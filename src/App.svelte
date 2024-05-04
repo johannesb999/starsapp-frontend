@@ -200,7 +200,7 @@
     document.body.appendChild(renderer.domElement);
 
     // Sterne laden und hinzufügen
-    stars = await loadStars();
+    stars = await getallstars();
     console.log(stars.length);
     const magValues = stars.map((star) => star.mag);
 
@@ -316,9 +316,38 @@
       ((mag - minMag) / (maxMag - minMag)) * (maxIntensity - minIntensity);
     return intensity;
   }
+
+
+
+
+
+
+
+
+
+  async function getMagByLocation() {
+
+  }
+
+
+
+  async function getallstars() {
+    console.log("test");
+    // const magbylocation = getMagByLocation();
+    const maxmag = 8;
+    const response = await axios.post("http://127.0.0.1:3001/all-stars",{maxmag});
+    console.log(response);
+    return response.data.map((star) => ({
+      ...star,
+      x: star.x0,
+      y: star.y0,
+      z: star.z0,
+    }));
+  }
 </script>
 
 <main>
+  <button on:click={getallstars}>test</button>
   <h1>{ausgewaehlteKonstellation}</h1>
 
   <button
