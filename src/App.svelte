@@ -4,15 +4,25 @@
   import * as THREE from "three";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
-  let magFilter = 20; // Initialwert für den Filter
-  // $: magFilterInverted = 20 - magFilter;
-  let scene, camera, renderer;
-  let showProperStarsOnly = false;
-  let sonneSichtbar = true;
-  let sonneMesh;
-  let stars = [];
+  let raycaster = new THREE.Raycaster();
+  let mouse = new THREE.Vector2();
 
-  const hauptSternzeichen = [
+  let container;
+  let camera, scene, renderer, controls;
+  let frustum;
+  let starField;
+  const maxDiameter = 0.3;
+  let selectedConstellation = "";
+  let selectedConstellation2 = "";
+  const maxMag = 8;
+  // Beispielwerte, die Sie erhalten haben
+const minRadius = 0.17;
+const maxRadius = 1587.37;
+const minNewRadius = 0.01; // Mindestgröße für Sichtbarkeit
+const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
+
+
+  const constellations = [
     "Ari",
     "Tau",
     "Gem",
@@ -26,260 +36,182 @@
     "Aqr",
     "Psc",
   ];
+  const constellationsRank2 = [
+  "And", "Ant", "And", "Ant", "Aps", "Aql", "Aqr", "Ara", "Ari", "Aur", "Boo", "CMa", "CMi", "CVn", "Cae", "Cam", "Cap", "Car", "Cas", "Cen", "Cep", "Cet", "Cha", "Cir", "Cnc", "Col", "Com", "CrA", "CrB", "Crt", "Cru", "Crv", "Cyg", "Del", "Dor", "Dra", "Eco", "Equ", "Eri", "For", "Gem", "Gru", "Her", "Hor", "Hya", "Hyi", "Ind", "LMi", "Lac", "Leo", "Lep", "Lib", "Lup", "Lyn", "Lyr", "Men", "Mic", "Mon", "Mus", "Nor", "Oct", "Oph", "Ori", "Pav", "Peg", "Per", "Phe", "Pic", "PsA", "Psc", "Pup", "Pyx", "Ret", "Scl", "Sco", "Sct", "Ser", "Sex", "Sge", "Sgr", "Sir", "Tau", "Tel", "TrA", "Tri", "Tuc", "UMa", "UMi", "Vel", "Vir", "Vol", "Vul"
+];
 
-  // Alle Konstellationen aus deiner Frage
-  let alleKonstellationen = [
-    { con: "And" },
-    { con: "Ant" },
-    { con: "And" },
-    { con: "Ant" },
-    { con: "Aps" },
-    { con: "Aql" },
-    { con: "Aqr" },
-    { con: "Ara" },
-    { con: "Ari" },
-    { con: "Aur" },
-    { con: "Boo" },
-    { con: "CMa" },
-    { con: "CMi" },
-    { con: "CVn" },
-    { con: "Cae" },
-    { con: "Cam" },
-    { con: "Cap" },
-    { con: "Car" },
-    { con: "Cas" },
-    { con: "Cen" },
-    { con: "Cep" },
-    { con: "Cet" },
-    { con: "Cha" },
-    { con: "Cir" },
-    { con: "Cnc" },
-    { con: "Col" },
-    { con: "Com" },
-    { con: "CrA" },
-    { con: "CrB" },
-    { con: "Crt" },
-    { con: "Cru" },
-    { con: "Crv" },
-    { con: "Cyg" },
-    { con: "Del" },
-    { con: "Dor" },
-    { con: "Dra" },
-    { con: "Eco" },
-    { con: "Equ" },
-    { con: "Eri" },
-    { con: "For" },
-    { con: "Gem" },
-    { con: "Gru" },
-    { con: "Her" },
-    { con: "Hor" },
-    { con: "Hya" },
-    { con: "Hyi" },
-    { con: "Ind" },
-    { con: "LMi" },
-    { con: "Lac" },
-    { con: "Leo" },
-    { con: "Lep" },
-    { con: "Lib" },
-    { con: "Lup" },
-    { con: "Lyn" },
-    { con: "Lyr" },
-    { con: "Men" },
-    { con: "Mic" },
-    { con: "Mon" },
-    { con: "Mus" },
-    { con: "Nor" },
-    { con: "Oct" },
-    { con: "Oph" },
-    { con: "Ori" },
-    { con: "Pav" },
-    { con: "Peg" },
-    { con: "Per" },
-    { con: "Phe" },
-    { con: "Pic" },
-    { con: "PsA" },
-    { con: "Psc" },
-    { con: "Pup" },
-    { con: "Pyx" },
-    { con: "Ret" },
-    { con: "Scl" },
-    { con: "Sco" },
-    { con: "Sct" },
-    { con: "Ser" },
-    { con: "Sex" },
-    { con: "Sge" },
-    { con: "Sgr" },
-    { con: "Sir" },
-    { con: "Tau" },
-    { con: "Tel" },
-    { con: "TrA" },
-    { con: "Tri" },
-    { con: "Tuc" },
-    { con: "UMa" },
-    { con: "UMi" },
-    { con: "Vel" },
-    { con: "Vir" },
-    { con: "Vol" },
-    { con: "Vul" },
-  ];
+  onMount(() => {
+    init();
+    loadStars();
+  });
 
-  // Trenne die Konstellationen in Hauptsternzeichen und andere
-  let hauptKonstellationen = alleKonstellationen.filter((konstellation) =>
-    hauptSternzeichen.includes(konstellation.con)
-  );
-  let andereKonstellationen = alleKonstellationen.filter(
-    (konstellation) => !hauptSternzeichen.includes(konstellation.con)
-  );
-
-  let ausgewaehlteKonstellation = "";
-  $: {
-    if (ausgewaehlteKonstellation) {
-      loadStarsForConstellation(ausgewaehlteKonstellation);
-    }
-  }
-
-  async function loadStarsForConstellation(constellation) {
-    try {
-      const response = await axios.get(
-        `http://127.0.0.1:3001/stars/${constellation}`
-      );
-
-      // Entferne die aktuellen Sterne aus der Szene
-      stars.forEach((star) => {
-        if (star.mesh) scene.remove(star.mesh);
-      });
-
-      // Aktualisiere das 'stars'-Array mit den neuen Daten
-      stars = response.data.map((star) => ({
-        ...star,
-        x: star.x0,
-        y: star.y0,
-        z: star.z0,
-        mesh: null, // Initialisiere 'mesh' als null
-      }));
-
-      // Füge neue Sterne basierend auf den geladenen Daten hinzu
-      stars.forEach((data) => {
-        const size = getSizeByAbsMag(data.absmag); // Berechne die Größe basierend auf dem 'mag'-Wert
-        const color = getColorByCI(data.ci); // Bestimme die Farbe basierend auf dem CI-Wert
-        const intensity = getIntensityByMag(data.mag); // Berechne die Intensität basierend auf dem 'mag'-Wert
-
-        // Erstelle das Material mit einer Emissionsfarbe basierend auf der Intensität
-        const material = new THREE.MeshStandardMaterial({
-          color: color,
-          emissive: color,
-          emissiveIntensity: intensity,
-        });
-
-        // Erstelle die Geometrie und das Mesh wie zuvor
-        const geometry = new THREE.SphereGeometry(size, 32, 32);
-        const sphere = new THREE.Mesh(geometry, material);
-        sphere.position.set(data.x, data.y, data.z);
-        scene.add(sphere);
-        data.mesh = sphere;
-      });
-
-      // Aktualisiere die Sichtbarkeit der Sterne basierend auf den aktuellen Filtern
-      updateStarVisibility();
-    } catch (error) {
-      console.error("Fehler beim Laden der Sterndaten: ", error);
-    }
-  }
-
-  onMount(async () => {
-    // Szene, Kamera und Renderer initialisieren
-    scene = new THREE.Scene();
+  function init() {
     camera = new THREE.PerspectiveCamera(
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      10000
+      500
     );
+    camera.position.z = 1;
+    // camera.position.set(0, 0, 0)
+    
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000000); // Setzen Sie explizit eine Hintergrundfarbe
+    
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    document.body.appendChild(renderer.domElement); // Stellen Sie sicher, dass dies ausgeführt wird
+    controls = new OrbitControls(camera, renderer.domElement);
+  }
 
-    // Sterne laden und hinzufügen
-    stars = await getallstars();
-    console.log(stars.length);
-    const magValues = stars.map((star) => star.mag);
+  function loadStars(selected) {
+    const url = selectedConstellation ? "http://127.0.0.1:3001/stars" : "http://127.0.0.1:3001/all-stars";
+    const body = { maxmag: maxMag, constellation: selected};
 
-    // Verwende Math.min() und Math.max() mit dem Spread-Operator, um den niedrigsten und höchsten Wert zu finden
-    const minMag = Math.min(...magValues);
-    const maxMag = Math.max(...magValues);
+    axios.post(url, body).then((response) => {
+        scene.clear(); // Leert die Szene vor dem Hinzufügen neuer Sterne
+        console.log(response.data);
+        const starsData = response.data
+          .filter(
+            (star) =>
+              star.x0 !== undefined &&
+              star.y0 !== undefined &&
+              star.z0 !== undefined
+          )
+          .map((star) => ({
+            x: star.x0,
+            y: star.y0,
+            z: star.z0,
+            id: star.id,
+            absmag: star.absmag,
+            ci: star.ci,
+            mag: star.mag,
+            dist: star.dist,
+          }));
+        addStars(starsData);
+        animate();
+      })
+      .catch((error) => {
+        console.error("Fehler beim Abrufen der Sterndaten:", error);
+      });
+  }
 
-    console.log(`Niedrigster mag-Wert: ${minMag}`);
-    console.log(`Höchster mag-Wert: ${maxMag}`);
+  function handleConstellationChange(event) {
+    selectedConstellation = event.target.value;
+    removeStars();
+    renderer.renderLists.dispose();
+    scene.clear();
+    loadStars(selectedConstellation);
+  }
+  function handleConstellationChange2(event) {
+    selectedConstellation2 = event.target.value;
+    removeStars();
+    renderer.renderLists.dispose();
+    scene.clear();
+    loadStars(selectedConstellation2);
+  }
 
-    const sunGeometry = new THREE.SphereGeometry(5, 32, 32); // Radius von 5, aber du kannst dies anpassen
-    const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 }); // Gelbe Farbe für die Sonne
-    sonneMesh = new THREE.Mesh(sunGeometry, sunMaterial);
-    sonneMesh.position.set(0.000005, 0, 0); // Setze die Position der Sonne
-    scene.add(sonneMesh);
+  function removeStars() {
+    scene.children.forEach((child) => {
+      if (child.userData.starData) {
+        // Überprüfen Sie, ob es sich um einen Stern handelt
+        scene.remove(child);
+        if (child.geometry) child.geometry.dispose();
 
-    stars.forEach((data) => {
-      const size = getSizeByAbsMag(data.absmag); // Berechne die Größe basierend auf dem 'mag'-Wert
-      const color = getColorByCI(data.ci); // Bestimme die Farbe basierend auf dem CI-Wert
-      const intensity = getIntensityByMag(data.mag); // Berechne die Intensität basierend auf dem 'mag'-Wert
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((material) => {
+              if (material.map) material.map.dispose();
+              material.dispose();
+            });
+          } else {
+            if (child.material.map) child.material.map.dispose();
+            child.material.dispose();
+          }
+        }
+      }
+    });
+  }
 
-      // Erstelle das Material mit einer Emissionsfarbe basierend auf der Intensität
-      const material = new THREE.MeshStandardMaterial({
+  function addStars(stars) {
+    if (stars.length === 0) {
+      console.error("Keine gültigen Sterndaten verfügbar.");
+      return;
+    }
+
+    stars.forEach((star) => {
+      // console.log(star);
+      if (star.id === 1) return;
+
+      const originalRadius = berechneSternRadius(star.ci, star.absmag);
+      const scaledRadius = mapRadius(originalRadius, minRadius, maxRadius, minNewRadius, maxNewRadius);
+      const color = getColorByCI(star.ci);
+      const intensity = getIntensityByMag(star.mag);
+      if (isNaN(scaledRadius)) {
+        console.log("+");
+      }
+      const starGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+
+      const starMaterial = new THREE.MeshStandardMaterial({
         color: color,
         emissive: color,
         emissiveIntensity: intensity,
       });
 
-      // Erstelle die Geometrie und das Mesh wie zuvor
-      const geometry = new THREE.SphereGeometry(size, 32, 32);
-      const sphere = new THREE.Mesh(geometry, material);
-      sphere.position.set(data.x, data.y, data.z);
+      const sphere = new THREE.Mesh(starGeometry, starMaterial);
+      sphere.position.set(star.x, star.y, star.z);
+      sphere.userData.starData = {
+        id: star.id,
+        x: star.x,
+        y: star.y,
+        z: star.z,
+      }; // Daten anhängen
       scene.add(sphere);
-      data.mesh = sphere;
     });
-
-    camera.position.z = 1000;
-    // camera.position.x = 5000;
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-
-    // Render-Schleife
-    const animate = function () {
-      updateStarVisibility();
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    };
-    animate();
-    // ladeHauptSternzeichenSterne();
-  });
-
-  function toggleSonne() {
-    sonneSichtbar = !sonneSichtbar;
-    sonneMesh.visible = sonneSichtbar;
   }
 
-  function updateStarVisibility() {
-    stars.forEach((star) => {
-      const isVisible =
-        star.mag < magFilter &&
-        (!showProperStarsOnly ||
-          (star.proper !== null && star.proper !== undefined));
-      if (star.mesh) {
-        star.mesh.visible = isVisible;
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+
+  function onMouseClick(event) {
+    // Berechnen der Mausposition im Normalized Device Coordinate (NDC) Raum
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Aktualisieren des Raycasters mit der Kamera und Mausposition
+    raycaster.setFromCamera(mouse, camera);
+
+    // Berechnen von Objekten, die vom Raycaster geschnitten werden
+    const intersects = raycaster.intersectObjects(scene.children);
+
+    if (intersects.length > 0) {
+      let firstObject = intersects[0].object;
+      if (firstObject.userData.starData) {
+        let newPosition = new THREE.Vector3(firstObject.userData.starData.x, firstObject.userData.starData.y, firstObject.userData.starData.z);
+            camera.position.copy(newPosition);
+            camera.position.setZ(newPosition.z + 0.1);  // Etwas zurücksetzen, um den Stern zu betrachten
+
+            // OrbitControls neu ausrichten
+            controls.target.copy(newPosition);
+            controls.update();
       }
-    });
+    }
   }
-  $: updateStarVisibility(), [magFilter, showProperStarsOnly];
+  window.addEventListener("click", onMouseClick);
 
-  async function loadStars() {
-    const response = await axios.get("http://127.0.0.1:3001/stars/Vir");
-    console.log(response.data);
-    return response.data.map((star) => ({
-      ...star,
-      x: star.x0,
-      y: star.y0,
-      z: star.z0,
-    }));
+  function returnToSun() {
+    let newPosition = new THREE.Vector3(0,0,0);
+            camera.position.copy(newPosition);
+            camera.position.setZ(newPosition.z + 0.1);  // Etwas zurücksetzen, um den Stern zu betrachten
+
+            // OrbitControls neu ausrichten
+            controls.target.copy(newPosition);
+            controls.update();
   }
+
+
 
   function getColorByCI(ci) {
     if (ci < 0)
@@ -293,15 +225,7 @@
     else return 0xffd2a1; // Orange/Rot
   }
 
-  function getSizeByAbsMag(absmag) {
-    if (absmag < 0)
-      return 2; // Sehr hell, also größer
-    else if (absmag < 5)
-      return 1.5; // Hell
-    else return 1; // Standardgröße
-  }
-
-  function getIntensityByMag(mag) {
+  function getIntensityByMag(mag) { 
     // Beispiel einer einfachen linearen Skalierung:
     // Hellerer Stern (niedriger 'mag') hat höhere Intensität
     const minMag = 0; // Minimal erwarteter 'mag'-Wert
@@ -317,91 +241,50 @@
     return intensity;
   }
 
+  function berechneSternRadius(CI, M) {
+    const L_sonne = 3.828e26; // Leuchtkraft der Sonne in Watt
+    const sigma = 5.67e-8; // Stefan-Boltzmann-Konstante in W/m^2/K^4
+    const pi = Math.PI;
+
+    const T = 4600 * (1 / (0.92 * CI + 1.7) + 1 / (0.92 * CI + 0.62));
+    const L = L_sonne * Math.pow(10, 0.4 * (4.83 - M));
+    const R = Math.sqrt(L / (4 * pi * sigma * Math.pow(T, 4)));
+    const R_sonnen = R / 6.96e8; // Umrechnung in Sonnenradien
+
+    return R_sonnen;
+}
+
+function mapRadius(originalRadius, minOriginal, maxOriginal, minNew, maxNew) {
+    // Skalieren des Radius innerhalb des neuen Bereichs
+    return ((originalRadius - minOriginal) / (maxOriginal - minOriginal)) * (maxNew - minNew) + minNew;
+}
 
 
 
-
-
-
-
-
-  async function getMagByLocation() {
-
-  }
-
-
-
-  async function getallstars() {
-    console.log("test");
-    // const magbylocation = getMagByLocation();
-    const maxmag = 8;
-    const response = await axios.post("http://127.0.0.1:3001/all-stars",{maxmag});
-    console.log(response);
-    return response.data.map((star) => ({
-      ...star,
-      x: star.x0,
-      y: star.y0,
-      z: star.z0,
-    }));
-  }
 </script>
 
 <main>
-  <button on:click={getallstars}>test</button>
-  <h1>{ausgewaehlteKonstellation}</h1>
-
-  <button
-    on:click={() => {
-      showProperStarsOnly = !showProperStarsOnly;
-    }}
-  >
-    {showProperStarsOnly ? "HS ausblenden" : "HS anzeigen"}</button
-  >
-  <!-- Slider im Markup -->
-  <p>Mag-Filter</p>
-  <div id="slider">
-    <input type="range" min="0" max="20" bind:value={magFilter} />
-    <p>{magFilter}</p>
-  </div>
-  <button on:click={toggleSonne}>
-    {sonneSichtbar ? "Sonne ausblenden" : "Sonne anzeigen"}
-  </button>
-
-  <!-- Dropdown für Hauptsternzeichen -->
-  <select bind:value={ausgewaehlteKonstellation}>
-    <option value="">Wähle ein Hauptsternzeichen</option>
-    {#each hauptKonstellationen as konstellation}
-      <option value={konstellation.con}>{konstellation.con}</option>
+  <select on:change={handleConstellationChange}>
+    <option value="">Alle Sterne anzeigen</option>
+    {#each constellations as constellation}
+      <option value={constellation}>{constellation}</option>
     {/each}
   </select>
-
-  <!-- Dropdown für andere Konstellationen -->
-  <select bind:value={ausgewaehlteKonstellation}>
-    <option value="">Wähle eine andere Konstellation</option>
-    {#each andereKonstellationen as konstellation}
-      <option value={konstellation.con}>{konstellation.con}</option>
+  <select on:change={handleConstellationChange2}>
+    <option value="">Alle Sterne anzeigen</option>
+    {#each constellationsRank2 as constellation}
+      <option value={constellation}>{constellation}</option>
     {/each}
   </select>
-
-  <!-- <label>
-      <input type="checkbox" bind:checked={alleHauptkonstellationenAnzeigen} on:change={toggleHauptkonstellationen} />
-      Alle Hauptkonstellationen anzeigen
-    </label>
-    <p>Hauptkonstellationen Sterne</p>
-    {#if hauptSternDaten.length > 0}
-      <p>
-        Sterne gefunden
-      </p>
-    {:else}
-      <p>Keine Sterne gefunden.</p>
-    {/if}
-   -->
+  <button on:click={returnToSun}>zur Sonne zurück</button>
 </main>
 
 <svelte:head>
   <style>
     body {
       margin: 0;
+      min-width: 0px;
+      width: 0px !important;
     }
     canvas {
       display: block;
@@ -409,42 +292,8 @@
   </style>
 </svelte:head>
 
-<!-- 
-<script>
-  let alleHauptkonstellationenAnzeigen = false;
-  $: {
-  if (stars.length > 0) {
-    stars.forEach(star => {
-      if (star.mesh) { // Stelle sicher, dass das Mesh-Objekt existiert
-        // Aktualisiere die Sichtbarkeit basierend auf der Checkbox
-        star.mesh.visible = alleHauptkonstellationenAnzeigen ? hauptSternzeichen.includes(star.con) : true;
-      }
-    });
-  }
-} 
-
-  let hauptSternDaten = [];
-
-async function ladeHauptSternzeichenSterne() {
-  try {
-    const response = await axios.get('http://127.0.0.1:3001/hauptkonstellationen');
-    hauptSternDaten = response.data;
-  } catch (error) {
-    console.error('Fehler beim Laden der Hauptkonstellationen-Sterne: ', error);
-  }
-}
-
-</script> -->
-
 <style>
-  #slider {
-    display: flex;
-    gap: 15px;
-    margin-top: -30px;
-  }
   main {
-    /* position: absolute; */
-    /* max-width: 100px;  */
-    text-align: left;
+    position: absolute;
   }
 </style>
