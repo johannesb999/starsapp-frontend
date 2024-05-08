@@ -166,8 +166,8 @@
 
   function loadStars(selected) {
     const url = selectedConstellation
-      ? "http://127.0.0.1:3001/stars"
-      : "http://127.0.0.1:3001/all-stars";
+      ? "http://starsapi:3001/stars"
+      : "http://starsapi:3001/all-stars";
     const body = { maxmag: maxMag, constellation: selected };
 
     axios
@@ -321,17 +321,13 @@
           ...firstObject.userData.starData,
           object: firstObject,
         };
-        let newPosition = new THREE.Vector3(
-          firstObject.userData.starData.x,
-          firstObject.userData.starData.y,
-          firstObject.userData.starData.z
-        );
-        camera.position.copy(newPosition);
-        camera.position.setZ(newPosition.z + 0.2); // Etwas zurücksetzen, um den Stern zu betrachten
+        // let newPosition = new THREE.Vector3(firstObject.userData.starData.x, firstObject.userData.starData.y, firstObject.userData.starData.z);
+        // camera.position.copy(newPosition);
+        // camera.position.setZ(newPosition.z + 0.2); // Etwas zurücksetzen, um den Stern zu betrachten
 
-        // OrbitControls neu ausrichten
-        controls.target.copy(newPosition);
-        controls.update();
+        // // OrbitControls neu ausrichten
+        // controls.target.copy(newPosition);
+        // controls.update();
       }
     }
   }
@@ -496,5 +492,6 @@
     padding: 10px;
     border: 2px solid black;
     border-radius: 8px;
+    cursor: pointer;
   }
 </style>
