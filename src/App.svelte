@@ -16,11 +16,20 @@
   let selectedConstellation2 = "";
   const maxMag = 8;
   // Beispielwerte, die Sie erhalten haben
-const minRadius = 0.17;
-const maxRadius = 1587.37;
-const minNewRadius = 0.01; // Mindestgröße für Sichtbarkeit
-const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
-
+  const minRadius = 0.17;
+  const maxRadius = 1587.37;
+  const minNewRadius = 0.05; // Mindestgröße für Sichtbarkeit
+  const maxNewRadius = 0.3; // Maximalgröße für die Darstellung
+  let lastRemovedStar = {
+    id: 1,
+    x: 0.000005,
+    y: 0,
+    z: 0,
+    absmag: 4.85,
+    ci: 0.9,
+  };
+  let selectedStar = { id: 1, x: 0.000005, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
+  let sunIgnored = false;
 
   const constellations = [
     "Ari",
@@ -37,8 +46,99 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
     "Psc",
   ];
   const constellationsRank2 = [
-  "And", "Ant", "And", "Ant", "Aps", "Aql", "Aqr", "Ara", "Ari", "Aur", "Boo", "CMa", "CMi", "CVn", "Cae", "Cam", "Cap", "Car", "Cas", "Cen", "Cep", "Cet", "Cha", "Cir", "Cnc", "Col", "Com", "CrA", "CrB", "Crt", "Cru", "Crv", "Cyg", "Del", "Dor", "Dra", "Eco", "Equ", "Eri", "For", "Gem", "Gru", "Her", "Hor", "Hya", "Hyi", "Ind", "LMi", "Lac", "Leo", "Lep", "Lib", "Lup", "Lyn", "Lyr", "Men", "Mic", "Mon", "Mus", "Nor", "Oct", "Oph", "Ori", "Pav", "Peg", "Per", "Phe", "Pic", "PsA", "Psc", "Pup", "Pyx", "Ret", "Scl", "Sco", "Sct", "Ser", "Sex", "Sge", "Sgr", "Sir", "Tau", "Tel", "TrA", "Tri", "Tuc", "UMa", "UMi", "Vel", "Vir", "Vol", "Vul"
-];
+    "And",
+    "Ant",
+    "And",
+    "Ant",
+    "Aps",
+    "Aql",
+    "Aqr",
+    "Ara",
+    "Ari",
+    "Aur",
+    "Boo",
+    "CMa",
+    "CMi",
+    "CVn",
+    "Cae",
+    "Cam",
+    "Cap",
+    "Car",
+    "Cas",
+    "Cen",
+    "Cep",
+    "Cet",
+    "Cha",
+    "Cir",
+    "Cnc",
+    "Col",
+    "Com",
+    "CrA",
+    "CrB",
+    "Crt",
+    "Cru",
+    "Crv",
+    "Cyg",
+    "Del",
+    "Dor",
+    "Dra",
+    "Eco",
+    "Equ",
+    "Eri",
+    "For",
+    "Gem",
+    "Gru",
+    "Her",
+    "Hor",
+    "Hya",
+    "Hyi",
+    "Ind",
+    "LMi",
+    "Lac",
+    "Leo",
+    "Lep",
+    "Lib",
+    "Lup",
+    "Lyn",
+    "Lyr",
+    "Men",
+    "Mic",
+    "Mon",
+    "Mus",
+    "Nor",
+    "Oct",
+    "Oph",
+    "Ori",
+    "Pav",
+    "Peg",
+    "Per",
+    "Phe",
+    "Pic",
+    "PsA",
+    "Psc",
+    "Pup",
+    "Pyx",
+    "Ret",
+    "Scl",
+    "Sco",
+    "Sct",
+    "Ser",
+    "Sex",
+    "Sge",
+    "Sgr",
+    "Sir",
+    "Tau",
+    "Tel",
+    "TrA",
+    "Tri",
+    "Tuc",
+    "UMa",
+    "UMi",
+    "Vel",
+    "Vir",
+    "Vol",
+    "Vul",
+  ];
 
   onMount(() => {
     init();
@@ -52,12 +152,12 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
       0.1,
       500
     );
-    camera.position.z = 1;
+    camera.position.z = 0.0001;
     // camera.position.set(0, 0, 0)
-    
+
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000); // Setzen Sie explizit eine Hintergrundfarbe
-    
+
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement); // Stellen Sie sicher, dass dies ausgeführt wird
@@ -65,10 +165,14 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
   }
 
   function loadStars(selected) {
-    const url = selectedConstellation ? "http://127.0.0.1:3001/stars" : "http://127.0.0.1:3001/all-stars";
-    const body = { maxmag: maxMag, constellation: selected};
+    const url = selectedConstellation
+      ? "http://127.0.0.1:3001/stars"
+      : "http://127.0.0.1:3001/all-stars";
+    const body = { maxmag: maxMag, constellation: selected };
 
-    axios.post(url, body).then((response) => {
+    axios
+      .post(url, body)
+      .then((response) => {
         scene.clear(); // Leert die Szene vor dem Hinzufügen neuer Sterne
         console.log(response.data);
         const starsData = response.data
@@ -139,18 +243,32 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
       return;
     }
 
+    console.log(stars);
     stars.forEach((star) => {
-      // console.log(star);
-      if (star.id === 1) return;
+      if (star.id === 1 && sunIgnored == false) {
+        sunIgnored = true;
+        return;
+      }
 
       const originalRadius = berechneSternRadius(star.ci, star.absmag);
-      const scaledRadius = mapRadius(originalRadius, minRadius, maxRadius, minNewRadius, maxNewRadius);
-      const color = getColorByCI(star.ci);
-      const intensity = getIntensityByMag(star.mag);
+      let scaledRadius = mapRadius(
+        originalRadius,
+        minRadius,
+        maxRadius,
+        minNewRadius,
+        maxNewRadius  
+      );
+      let color = getColorByCI(star.ci);
+      let intensity = getIntensityByMag(star.mag);
+      if (star.id === 1) {
+        color = 0xff0000;
+        intensity = 0xff0000;
+      }
       if (isNaN(scaledRadius)) {
         console.log("+");
+        scaledRadius = 0.05;
       }
-      const starGeometry = new THREE.SphereGeometry(0.1, 16, 16);
+      const starGeometry = new THREE.SphereGeometry(scaledRadius, 16, 16);
 
       const starMaterial = new THREE.MeshStandardMaterial({
         color: color,
@@ -165,6 +283,10 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
         x: star.x,
         y: star.y,
         z: star.z,
+        absmag: star.absmag,
+        ci: star.ci,
+        mag: star.mag,
+        dist: star.dist,
       }; // Daten anhängen
       scene.add(sphere);
     });
@@ -189,29 +311,75 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
     if (intersects.length > 0) {
       let firstObject = intersects[0].object;
       if (firstObject.userData.starData) {
-        let newPosition = new THREE.Vector3(firstObject.userData.starData.x, firstObject.userData.starData.y, firstObject.userData.starData.z);
-            camera.position.copy(newPosition);
-            camera.position.setZ(newPosition.z + 0.1);  // Etwas zurücksetzen, um den Stern zu betrachten
+        console.log(firstObject.userData.starData);
 
-            // OrbitControls neu ausrichten
-            controls.target.copy(newPosition);
-            controls.update();
+        if (lastRemovedStar != null) addStars([lastRemovedStar]);
+
+        lastRemovedStar = null;
+
+        selectedStar = {
+          ...firstObject.userData.starData,
+          object: firstObject,
+        };
+        let newPosition = new THREE.Vector3(
+          firstObject.userData.starData.x,
+          firstObject.userData.starData.y,
+          firstObject.userData.starData.z
+        );
+        camera.position.copy(newPosition);
+        camera.position.setZ(newPosition.z + 0.2); // Etwas zurücksetzen, um den Stern zu betrachten
+
+        // OrbitControls neu ausrichten
+        controls.target.copy(newPosition);
+        controls.update();
       }
     }
   }
   window.addEventListener("click", onMouseClick);
+  function jumpToStar() {
+    let newPosition = new THREE.Vector3(
+      selectedStar.x,
+      selectedStar.y,
+      selectedStar.z
+    );
+    camera.position.copy(newPosition);
+    camera.position.setZ(newPosition.z + 0.001);
+    // OrbitControls neu ausrichten
+    controls.target.copy(newPosition);
+    controls.update();
 
-  function returnToSun() {
-    let newPosition = new THREE.Vector3(0,0,0);
-            camera.position.copy(newPosition);
-            camera.position.setZ(newPosition.z + 0.1);  // Etwas zurücksetzen, um den Stern zu betrachten
+    if (selectedStar.object) {
+      scene.remove(selectedStar.object);
+      disposeMaterial(selectedStar.object);
+    }
 
-            // OrbitControls neu ausrichten
-            controls.target.copy(newPosition);
-            controls.update();
+    // Aktualisieren von lastRemovedStar
+    lastRemovedStar = selectedStar;
   }
 
+  function returnToSun() {
+    console.log("button pressed");
+    let newPosition = new THREE.Vector3(0.000005, 0, 0);
+    console.log(newPosition);
+    camera.position.copy(newPosition);
+    camera.position.setZ(newPosition.z + 0.1); // Etwas zurücksetzen, um den Stern zu betrachten
 
+    // OrbitControls neu ausrichten
+    controls.target.copy(newPosition);
+    controls.update();
+    selectedStar = { id: 1, x: 0.000005, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
+    if (lastRemovedStar != null) addStars([lastRemovedStar]);
+    lastRemovedStar = { id: 1, x: 0.000005, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
+    console.log(scene.children);
+    const sce = scene.children.reverse();
+    const sun = sce.find((child) => {
+      console.log("-");
+      if (child.userData.starData.id === 1) console.log("hit");
+      return child.userData.starData && child.userData.starData.id === 1;
+    });
+    scene.remove(sun);
+    disposeMaterial(sun);
+  }
 
   function getColorByCI(ci) {
     if (ci < 0)
@@ -225,7 +393,7 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
     else return 0xffd2a1; // Orange/Rot
   }
 
-  function getIntensityByMag(mag) { 
+  function getIntensityByMag(mag) {
     // Beispiel einer einfachen linearen Skalierung:
     // Hellerer Stern (niedriger 'mag') hat höhere Intensität
     const minMag = 0; // Minimal erwarteter 'mag'-Wert
@@ -242,6 +410,7 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
   }
 
   function berechneSternRadius(CI, M) {
+    // if(CI == undefined || M == undefined) console.log("CI" + CI + "M" +M);
     const L_sonne = 3.828e26; // Leuchtkraft der Sonne in Watt
     const sigma = 5.67e-8; // Stefan-Boltzmann-Konstante in W/m^2/K^4
     const pi = Math.PI;
@@ -252,15 +421,27 @@ const maxNewRadius = 0.1;  // Maximalgröße für die Darstellung
     const R_sonnen = R / 6.96e8; // Umrechnung in Sonnenradien
 
     return R_sonnen;
-}
+  }
 
-function mapRadius(originalRadius, minOriginal, maxOriginal, minNew, maxNew) {
+  function mapRadius(originalRadius, minOriginal, maxOriginal, minNew, maxNew) {
     // Skalieren des Radius innerhalb des neuen Bereichs
-    return ((originalRadius - minOriginal) / (maxOriginal - minOriginal)) * (maxNew - minNew) + minNew;
-}
+    return (
+      ((originalRadius - minOriginal) / (maxOriginal - minOriginal)) *
+        (maxNew - minNew) +
+      minNew
+    );
+  }
 
-
-
+  function disposeMaterial(object) {
+    if (object.geometry) object.geometry.dispose();
+    if (object.material) {
+      if (Array.isArray(object.material)) {
+        object.material.forEach((material) => material.dispose());
+      } else {
+        object.material.dispose();
+      }
+    }
+  }
 </script>
 
 <main>
@@ -277,6 +458,12 @@ function mapRadius(originalRadius, minOriginal, maxOriginal, minNew, maxNew) {
     {/each}
   </select>
   <button on:click={returnToSun}>zur Sonne zurück</button>
+  <div class="overlay">
+    <h2>Stern: {selectedStar.id}</h2>
+    <p>Magnitude: {selectedStar.mag}</p>
+    <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
+    <button on:click={jumpToStar}>Sprung</button>
+  </div>
 </main>
 
 <svelte:head>
@@ -295,5 +482,19 @@ function mapRadius(originalRadius, minOriginal, maxOriginal, minNew, maxNew) {
 <style>
   main {
     position: absolute;
+    width: 100%;
+    /* border: 2px solid pink;   */
+    display: flex;
+    justify-content: start;
+    gap: 5px;
+  }
+  .overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border: 2px solid black;
+    border-radius: 8px;
   }
 </style>
