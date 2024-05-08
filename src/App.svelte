@@ -166,8 +166,8 @@
 
   function loadStars(selected) {
     const url = selectedConstellation
-      ? "http://starsapi.johannes-biess.com/stars"
-      : "http://starsapi.johannes-biess.com/all-stars";
+      ? "https://starsapi.johannes-biess.com/stars"
+      : "https://starsapi.johannes-biess.com/all-stars";
     const body = { maxmag: maxMag, constellation: selected };
 
     axios
