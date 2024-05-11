@@ -31,6 +31,10 @@
   let selectedStar = { id: 1, x: 0.000005, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
   let sunIgnored = false;
 
+  let lastCameraPosition = new THREE.Vector3();
+  let lastCameraQuaternion = new THREE.Quaternion();
+
+
   const constellations = [
     "Ari",
     "Tau",
@@ -294,8 +298,38 @@
 
   function animate() {
     requestAnimationFrame(animate);
-    renderer.render(scene, camera);
+    updateVisibility();
+    renderer.render(scene, camera); 
+    controls.update();
   }
+
+  function cameraMoved() {
+    let positionChanged = !lastCameraPosition.equals(camera.position);
+    let quaternionChanged = !lastCameraQuaternion.equals(camera.quaternion);
+
+    // Aktualisiere die letzte bekannte Position und Ausrichtung der Kamera für den nächsten Frame
+    lastCameraPosition.copy(camera.position);
+    lastCameraQuaternion.copy(camera.quaternion);
+
+    return positionChanged || quaternionChanged;
+}
+
+  function updateVisibility() {
+  const frustum = new THREE.Frustum();
+  const cameraViewProjectionMatrix = new THREE.Matrix4();
+
+  // Aktualisiere die Frustum-Grenzen basierend auf der aktuellen Kameraposition und -konfiguration
+  cameraViewProjectionMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+  // Durchlaufe alle Objekte der Szene und aktualisiere ihre Sichtbarkeit
+  scene.traverse(function(object) {
+    if (object instanceof THREE.Mesh) {
+      object.visible = frustum.intersectsObject(object);
+    }
+  });
+}
+
 
   function onMouseClick(event) {
     // Berechnen der Mausposition im Normalized Device Coordinate (NDC) Raum
