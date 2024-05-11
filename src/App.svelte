@@ -154,7 +154,7 @@
       75,
       window.innerWidth / window.innerHeight,
       0.1,
-      500
+      300
     );
     camera.position.z = 0.0001;
     // camera.position.set(0, 0, 0)
