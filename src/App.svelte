@@ -30,9 +30,7 @@
   };
   let selectedStar = { id: 1, x: 0.000005, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
   let sunIgnored = false;
-
-  let lastCameraPosition = new THREE.Vector3();
-  let lastCameraQuaternion = new THREE.Quaternion();
+  let counter = 0;
 
 
   const constellations = [
@@ -253,6 +251,7 @@
         sunIgnored = true;
         return;
       }
+      let starGeometry;
 
       const originalRadius = berechneSternRadius(star.ci, star.absmag);
       let scaledRadius = mapRadius(
@@ -262,6 +261,7 @@
         minNewRadius,
         maxNewRadius  
       );
+      // console.log(scaledRadius);
       let color = getColorByCI(star.ci);
       let intensity = getIntensityByMag(star.mag);
       if (star.id === 1) {
@@ -272,7 +272,13 @@
         console.log("+");
         scaledRadius = 0.05;
       }
-      const starGeometry = new THREE.SphereGeometry(scaledRadius, 16, 16);
+      if(star.dist < 200) {
+        starGeometry = new THREE.SphereGeometry(scaledRadius, 16, 16);
+      } else if (star.dist < 400) {
+        starGeometry = new THREE.SphereGeometry(scaledRadius, 8, 8);
+      } else {
+        starGeometry = new THREE.SphereGeometry(scaledRadius, 4, 4);
+      }
 
       const starMaterial = new THREE.MeshStandardMaterial({
         color: color,
@@ -303,16 +309,6 @@
     controls.update();
   }
 
-  function cameraMoved() {
-    let positionChanged = !lastCameraPosition.equals(camera.position);
-    let quaternionChanged = !lastCameraQuaternion.equals(camera.quaternion);
-
-    // Aktualisiere die letzte bekannte Position und Ausrichtung der Kamera für den nächsten Frame
-    lastCameraPosition.copy(camera.position);
-    lastCameraQuaternion.copy(camera.quaternion);
-
-    return positionChanged || quaternionChanged;
-}
 
   function updateVisibility() {
   const frustum = new THREE.Frustum();
