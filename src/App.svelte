@@ -33,6 +33,8 @@
   let counter = 0;
 
 
+  const leoHip = [49669, 57632, 50583, 54872, 54879, 47908, 48455, 49641, 50555, 51069, 55434];
+
   const constellations = [
     "Ari",
     "Tau",
@@ -468,9 +470,65 @@
       }
     }
   }
+
+  var leoLines = [
+    { x0: -29.062, y0: 18.026, z0: 16.685 },
+    { x0: -53.196, y0: 35.259, z0: 28.114 },
+    { x0: -21.019, y0: 11.132, z0: 5.041 },
+  { x0: -115.275, y0: 61.333, z0: -0.847 },
+  { x0: -273.354, y0: 128.03, z0: -431.558 },
+  { x0: -65.657, y0: 28.518, z0: -21.662 },
+  { x0: -16.442, y0: 3.337, z0: 6.281 },
+  { x0: -34.003, y0: 15.861, z0: 13.539 },
+  { x0: -21.019, y0: 11.132, z0: 5.041 },
+  // { x0: -46.506, y0: 9.411, z0: 13.096 },
+  // { x0: -72.313, y0: 12.381, z0: 7.749 },
+  // { x0: -10.634, y0: 0.508, z0: 2.768 }
+];
+
+function connectStars() {
+    for (let i = 0; i < leoLines.length - 1; i++) {
+        addLine(leoLines[i], leoLines[i + 1]);
+    }
+}
+
+function addLine(start, end) {
+    let geometry = new THREE.BufferGeometry();
+    let vertices = new Float32Array([
+        start.x0, start.y0, start.z0,
+        end.x0, end.y0, end.z0
+    ]);
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    let color = Math.floor(Math.random() * 0xffffff);
+    let material = new THREE.LineBasicMaterial({ color: color });
+    let line = new THREE.Line(geometry, material);
+    scene.add(line);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 
 <main>
+  <button on:click={connectStars}>Connect Leo</button>
   <select on:change={handleConstellationChange}>
     <option value="">Alle Sterne anzeigen</option>
     {#each constellations as constellation}
