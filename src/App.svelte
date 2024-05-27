@@ -159,9 +159,9 @@
     );
     camera.position.z = 0.0001;
     const angleInDegrees = 23.5;
-  const angleInRadians = angleInDegrees * (Math.PI / 180);
+    const angleInRadians = angleInDegrees * (Math.PI / 180);
 
-// Kamera um die x-Achse rotieren
+    // Kamera um die x-Achse rotieren
     camera.rotation.x += angleInRadians;
     // camera.position.set(0, 0, 0)
 
@@ -249,15 +249,13 @@
     });
   }
 
-
-
   function calculateCoordinates(ra, dec, dist) {
     // Konvertiere RA von Stunden in Grad (1 Stunde = 15 Grad)
     let raDeg = ra * 15;
 
     // Konvertiere RA und DEC in Radianten für die trigonometrischen Funktionen
-    let raRad = raDeg * Math.PI / 180;
-    let decRad = dec * Math.PI / 180;
+    let raRad = (raDeg * Math.PI) / 180;
+    let decRad = (dec * Math.PI) / 180;
 
     // Berechne die kartesischen Koordinaten
     let x = dist * Math.cos(decRad) * Math.cos(raRad);
@@ -265,7 +263,7 @@
     let z = dist * Math.sin(decRad);
 
     return { x, y, z };
-}
+  }
 
   function addStars(stars) {
     if (stars.length === 0) {
@@ -274,35 +272,28 @@
     }
 
     // Materialien definieren
-const greenMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-const redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const greenMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    const redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
-// Geometrie definieren
-const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+    // Geometrie definieren
+    const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
 
-// Quader erstellen
-const greenCube = new THREE.Mesh(geometry, greenMaterial);
-greenCube.position.set(1, 0, 0);
-scene.add(greenCube);
+    // Quader erstellen
+    const greenCube = new THREE.Mesh(geometry, greenMaterial);
+    greenCube.position.set(1, 0, 0);
+    scene.add(greenCube);
 
-const blueCube = new THREE.Mesh(geometry, blueMaterial);
-blueCube.position.set(0, 1, 0);
-scene.add(blueCube);
+    const blueCube = new THREE.Mesh(geometry, blueMaterial);
+    blueCube.position.set(0, 1, 0);
+    scene.add(blueCube);
 
-const redCube = new THREE.Mesh(geometry, redMaterial);
-redCube.position.set(0, 0, 1);
-scene.add(redCube);
-
-
-
-
-
-
+    const redCube = new THREE.Mesh(geometry, redMaterial);
+    redCube.position.set(0, 0, 1);
+    scene.add(redCube);
 
     console.log(stars);
     stars.forEach((star) => {
-
       if (star.id === 1 && sunIgnored == false) {
         sunIgnored = true;
         return;
@@ -543,233 +534,272 @@ scene.add(redCube);
       // { x0: -72.313, y0: 12.381, z0: 7.749 },
       // { x0: -10.634, y0: 0.508, z0: 2.768 }
     ],
-    fische: [
-      { x0: 38.448, y0: 12.814, z0: 5.39 },
-      { x0: 31.621, y0: -30.021, z0: -13.525 },
-      { x0: 41.496, y0: -7.847, z0: 2.422 },
-      { x0: 48.701, y0: -7.076, z0: 1.079 },
-      { x0: 25.568, y0: -3.193, z0: -1.841 },
-      { x0: 38.777, y0: -3.429, z0: -9.866 },
-      { x0: 13.595, y0: -1.192, z0: 1.344 },
-      { x0: 31.941, y0: -2.507, z0: 0.996 },
-      { x0: 32.792, y0: -0.099, z0: 3.947 },
-    ],
+
     Zwilling: [
-       { x0: -0.102, y0: 75.752, z0: -171.951 },
-  { x0: -6.562, y0: 65.281, z0: 27.195 },
-  { x0: -26.594, y0: 209.318, z0: 77.684 },
-  { x0: -5.266, y0: 31.714, z0: 9.461 },
-  { x0: -46.024, y0: 237.15, z0: 113.322 },
-  { x0: -3.532, y0: 17.638, z0: 4.118 },
-  { x0: -11.225, y0: 47.866, z0: 33.114 },
-  { x0: -84.119, y0: 292.833, z0: 114.34 },
-  { x0: -31.691, y0: 98.796, z0: 60.496 },
-  { x0: -9.825, y0: 27.709, z0: 8.731 },
-  { x0: -5.888, y0: 16.151, z0: 6.94 },
-  { x0: -13.456, y0: 34.281, z0: 19.415 },
-  { x0: -5.312, y0: 12.13, z0: 8.239 },
-  { x0: -28.15, y0: 63.284, z0: 35.133 },
-  { x0: -17.374, y0: 35.447, z0: 17.905 },
-  { x0: -4.055, y0: 8.195, z0: 4.867 },
+      { x0: -3.532, y0: 17.638, z0: 4.118 },
+      { x0: -9.825, y0: 27.709, z0: 8.731 },
+      { x0: -5.888, y0: 16.151, z0: 6.94 },
+      { x0: -84.119, y0: 292.833, z0: 114.34 },
+      { x0: -5.266, y0: 31.714, z0: 9.461 },
+      { x0: -84.119, y0: 292.833, z0: 114.34 },
+      { x0: -5.888, y0: 16.151, z0: 6.94 },
+      { x0: -28.15, y0: 63.284, z0: 35.133 },
+      { x0: -17.374, y0: 35.447, z0: 17.905 },
+      { x0: -28.15, y0: 63.284, z0: 35.133 },
+      { x0: -4.055, y0: 8.195, z0: 4.867 },
+      { x0: -28.15, y0: 63.284, z0: 35.133 },
+      { x0: -13.456, y0: 34.281, z0: 19.415 },
+      { x0: -31.691, y0: 98.796, z0: 60.496 },
+      { x0: -5.312, y0: 12.13, z0: 8.239 },
+      { x0: -31.691, y0: 98.796, z0: 60.496 },
+      { x0: -11.225, y0: 47.866, z0: 33.114 },
+      { x0: -31.691, y0: 98.796, z0: 60.496 },
+      { x0: -46.024, y0: 237.15, z0: 113.322 },
+      { x0: -26.594, y0: 209.318, z0: 77.684 },
+      { x0: -46.024, y0: 237.15, z0: 113.322 },
+      { x0: -6.562, y0: 65.281, z0: 27.195 },
+      { x0: -6.562, y0: 65.281, z0: 27.195 },
+      { x0: -0.785, y0: 43.678, z0: 18.781 },
     ],
+
     Widder: [
       { _id: "663b7e1c2bdcc11befd4a1a5", x0: 41.77, y0: 22.568, z0: 16.62 },
-  { _id: "663b7e1c2bdcc11befd4a24c", x0: 14.753, y0: 8.063, z0: 6.389 },
-  { _id: "663b7e1c2bdcc11befd4ab7b", x0: 15.732, y0: 9.752, z0: 8.034 },
-  { _id: "663b7e1e2bdcc11befd4c94e", x0: 33.288, y0: 30.498, z0: 23.262},
-],Wassermann: [
-  {
-    _id: '663b7e542bdcc11befd943d5',
-    hip: 115438,
-    ra: 23.382842,
-    dec: -20.10058,
-    dist: 50.3632,
-    x0: 46.68,
-    y0: -7.608,
-    z0: -17.308
-  },
-  {
-    _id: '663b7e532bdcc11befd93eab',
-    hip: 114855,
-    ra: 23.26485994,
-    dec: -9.08773573,
-    dist: 45.2645,
-    x0: 43.871,
-    y0: -8.549,
-    z0: -7.149
-  },
-  {
-    _id: '663b7e522bdcc11befd92d35',
-    hip: 112961,
-    ra: 22.87691,
-    dec: -7.579599,
-    dist: 111.9069,
-    x0: 106.169,
-    y0: -32.148,
-    z0: -14.761
-  },
-  {
-    _id: '663b7e522bdcc11befd91fa0',
-    hip: 111497,
-    ra: 22.589272,
-    dec: -0.117498,
-    dist: 54.434,
-    x0: 50.763,
-    y0: -19.65,
-    z0: -0.112
-  },
-  {
-    _id: '663b7e522bdcc11befd91a77',
-    hip: 110960,
-    ra: 22.480531,
-    dec: -0.019972,
-    dist: 28.169,
-    x0: 25.97,
-    y0: -10.912,
-    z0: -0.01
-  },
-  {
-    _id: '663b7e512bdcc11befd9149b',
-    hip: 110395,
-    ra: 22.360938,
-    dec: -1.387331,
-    dist: 50.2008,
-    x0: 45.636,
-    y0: -20.88,
-    z0: -1.215
-  },
-  {
-    _id: '663b7e512bdcc11befd90710',
-    hip: 109074,
-    ra: 22.09639885,
-    dec: -0.31984929,
-    dist: 202.2185,
-    x0: 177.619,
-    y0: -96.656,
-    z0: -1.129
-  },
-  {
-    _id: '663b7e4f2bdcc11befd8e928',
-    hip: 106278,
-    ra: 21.525982,
-    dec: -5.571172,
-    dist: 167.4261,
-    x0: 132.887,
-    y0: -100.54,
-    z0: -16.254
-  },
-  {
-    _id: '663b7e4e2bdcc11befd8bdc8',
-    hip: 102618,
-    ra: 20.79459785,
-    dec: -9.49577641,
-    dist: 63.6943,
-    x0: 41.97,
-    y0: -46.745,
-    z0: -10.508
-  },
-  {
-    _id: '663b7e4f2bdcc11befd8e928',
-    hip: 106278,
-    ra: 21.525982,
-    dec: -5.571172,
-    dist: 167.4261,
-    x0: 132.887,
-    y0: -100.54,
-    z0: -16.254
-  },
-  {
-    _id: '663b7e512bdcc11befd90710',
-    hip: 109074,
-    ra: 22.09639885,
-    dec: -0.31984929,
-    dist: 202.2185,
-    x0: 177.619,
-    y0: -96.656,
-    z0: -1.129
-  },
-  {
-    _id: '663b7e512bdcc11befd910b1',
-    hip: 110003,
-    ra: 22.28056584,
-    dec: -7.78328831,
-    dist: 58.5163,
-    x0: 52.202,
-    y0: -25.226,
-    z0: -7.925
-  },
-  {
-    _id: '663b7e512bdcc11befd907a2',
-    hip: 109139,
-    ra: 22.10728585,
-    dec: -13.86968033,
-    dist: 64.5411,
-    x0: 55.123,
-    y0: -29.793,
-    z0: -15.471
-  },
-  {
-    _id: '663b7e512bdcc11befd910b1',
-    hip: 110003,
-    ra: 22.28056584,
-    dec: -7.78328831,
-    dist: 58.5163,
-    x0: 52.202,
-    y0: -25.226,
-    z0: -7.925
-  },
-  {
-    _id: '663b7e522bdcc11befd91c07',
-    hip: 111123,
-    ra: 22.51078213,
-    dec: -10.67796039,
-    dist: 88.8099,
-    x0: 80.723,
-    y0: -33.17,
-    z0: -16.455
-  },
-  {
-    _id: '663b7e522bdcc11befd92aeb',
-    hip: 112716,
-    ra: 22.82652815,
-    dec: -13.59262957,
-    dist: 99.8288,
-    x0: 92.49,
-    y0: -29.343,
-    z0: -23.461
-  },
-  {
-    _id: '663b7e532bdcc11befd92ea6',
-    hip: 113136,
-    ra: 22.910837,
-    dec: -15.82082,
-    dist: 49.2368,
-    x0: 45.459,
-    y0: -13.325,
-    z0: -13.423
-  },
-  {
-    _id: '663b7e532bdcc11befd939fd',
-    hip: 114341,
-    ra: 23.157443,
-    dec: -21.17241,
-    dist: 78.9203,
-    x0: 71.81,
-    y0: -16.102,
-    z0: -28.504
-  },
-],
+      { _id: "663b7e1c2bdcc11befd4a24c", x0: 14.753, y0: 8.063, z0: 6.389 },
+      { _id: "663b7e1c2bdcc11befd4ab7b", x0: 15.732, y0: 9.752, z0: 8.034 },
+      { _id: "663b7e1e2bdcc11befd4c94e", x0: 33.288, y0: 30.498, z0: 23.262 },
+    ],
+    Wassermann: [
+      {
+        _id: "663b7e542bdcc11befd943d5",
+        hip: 115438,
+        ra: 23.382842,
+        dec: -20.10058,
+        dist: 50.3632,
+        x0: 46.68,
+        y0: -7.608,
+        z0: -17.308,
+      },
+      {
+        _id: "663b7e532bdcc11befd93eab",
+        hip: 114855,
+        ra: 23.26485994,
+        dec: -9.08773573,
+        dist: 45.2645,
+        x0: 43.871,
+        y0: -8.549,
+        z0: -7.149,
+      },
+      {
+        _id: "663b7e522bdcc11befd92d35",
+        hip: 112961,
+        ra: 22.87691,
+        dec: -7.579599,
+        dist: 111.9069,
+        x0: 106.169,
+        y0: -32.148,
+        z0: -14.761,
+      },
+      {
+        _id: "663b7e522bdcc11befd91fa0",
+        hip: 111497,
+        ra: 22.589272,
+        dec: -0.117498,
+        dist: 54.434,
+        x0: 50.763,
+        y0: -19.65,
+        z0: -0.112,
+      },
+      {
+        _id: "663b7e522bdcc11befd91a77",
+        hip: 110960,
+        ra: 22.480531,
+        dec: -0.019972,
+        dist: 28.169,
+        x0: 25.97,
+        y0: -10.912,
+        z0: -0.01,
+      },
+      {
+        _id: "663b7e512bdcc11befd9149b",
+        hip: 110395,
+        ra: 22.360938,
+        dec: -1.387331,
+        dist: 50.2008,
+        x0: 45.636,
+        y0: -20.88,
+        z0: -1.215,
+      },
+      {
+        _id: "663b7e512bdcc11befd90710",
+        hip: 109074,
+        ra: 22.09639885,
+        dec: -0.31984929,
+        dist: 202.2185,
+        x0: 177.619,
+        y0: -96.656,
+        z0: -1.129,
+      },
+      {
+        _id: "663b7e4f2bdcc11befd8e928",
+        hip: 106278,
+        ra: 21.525982,
+        dec: -5.571172,
+        dist: 167.4261,
+        x0: 132.887,
+        y0: -100.54,
+        z0: -16.254,
+      },
+      {
+        _id: "663b7e4e2bdcc11befd8bdc8",
+        hip: 102618,
+        ra: 20.79459785,
+        dec: -9.49577641,
+        dist: 63.6943,
+        x0: 41.97,
+        y0: -46.745,
+        z0: -10.508,
+      },
+      {
+        _id: "663b7e4f2bdcc11befd8e928",
+        hip: 106278,
+        ra: 21.525982,
+        dec: -5.571172,
+        dist: 167.4261,
+        x0: 132.887,
+        y0: -100.54,
+        z0: -16.254,
+      },
+      {
+        _id: "663b7e512bdcc11befd90710",
+        hip: 109074,
+        ra: 22.09639885,
+        dec: -0.31984929,
+        dist: 202.2185,
+        x0: 177.619,
+        y0: -96.656,
+        z0: -1.129,
+      },
+      {
+        _id: "663b7e512bdcc11befd910b1",
+        hip: 110003,
+        ra: 22.28056584,
+        dec: -7.78328831,
+        dist: 58.5163,
+        x0: 52.202,
+        y0: -25.226,
+        z0: -7.925,
+      },
+      {
+        _id: "663b7e512bdcc11befd907a2",
+        hip: 109139,
+        ra: 22.10728585,
+        dec: -13.86968033,
+        dist: 64.5411,
+        x0: 55.123,
+        y0: -29.793,
+        z0: -15.471,
+      },
+      {
+        _id: "663b7e512bdcc11befd910b1",
+        hip: 110003,
+        ra: 22.28056584,
+        dec: -7.78328831,
+        dist: 58.5163,
+        x0: 52.202,
+        y0: -25.226,
+        z0: -7.925,
+      },
+      {
+        _id: "663b7e522bdcc11befd91c07",
+        hip: 111123,
+        ra: 22.51078213,
+        dec: -10.67796039,
+        dist: 88.8099,
+        x0: 80.723,
+        y0: -33.17,
+        z0: -16.455,
+      },
+      {
+        _id: "663b7e522bdcc11befd92aeb",
+        hip: 112716,
+        ra: 22.82652815,
+        dec: -13.59262957,
+        dist: 99.8288,
+        x0: 92.49,
+        y0: -29.343,
+        z0: -23.461,
+      },
+      {
+        _id: "663b7e532bdcc11befd92ea6",
+        hip: 113136,
+        ra: 22.910837,
+        dec: -15.82082,
+        dist: 49.2368,
+        x0: 45.459,
+        y0: -13.325,
+        z0: -13.423,
+      },
+      {
+        _id: "663b7e532bdcc11befd939fd",
+        hip: 114341,
+        ra: 23.157443,
+        dec: -21.17241,
+        dist: 78.9203,
+        x0: 71.81,
+        y0: -16.102,
+        z0: -28.504,
+      },
+    ],
+    Skorpion: [
+      { x0: -16.049, y0: -138.75, z0: -105.65 },
+      { x0: -8.785, y0: -114.748, z0: -93.293 },
+      { x0: -29.202, y0: -538.527, z0: -454.583 },
+      { x0: -6.654, y0: -67.017, z0: -62.797 },
+      { x0: -3.401, y0: -16.055, z0: -15.432 },
+      { x0: -8.585, y0: -29.255, z0: -27.803 },
+      { x0: -35.433, y0: -115.662, z0: -94.672 },
+      { x0: -4.842, y0: -15.396, z0: -11.007 },
+      { x0: -45.96, y0: -119.547, z0: -68.721 },
+      { x0: -58.543, y0: -140.308, z0: -75.575 },
+      { x0: -46.814, y0: -80.155, z0: -45.503 },
+      { x0: -58.543, y0: -140.308, z0: -75.575 },
+      { x0: -69.333, y0: -120.492, z0: -57.928 },
+      { x0: -58.543, y0: -140.308, z0: -75.575 },
+      { x0: -55.881, y0: -102.321, z0: -41.986 },
+    ],
+    Fische: [
+      { x0: 105.454, y0: 35.156, z0: 50.855 },
+      { x0: 96.78, y0: 27.212, z0: 62.343 },
+      { x0: 82.363, y0: 29.761, z0: 45.131 },
+      { x0: 105.454, y0: 35.156, z0: 50.855 },
+      { x0: 101.738, y0: 42.915, z0: 30.302 },
+      { x0: 75.809, y0: 37.547, z0: 13.638 },
+      // stern daneben
+      { x0: 41.361, y0: 24.472, z0: 2.364 },
+      { x0: 48.236, y0: 26.069, z0: 3.054 },
+      { x0: 100.757, y0: 47.752, z0: 10.712 },
+      { x0: 98.543, y0: 40.911, z0: 11.485 },
+      { x0: 53.54, y0: 15.086, z0: 7.709 },
+      { x0: 176.504, y0: 37.751, z0: 23.122 },
+      { x0: 139.669, y0: 12.587, z0: 20.184 },
+      { x0: 32.792, y0: -0.099, z0: 3.947 },
+      { x0: 13.595, y0: -1.192, z0: 1.344 },
+      { x0: 51.141, y0: -7.195, z0: 5.774 },
+      { x0: 41.496, y0: -7.847, z0: 2.422 },
+      { x0: 48.701, y0: -7.076, z0: 1.079 },
+      { x0: 31.941, y0: -2.507, z0: 0.996 },
+      { x0: 13.595, y0: -1.192, z0: 1.344 },
+    ],
+  };
 
-};
+  let selectedArray;
+  $: if (selectedArray) {
+    updateLines(selectedArray);
+    console.log("debug");
+  }
 
-let selectedArray;
-$: if (selectedArray) {
-  updateLines(selectedArray);
-  console.log("debug");   
-}
-
-function updateLines(arrayName) {
-  // scene.clear(); // Bereinigt die aktuelle Szene, um eine neue Linienkonfiguration zu zeichnen
+  function updateLines(arrayName) {
+    // scene.clear(); // Bereinigt die aktuelle Szene, um eine neue Linienkonfiguration zu zeichnen
     console.log(arrayName);
     let array = arrays[arrayName];
     if (array) {
