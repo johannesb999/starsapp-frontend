@@ -145,6 +145,8 @@
     "Vul",
   ];
 
+  let lineGroup = new THREE.Group();
+
   onMount(() => {
     init();
     loadStars();
@@ -158,15 +160,11 @@
       300
     );
     camera.position.z = 0.0001;
-    const angleInDegrees = 23.5;
-    const angleInRadians = angleInDegrees * (Math.PI / 180);
-
-    // Kamera um die x-Achse rotieren
-    camera.rotation.x += angleInRadians;
-    // camera.position.set(0, 0, 0)
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000); // Setzen Sie explizit eine Hintergrundfarbe
+
+    scene.rotation.z = THREE.MathUtils.degToRad(337.5);
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -336,7 +334,7 @@
       });
 
       const sphere = new THREE.Mesh(starGeometry, starMaterial);
-      sphere.position.set(coordinates.x, coordinates.z, coordinates.y);
+      sphere.position.set(coordinates.y, coordinates.z, coordinates.x);
       sphere.userData.starData = {
         id: star.id,
         x: star.x,
@@ -349,6 +347,25 @@
       }; // Daten anhängen
       scene.add(sphere);
     });
+
+    //     // Torus hinzufügen
+    //     const radius = 299;  // Radius des Torus
+    // const tubeRadius = 0.4;  // Radius des Torus' "Rohrs"
+    // const radialSegments = 16;  // Anzahl der Segmente um den Hauptkreis
+    // const tubularSegments = 100;  // Anzahl der Segmente des Rohrs
+    // const torusGeometry = new THREE.TorusGeometry(radius, tubeRadius, radialSegments, tubularSegments);
+    // const torusMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 }); // Gelbe Farbe
+    // const torus = new THREE.Mesh(torusGeometry, torusMaterial);
+
+    // // Orientierung des Torus anpassen, um ihn in der X-Y-Ebene zu platzieren
+    // // torus.rotation.x = Math.PI / 2; // Rotiert den Torus, sodass er flach auf der X-Y-Ebene liegt
+
+    // torus.rotation.x = THREE.MathUtils.degToRad(47 * 3);
+
+    // // Positionieren des Torus relativ zur Kamera oder einem anderen Objekt
+    // torus.position.copy(camera.position);
+
+    // scene.add(torus);
   }
 
   function animate() {
@@ -521,6 +538,7 @@
 
   let arrays = {
     leoLines: [
+      { x: -69.8918888888889, y: 34.736444444444444, z: -42.151777777777774 },
       { x0: -29.062, y0: 18.026, z0: 16.685 },
       { x0: -53.196, y0: 35.259, z0: 28.114 },
       { x0: -21.019, y0: 11.132, z0: 5.041 },
@@ -536,6 +554,7 @@
     ],
 
     Zwilling: [
+      { x: -23.42220833333333, y: 90.71025000000002, z: 42.19983333333334 },
       { x0: -3.532, y0: 17.638, z0: 4.118 },
       { x0: -9.825, y0: 27.709, z0: 8.731 },
       { x0: -5.888, y0: 16.151, z0: 6.94 },
@@ -563,12 +582,18 @@
     ],
 
     Widder: [
+      { x: 26.385749999999998, y: 17.72025, z: 13.57625 },
       { _id: "663b7e1c2bdcc11befd4a1a5", x0: 41.77, y0: 22.568, z0: 16.62 },
       { _id: "663b7e1c2bdcc11befd4a24c", x0: 14.753, y0: 8.063, z0: 6.389 },
       { _id: "663b7e1c2bdcc11befd4ab7b", x0: 15.732, y0: 9.752, z0: 8.034 },
       { _id: "663b7e1e2bdcc11befd4c94e", x0: 33.288, y0: 30.498, z0: 23.262 },
     ],
     Wassermann: [
+      {
+        x: 71.29146666666665,
+        y: -32.709799999999994,
+        z: -11.578999999999999,
+      },
       {
         _id: "663b7e542bdcc11befd943d5",
         hip: 115438,
@@ -751,6 +776,7 @@
       },
     ],
     Skorpion: [
+      { x: -33.7712, y: -125.25659999999999, z: -87.07333333333335 },
       { x0: -16.049, y0: -138.75, z0: -105.65 },
       { x0: -8.785, y0: -114.748, z0: -93.293 },
       { x0: -29.202, y0: -538.527, z0: -454.583 },
@@ -768,6 +794,7 @@
       { x0: -55.881, y0: -102.321, z0: -41.986 },
     ],
     Fische: [
+      { x: 72.97345000000001, y: 19.26335, z: 17.433 },
       { x0: 105.454, y0: 35.156, z0: 50.855 },
       { x0: 96.78, y0: 27.212, z0: 62.343 },
       { x0: 82.363, y0: 29.761, z0: 45.131 },
@@ -799,19 +826,19 @@
   }
 
   function updateLines(arrayName) {
-    // scene.clear(); // Bereinigt die aktuelle Szene, um eine neue Linienkonfiguration zu zeichnen
+    // lineGroup.clear(); // Löscht nur die Linien in der Gruppe
     console.log(arrayName);
     let array = arrays[arrayName];
     if (array) {
-      for (let i = 0; i < array.length - 1; i++) {
-        addLine(array[i], array[i + 1]);
+      for (let i = 1; i < array.length - 1; i++) {
+        addLine(array[i], array[i + 1], array[0]);
       }
     } else {
       console.error("Unbekanntes Array:", arrayName);
     }
   }
 
-  function addLine(start, end) {
+  function addLine(start, end, center) {
     let geometry = new THREE.BufferGeometry();
     let vertices = new Float32Array([
       start.y0,
@@ -825,12 +852,29 @@
     let color = Math.floor(Math.random() * 0xffffff);
     let material = new THREE.LineBasicMaterial({ color: color });
     let line = new THREE.Line(geometry, material);
-    scene.add(line);
+    lineGroup.add(line); // Füge die Linie zur Gruppe hinzu
+    scene.add(lineGroup);
+    console.log(center);
+    moveToConstellation(new THREE.Vector3(center.y, center.z, center.x));
+  }
+
+  function moveToConstellation(newTarget) {
+    // Aktuelle Position der Kamera speichern
+
+    // Setze das neue Ziel für die OrbitControls
+    controls.target.copy(newTarget);
+
+    // Setze die Kameraposition zurück, um sicherzustellen, dass die Kamera nicht bewegt wird
+    camera.position.set(0, 0, 0.00005);
+
+    // Notwendig, um die Änderungen zu verarbeiten
+    controls.update();
   }
 </script>
 
 <main>
   <select bind:value={selectedArray}>
+    <option value="">Tierkreiszeichen</option>
     {#each Object.keys(arrays) as arrayName}
       <option value={arrayName}>{arrayName}</option>
     {/each}
