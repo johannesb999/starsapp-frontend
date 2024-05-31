@@ -3,19 +3,15 @@
   import axios from "axios";
   import * as THREE from "three";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+  import gsap from "gsap";
 
   let raycaster = new THREE.Raycaster();
   let mouse = new THREE.Vector2();
 
-  let container;
   let camera, scene, renderer, controls;
-  let frustum;
-  let starField;
-  const maxDiameter = 0.3;
   let selectedConstellation = "";
   let selectedConstellation2 = "";
   const maxMag = 8;
-  // Beispielwerte, die Sie erhalten haben
   const minRadius = 0.17;
   const maxRadius = 1587.37;
   const minNewRadius = 0.05; // Mindestgröße für Sichtbarkeit
@@ -30,12 +26,6 @@
   };
   let selectedStar = { id: 1, x: 0.000005, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
   let sunIgnored = false;
-  let counter = 0;
-
-  const leoHip = [
-    49669, 57632, 50583, 54872, 54879, 47908, 48455, 49641, 50555, 51069, 55434,
-  ];
-
   const constellations = [
     "Ari",
     "Tau",
@@ -210,59 +200,6 @@
       });
   }
 
-  function handleConstellationChange(event) {
-    selectedConstellation = event.target.value;
-    removeStars();
-    renderer.renderLists.dispose();
-    scene.clear();
-    loadStars(selectedConstellation);
-  }
-  function handleConstellationChange2(event) {
-    selectedConstellation2 = event.target.value;
-    removeStars();
-    renderer.renderLists.dispose();
-    scene.clear();
-    loadStars(selectedConstellation2);
-  }
-
-  function removeStars() {
-    scene.children.forEach((child) => {
-      if (child.userData.starData) {
-        // Überprüfen Sie, ob es sich um einen Stern handelt
-        scene.remove(child);
-        if (child.geometry) child.geometry.dispose();
-
-        if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach((material) => {
-              if (material.map) material.map.dispose();
-              material.dispose();
-            });
-          } else {
-            if (child.material.map) child.material.map.dispose();
-            child.material.dispose();
-          }
-        }
-      }
-    });
-  }
-
-  function calculateCoordinates(ra, dec, dist) {
-    // Konvertiere RA von Stunden in Grad (1 Stunde = 15 Grad)
-    let raDeg = ra * 15;
-
-    // Konvertiere RA und DEC in Radianten für die trigonometrischen Funktionen
-    let raRad = (raDeg * Math.PI) / 180;
-    let decRad = (dec * Math.PI) / 180;
-
-    // Berechne die kartesischen Koordinaten
-    let x = dist * Math.cos(decRad) * Math.cos(raRad);
-    let y = dist * Math.cos(decRad) * Math.sin(raRad);
-    let z = dist * Math.sin(decRad);
-
-    return { x, y, z };
-  }
-
   function addStars(stars) {
     if (stars.length === 0) {
       console.error("Keine gültigen Sterndaten verfügbar.");
@@ -298,8 +235,6 @@
       }
       let starGeometry;
 
-      let coordinates = calculateCoordinates(star.ra, star.dec, star.dist);
-
       const originalRadius = berechneSternRadius(star.ci, star.absmag);
       let scaledRadius = mapRadius(
         originalRadius,
@@ -334,7 +269,7 @@
       });
 
       const sphere = new THREE.Mesh(starGeometry, starMaterial);
-      sphere.position.set(coordinates.y, coordinates.z, coordinates.x);
+      sphere.position.set(star.y, star.z, star.x);
       sphere.userData.starData = {
         id: star.id,
         x: star.x,
@@ -429,26 +364,85 @@
     }
   }
   window.addEventListener("click", onMouseClick);
-  function jumpToStar() {
-    let newPosition = new THREE.Vector3(
-      selectedStar.x,
-      selectedStar.y,
-      selectedStar.z
+
+
+
+//   function createHyperspaceLines() {
+//     const lines = [];
+//     const material = new THREE.LineBasicMaterial({ color: 0xffffff });
+//     for (let i = 0; i < 100; i++) {
+//         const positions = new Float32Array([
+//             (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50, Math.random() * -100, // Startpunkt
+//             (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50, 0    // Endpunkt
+//         ]);
+//         const geometry = new THREE.BufferGeometry();
+//         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+//         const line = new THREE.Line(geometry, material);
+//         scene.add(line);
+//         lines.push(line);
+//     }
+//     return lines;
+// }
+
+// function animateHyperspaceLines(lines) {
+//     lines.forEach(line => {
+//         const positions = line.geometry.attributes.position.array;
+//         const lastIndex = positions.length - 1; // Letzter Index des Arrays
+//         gsap.to({z: positions[lastIndex]}, {
+//             z: 100, // Zielposition des Endpunkts
+//             duration: 2,
+//             ease: "power2.in",
+//             onUpdate: function() {
+//                 positions[lastIndex] = this.target.z;
+//                 line.geometry.attributes.position.needsUpdate = true;
+//             }
+//         });
+//     });
+// }
+
+
+
+async function jumpToStar() {
+    const angle = THREE.MathUtils.degToRad(337.5);
+    const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
+    let originalPosition = new THREE.Vector3(
+        selectedStar.y,
+        selectedStar.z,
+        selectedStar.x + 0.01,
     );
-    camera.position.copy(newPosition);
-    camera.position.setZ(newPosition.z + 0.001);
+
+    let newPosition = originalPosition.applyMatrix4(rotationMatrix);
+
     // OrbitControls neu ausrichten
     controls.target.copy(newPosition);
     controls.update();
+    // const hyperspaceLines = createHyperspaceLines();
+    // console.log(hyperspaceLines);
+    // animateHyperspaceLines(hyperspaceLines);
+
+    await gsap.to(camera.position, {
+        x: newPosition.x,
+        y: newPosition.y,
+        z: newPosition.z,
+        duration: 2
+    });
 
     if (selectedStar.object) {
-      scene.remove(selectedStar.object);
-      disposeMaterial(selectedStar.object);
+        scene.remove(selectedStar.object);
+        disposeMaterial(selectedStar.object);
     }
 
     // Aktualisieren von lastRemovedStar
     lastRemovedStar = selectedStar;
-  }
+}
+
+
+
+
+
+
+
+
 
   function returnToSun() {
     console.log("button pressed");
@@ -523,17 +517,6 @@
         (maxNew - minNew) +
       minNew
     );
-  }
-
-  function disposeMaterial(object) {
-    if (object.geometry) object.geometry.dispose();
-    if (object.material) {
-      if (Array.isArray(object.material)) {
-        object.material.forEach((material) => material.dispose());
-      } else {
-        object.material.dispose();
-      }
-    }
   }
 
   let arrays = {
@@ -867,6 +850,54 @@
 
     // Notwendig, um die Änderungen zu verarbeiten
     controls.update();
+  }
+
+  function handleConstellationChange(event) {
+    selectedConstellation = event.target.value;
+    removeStars();
+    renderer.renderLists.dispose();
+    scene.clear();
+    loadStars(selectedConstellation);
+  }
+  function handleConstellationChange2(event) {
+    selectedConstellation2 = event.target.value;
+    removeStars();
+    renderer.renderLists.dispose();
+    scene.clear();
+    loadStars(selectedConstellation2);
+  }
+
+  function removeStars() {
+    scene.children.forEach((child) => {
+      if (child.userData.starData) {
+        // Überprüfen Sie, ob es sich um einen Stern handelt
+        scene.remove(child);
+        if (child.geometry) child.geometry.dispose();
+
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((material) => {
+              if (material.map) material.map.dispose();
+              material.dispose();
+            });
+          } else {
+            if (child.material.map) child.material.map.dispose();
+            child.material.dispose();
+          }
+        }
+      }
+    });
+  }
+
+  function disposeMaterial(object) {
+    if (object.geometry) object.geometry.dispose();
+    if (object.material) {
+      if (Array.isArray(object.material)) {
+        object.material.forEach((material) => material.dispose());
+      } else {
+        object.material.dispose();
+      }
+    }
   }
 </script>
 
