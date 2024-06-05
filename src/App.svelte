@@ -54,7 +54,7 @@
   }
 
   function loadStars() {
-    const url = "https://starsapi.johannes-biess.com/stars";
+    const url = "https://starsapi.johannes-biess.com/all-stars";
     const body = { maxmag: maxMag };
 
     axios
