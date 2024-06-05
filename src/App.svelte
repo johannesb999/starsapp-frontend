@@ -9,8 +9,6 @@
   let mouse = new THREE.Vector2();
 
   let camera, scene, renderer, controls;
-  let selectedConstellation = "";
-  let selectedConstellation2 = "";
   const maxMag = 8;
   const minRadius = 0.17;
   const maxRadius = 1587.37;
@@ -26,114 +24,7 @@
   };
   let selectedStar = { id: 1, x: 0.000005, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
   let sunIgnored = false;
-  const constellations = [
-    "Ari",
-    "Tau",
-    "Gem",
-    "Cnc",
-    "Leo",
-    "Vir",
-    "Lib",
-    "Sco",
-    "Sgr",
-    "Cap",
-    "Aqr",
-    "Psc",
-  ];
-  const constellationsRank2 = [
-    "And",
-    "Ant",
-    "And",
-    "Ant",
-    "Aps",
-    "Aql",
-    "Aqr",
-    "Ara",
-    "Ari",
-    "Aur",
-    "Boo",
-    "CMa",
-    "CMi",
-    "CVn",
-    "Cae",
-    "Cam",
-    "Cap",
-    "Car",
-    "Cas",
-    "Cen",
-    "Cep",
-    "Cet",
-    "Cha",
-    "Cir",
-    "Cnc",
-    "Col",
-    "Com",
-    "CrA",
-    "CrB",
-    "Crt",
-    "Cru",
-    "Crv",
-    "Cyg",
-    "Del",
-    "Dor",
-    "Dra",
-    "Eco",
-    "Equ",
-    "Eri",
-    "For",
-    "Gem",
-    "Gru",
-    "Her",
-    "Hor",
-    "Hya",
-    "Hyi",
-    "Ind",
-    "LMi",
-    "Lac",
-    "Leo",
-    "Lep",
-    "Lib",
-    "Lup",
-    "Lyn",
-    "Lyr",
-    "Men",
-    "Mic",
-    "Mon",
-    "Mus",
-    "Nor",
-    "Oct",
-    "Oph",
-    "Ori",
-    "Pav",
-    "Peg",
-    "Per",
-    "Phe",
-    "Pic",
-    "PsA",
-    "Psc",
-    "Pup",
-    "Pyx",
-    "Ret",
-    "Scl",
-    "Sco",
-    "Sct",
-    "Ser",
-    "Sex",
-    "Sge",
-    "Sgr",
-    "Sir",
-    "Tau",
-    "Tel",
-    "TrA",
-    "Tri",
-    "Tuc",
-    "UMa",
-    "UMi",
-    "Vel",
-    "Vir",
-    "Vol",
-    "Vul",
-  ];
+
 
   let lineGroup = new THREE.Group();
 
@@ -162,11 +53,9 @@
     controls = new OrbitControls(camera, renderer.domElement);
   }
 
-  function loadStars(selected) {
-    const url = selectedConstellation
-      ? "https://starsapi.johannes-biess.com/stars"
-      : "https://starsapi.johannes-biess.com/all-stars";
-    const body = { maxmag: maxMag, constellation: selected };
+  function loadStars() {
+    const url = "https://starsapi.johannes-biess.com/stars";
+    const body = { maxmag: maxMag };
 
     axios
       .post(url, body)
@@ -282,25 +171,6 @@
       }; // Daten anhängen
       scene.add(sphere);
     });
-
-    //     // Torus hinzufügen
-    //     const radius = 299;  // Radius des Torus
-    // const tubeRadius = 0.4;  // Radius des Torus' "Rohrs"
-    // const radialSegments = 16;  // Anzahl der Segmente um den Hauptkreis
-    // const tubularSegments = 100;  // Anzahl der Segmente des Rohrs
-    // const torusGeometry = new THREE.TorusGeometry(radius, tubeRadius, radialSegments, tubularSegments);
-    // const torusMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 }); // Gelbe Farbe
-    // const torus = new THREE.Mesh(torusGeometry, torusMaterial);
-
-    // // Orientierung des Torus anpassen, um ihn in der X-Y-Ebene zu platzieren
-    // // torus.rotation.x = Math.PI / 2; // Rotiert den Torus, sodass er flach auf der X-Y-Ebene liegt
-
-    // torus.rotation.x = THREE.MathUtils.degToRad(47 * 3);
-
-    // // Positionieren des Torus relativ zur Kamera oder einem anderen Objekt
-    // torus.position.copy(camera.position);
-
-    // scene.add(torus);
   }
 
   function animate() {
@@ -353,52 +223,11 @@
           ...firstObject.userData.starData,
           object: firstObject,
         };
-        // let newPosition = new THREE.Vector3(firstObject.userData.starData.x, firstObject.userData.starData.y, firstObject.userData.starData.z);
-        // camera.position.copy(newPosition);
-        // camera.position.setZ(newPosition.z + 0.2); // Etwas zurücksetzen, um den Stern zu betrachten
-
-        // // OrbitControls neu ausrichten
-        // controls.target.copy(newPosition);
-        // controls.update();
       }
     }
   }
   window.addEventListener("click", onMouseClick);
 
-
-
-//   function createHyperspaceLines() {
-//     const lines = [];
-//     const material = new THREE.LineBasicMaterial({ color: 0xffffff });
-//     for (let i = 0; i < 100; i++) {
-//         const positions = new Float32Array([
-//             (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50, Math.random() * -100, // Startpunkt
-//             (Math.random() - 0.5) * 50, (Math.random() - 0.5) * 50, 0    // Endpunkt
-//         ]);
-//         const geometry = new THREE.BufferGeometry();
-//         geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-//         const line = new THREE.Line(geometry, material);
-//         scene.add(line);
-//         lines.push(line);
-//     }
-//     return lines;
-// }
-
-// function animateHyperspaceLines(lines) {
-//     lines.forEach(line => {
-//         const positions = line.geometry.attributes.position.array;
-//         const lastIndex = positions.length - 1; // Letzter Index des Arrays
-//         gsap.to({z: positions[lastIndex]}, {
-//             z: 100, // Zielposition des Endpunkts
-//             duration: 2,
-//             ease: "power2.in",
-//             onUpdate: function() {
-//                 positions[lastIndex] = this.target.z;
-//                 line.geometry.attributes.position.needsUpdate = true;
-//             }
-//         });
-//     });
-// }
 
 
 
@@ -804,7 +633,7 @@ async function jumpToStar() {
   $: if (selectedArray) {
     updateLines(selectedArray);
     console.log("debug");
-  }
+  } 
 
   function updateLines(arrayName) {
     // lineGroup.clear(); // Löscht nur die Linien in der Gruppe
@@ -852,43 +681,6 @@ async function jumpToStar() {
     controls.update();
   }
 
-  function handleConstellationChange(event) {
-    selectedConstellation = event.target.value;
-    removeStars();
-    renderer.renderLists.dispose();
-    scene.clear();
-    loadStars(selectedConstellation);
-  }
-  function handleConstellationChange2(event) {
-    selectedConstellation2 = event.target.value;
-    removeStars();
-    renderer.renderLists.dispose();
-    scene.clear();
-    loadStars(selectedConstellation2);
-  }
-
-  function removeStars() {
-    scene.children.forEach((child) => {
-      if (child.userData.starData) {
-        // Überprüfen Sie, ob es sich um einen Stern handelt
-        scene.remove(child);
-        if (child.geometry) child.geometry.dispose();
-
-        if (child.material) {
-          if (Array.isArray(child.material)) {
-            child.material.forEach((material) => {
-              if (material.map) material.map.dispose();
-              material.dispose();
-            });
-          } else {
-            if (child.material.map) child.material.map.dispose();
-            child.material.dispose();
-          }
-        }
-      }
-    });
-  }
-
   function disposeMaterial(object) {
     if (object.geometry) object.geometry.dispose();
     if (object.material) {
@@ -909,20 +701,7 @@ async function jumpToStar() {
     {/each}
   </select>
 
-  <!-- <button on:click={connectStars}>Connect Leo</button> -->
-  <select on:change={handleConstellationChange}>
-    <option value="">Alle Sterne anzeigen</option>
-    {#each constellations as constellation}
-      <option value={constellation}>{constellation}</option>
-    {/each}
-  </select>
-  <select on:change={handleConstellationChange2}>
-    <option value="">Alle Sterne anzeigen</option>
-    {#each constellationsRank2 as constellation}
-      <option value={constellation}>{constellation}</option>
-    {/each}
-  </select>
-  <button on:click={returnToSun}>zur Sonne zurück</button>
+  <button on:click={returnToSun}>Sonne</button>
   <div class="overlay">
     <h2>Stern: {selectedStar.id}</h2>
     <p>Magnitude: {selectedStar.mag}</p>
