@@ -26,6 +26,7 @@
   let sunIgnored = false;
 
 
+
   let lineGroup = new THREE.Group();
 
   onMount(() => {
@@ -203,14 +204,16 @@
     // Berechnen der Mausposition im Normalized Device Coordinate (NDC) Raum
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
+    
     // Aktualisieren des Raycasters mit der Kamera und Mausposition
     raycaster.setFromCamera(mouse, camera);
-
+    
     // Berechnen von Objekten, die vom Raycaster geschnitten werden
     const intersects = raycaster.intersectObjects(scene.children);
-
+    
     if (intersects.length > 0) {
+      console.log("click registered");
+      hideInfo();
       let firstObject = intersects[0].object;
       if (firstObject.userData.starData) {
         console.log(firstObject.userData.starData);
@@ -228,16 +231,13 @@
   }
   window.addEventListener("click", onMouseClick);
 
-
-
-
-async function jumpToStar() {
+  async function jumpToStar() {
     const angle = THREE.MathUtils.degToRad(337.5);
     const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
     let originalPosition = new THREE.Vector3(
-        selectedStar.y,
-        selectedStar.z,
-        selectedStar.x + 0.01,
+      selectedStar.y,
+      selectedStar.z,
+      selectedStar.x + 0.01
     );
 
     let newPosition = originalPosition.applyMatrix4(rotationMatrix);
@@ -250,30 +250,23 @@ async function jumpToStar() {
     // animateHyperspaceLines(hyperspaceLines);
 
     await gsap.to(camera.position, {
-        x: newPosition.x,
-        y: newPosition.y,
-        z: newPosition.z,
-        duration: 2
+      x: newPosition.x,
+      y: newPosition.y,
+      z: newPosition.z,
+      duration: 2,
     });
 
     if (selectedStar.object) {
-        scene.remove(selectedStar.object);
-        disposeMaterial(selectedStar.object);
+      scene.remove(selectedStar.object);
+      disposeMaterial(selectedStar.object);
     }
 
     // Aktualisieren von lastRemovedStar
     lastRemovedStar = selectedStar;
-}
-
-
-
-
-
-
-
-
+  }
 
   function returnToSun() {
+    hideInfo();
     console.log("button pressed");
     let newPosition = new THREE.Vector3(0.000005, 0, 0);
     console.log(newPosition);
@@ -627,13 +620,844 @@ async function jumpToStar() {
       { x0: 31.941, y0: -2.507, z0: 0.996 },
       { x0: 13.595, y0: -1.192, z0: 1.344 },
     ],
+    taurus: [
+      {
+        _id: "663b7e1f2bdcc11befd4e074",
+        hip: 15900,
+        ra: 3.4135552,
+        dec: 9.02887505,
+        dist: 89.2061,
+        x0: 55.2,
+        y0: 68.663,
+        z0: 13.999,
+      },
+      {
+        _id: "663b7e202bdcc11befd4f8e6",
+        hip: 18724,
+        ra: 4.01133764,
+        dec: 12.49034684,
+        dist: 124.3823,
+        x0: 60.407,
+        y0: 105.349,
+        z0: 26.901,
+      },
+      {
+        _id: "663b7e212bdcc11befd50633",
+        hip: 20205,
+        ra: 4.32988998,
+        dec: 15.6276446,
+        dist: 46.1584,
+        x0: 18.823,
+        y0: 40.27,
+        z0: 12.434,
+      },
+      {
+        _id: "663b7e212bdcc11befd50c8a",
+        hip: 20894,
+        ra: 4.4777058,
+        dec: 15.87088179,
+        dist: 46.1042,
+        x0: 17.21,
+        y0: 40.872,
+        z0: 12.608,
+      },
+
+      {
+        _id: "663b7e212bdcc11befd51178",
+        hip: 21421,
+        ra: 4.5986668,
+        dec: 16.50976164,
+        dist: 20.4332,
+        x0: 7.027,
+        y0: 18.288,
+        z0: 5.807,
+      },
+      {
+        _id: "663b7e242bdcc11befd547f6",
+        hip: 26451,
+        ra: 5.627413,
+        dec: 21.142549,
+        dist: 136.4256,
+        x0: 12.392,
+        y0: 126.638,
+        z0: 49.207,
+      },
+      {
+        _id: "663b7e212bdcc11befd51178",
+        hip: 21421,
+        ra: 4.5986668,
+        dec: 16.50976164,
+        dist: 20.4332,
+        x0: 7.027,
+        y0: 18.288,
+        z0: 5.807,
+      },
+      {
+        _id: "663b7e212bdcc11befd50c7e",
+        hip: 20889,
+        ra: 4.47694409,
+        dec: 19.18043252,
+        dist: 44.712,
+        x0: 16.396,
+        y0: 38.917,
+        z0: 14.69,
+      },
+      {
+        _id: "663b7e222bdcc11befd515d4",
+        hip: 21881,
+        ra: 4.70408391,
+        dec: 22.95694022,
+        dist: 122.1001,
+        x0: 37.416,
+        y0: 106.021,
+        z0: 47.624,
+      },
+      {
+        _id: "663b7e242bdcc11befd53bb7",
+        hip: 25428,
+        ra: 5.43819387,
+        dec: 28.60787346,
+        dist: 41.0509,
+        x0: 5.282,
+        y0: 35.65,
+        z0: 19.655,
+      },
+      {
+        _id: "663b7e222bdcc11befd515d4",
+        hip: 21881,
+        ra: 4.70408391,
+        dec: 22.95694022,
+        dist: 122.1001,
+        x0: 37.416,
+        y0: 106.021,
+        z0: 47.624,
+      },
+      {
+        _id: "663b7e212bdcc11befd50c7e",
+        hip: 20889,
+        ra: 4.47694409,
+        dec: 19.18043252,
+        dist: 44.712,
+        x0: 16.396,
+        y0: 38.917,
+        z0: 14.69,
+      },
+      {
+        _id: "663b7e212bdcc11befd50a34",
+        tyc: "1269-1246-1",
+        ra: 4.42482999,
+        dec: 17.92790534,
+        dist: 47.4237,
+        x0: 18.084,
+        y0: 41.339,
+        z0: 14.598,
+      },
+
+      {
+        _id: "663b7e212bdcc11befd50868",
+        hip: 20455,
+        ra: 4.38224798,
+        dec: 17.54251527,
+        dist: 49.2388,
+        x0: 19.295,
+        y0: 42.801,
+        z0: 14.841,
+      },
+      {
+        _id: "663b7e202bdcc11befd4f136",
+        hip: 17847,
+        ra: 3.81937298,
+        dec: 24.05341343,
+        dist: 123.1762,
+        x0: 60.782,
+        y0: 94.643,
+        z0: 50.205,
+      },
+    ],
+    Cancer: [
+      {
+        _id: "663b7e2f2bdcc11befd616fe",
+        hip: 40526,
+        ra: 8.27525572,
+        dec: 9.1855446,
+        dist: 98.9845,
+        x0: -54.824,
+        y0: 80.886,
+        z0: 15.801,
+      },
+      {
+        _id: "663b7e302bdcc11befd63726",
+        hip: 42911,
+        ra: 8.74475018,
+        dec: 18.15430914,
+        dist: 40.032,
+        x0: -25.042,
+        y0: 28.634,
+        z0: 12.473,
+      },
+      {
+        _id: "663b7e302bdcc11befd63726",
+        hip: 42911,
+        ra: 8.74475018,
+        dec: 18.15430914,
+        dist: 40.032,
+        x0: -25.042,
+        y0: 28.634,
+        z0: 12.473,
+      },
+      {
+        _id: "663b7e302bdcc11befd635ae",
+        hip: 42806,
+        ra: 8.72142952,
+        dec: 21.46849861,
+        dist: 53.6392,
+        x0: -32.631,
+        y0: 37.775,
+        z0: 19.631,
+      },
+      {
+        _id: "663b7e302bdcc11befd6395e",
+        hip: 43103,
+        ra: 8.77828306,
+        dec: 28.75990042,
+        dist: 101.5228,
+        x0: -59.175,
+        y0: 66.477,
+        z0: 48.847,
+      },
+      {
+        _id: "663b7e302bdcc11befd635ae",
+        hip: 42806,
+        ra: 8.72142952,
+        dec: 21.46849861,
+        dist: 53.6392,
+        x0: -32.631,
+        y0: 37.775,
+        z0: 19.631,
+      },
+      {
+        _id: "663b7e2f2bdcc11befd61b46",
+        hip: 40843,
+        ra: 8.33440576,
+        dec: 27.21770692,
+        dist: 18.2233,
+        x0: -9.299,
+        y0: 13.272,
+        z0: 8.335,
+      },
+
+      {
+        _id: "663b7e302bdcc11befd6395e",
+        hip: 43103,
+        ra: 8.77828306,
+        dec: 28.75990042,
+        dist: 101.5228,
+        x0: -59.175,
+        y0: 66.477,
+        z0: 48.847,
+      },
+      {
+        _id: "663b7e312bdcc11befd64555",
+        hip: 44066,
+        ra: 8.9747827,
+        dec: 11.85768694,
+        dist: 57.7367,
+        x0: -39.69,
+        y0: 40.218,
+        z0: 11.864,
+      },
+    ],
+    virgo: [
+      {
+        _id: "663b7e3c2bdcc11befd74ae6",
+        hip: 71957,
+        ra: 14.717673,
+        dec: -5.658207,
+        dist: 18.2715,
+        x0: -13.771,
+        y0: -11.872,
+        z0: -1.801,
+      },
+      {
+        _id: "663b7e3c2bdcc11befd737a9",
+        hip: 69701,
+        ra: 14.266908,
+        dec: -6.000547,
+        dist: 22.237,
+        x0: -18.334,
+        y0: -12.368,
+        z0: -2.325,
+      },
+      {
+        _id: "663b7e3b2bdcc11befd73560",
+        hip: 69427,
+        ra: 14.21492928,
+        dec: -10.2737004,
+        dist: 86.2979,
+        x0: -71.034,
+        y0: -46.526,
+        z0: -15.391,
+      },
+      {
+        _id: "663b7e3a2bdcc11befd713bc",
+        hip: 65474,
+        ra: 13.41989015,
+        dec: -11.16124491,
+        dist: 76.5697,
+        x0: -69.991,
+        y0: -27.286,
+        z0: -14.822,
+      },
+      {
+        _id: "663b7e3a2bdcc11befd71a54",
+        hip: 66249,
+        ra: 13.57822,
+        dec: -0.59582,
+        dist: 22.7118,
+        x0: -20.799,
+        y0: -9.119,
+        z0: -0.236,
+      },
+      {
+        _id: "663b7e3b2bdcc11befd72d84",
+        hip: 68520,
+        ra: 14.02744238,
+        dec: 1.54453325,
+        dist: 69.5262,
+        x0: -59.938,
+        y0: -35.182,
+        z0: 1.874,
+      },
+      {
+        _id: "663b7e3c2bdcc11befd74d43",
+        hip: 72220,
+        ra: 14.77081222,
+        dec: 1.89288176,
+        dist: 41.1838,
+        x0: -30.798,
+        y0: -27.308,
+        z0: 1.36,
+      },
+      {
+        _id: "663b7e3b2bdcc11befd72d84",
+        hip: 68520,
+        ra: 14.02744238,
+        dec: 1.54453325,
+        dist: 69.5262,
+        x0: -59.938,
+        y0: -35.182,
+        z0: 1.874,
+      },
+      {
+        _id: "663b7e3a2bdcc11befd71a54",
+        hip: 66249,
+        ra: 13.57822,
+        dec: -0.59582,
+        dist: 22.7118,
+        x0: -20.799,
+        y0: -9.119,
+        z0: -0.236,
+      },
+      {
+        _id: "663b7e392bdcc11befd6ff74",
+        hip: 63090,
+        ra: 12.92672454,
+        dec: 3.39747144,
+        dist: 60.8273,
+        x0: -58.942,
+        y0: -14.588,
+        z0: 3.605,
+      },
+      {
+        _id: "663b7e392bdcc11befd703cd",
+        hip: 63608,
+        ra: 13.03627731,
+        dec: 10.95914863,
+        dist: 33.1006,
+        x0: -31.308,
+        y0: -8.709,
+        z0: 6.293,
+      },
+      {
+        _id: "663b7e392bdcc11befd6ff74",
+        hip: 63090,
+        ra: 12.92672454,
+        dec: 3.39747144,
+        dist: 60.8273,
+        x0: -58.942,
+        y0: -14.588,
+        z0: 3.605,
+      },
+      {
+        _id: "663b7e392bdcc11befd6f621",
+        hip: 61941,
+        ra: 12.694345,
+        dec: -1.449375,
+        dist: 11.685,
+        x0: -11.489,
+        y0: -2.112,
+        z0: -0.296,
+      },
+      {
+        _id: "663b7e3a2bdcc11befd713bc",
+        hip: 65474,
+        ra: 13.41989015,
+        dec: -11.16124491,
+        dist: 76.5697,
+        x0: -69.991,
+        y0: -27.286,
+        z0: -14.822,
+      },
+      {
+        _id: "663b7e392bdcc11befd6f621",
+        hip: 61941,
+        ra: 12.694345,
+        dec: -1.449375,
+        dist: 11.685,
+        x0: -11.489,
+        y0: -2.112,
+        z0: -0.296,
+      },
+      {
+        _id: "663b7e382bdcc11befd6e6c9",
+        hip: 60030,
+        ra: 12.31119956,
+        dec: -0.78718713,
+        dist: 114.9812,
+        x0: -114.589,
+        y0: -9.356,
+        z0: -1.58,
+      },
+      {
+        _id: "663b7e372bdcc11befd6d03e",
+        hip: 57380,
+        ra: 11.76432288,
+        dec: 6.52938127,
+        dist: 101.5783,
+        x0: -100.727,
+        y0: 6.223,
+        z0: 11.551,
+      },
+    ],
+    libra: [
+      {
+        _id: "663b7e3f2bdcc11befd781cb",
+        hip: 77853,
+        ra: 15.89709401,
+        dec: -16.72929324,
+        dist: 51.6529,
+        x0: -25.878,
+        y0: -42.158,
+        z0: -14.868,
+      },
+      {
+        _id: "663b7e3e2bdcc11befd77344",
+        hip: 76333,
+        ra: 15.592105,
+        dec: -14.789537,
+        dist: 49.3601,
+        x0: -28.132,
+        y0: -38.552,
+        z0: -12.6,
+      },
+      {
+        _id: "663b7e3d2bdcc11befd7648b",
+        hip: 74785,
+        ra: 15.283449,
+        dec: -9.382917,
+        dist: 56.7537,
+        x0: -36.549,
+        y0: -42.42,
+        z0: -9.253,
+      },
+
+      {
+        _id: "663b7e3d2bdcc11befd750ab",
+        hip: 72622,
+        ra: 14.84797594,
+        dec: -16.04177696,
+        dist: 23.2396,
+        x0: -16.409,
+        y0: -15.152,
+        z0: -6.422,
+      },
+      {
+        _id: "663b7e3d2bdcc11befd75a8b",
+        hip: 73714,
+        ra: 15.06783762,
+        dec: -25.28196292,
+        dist: 79.7534,
+        x0: -50.079,
+        y0: -51.89,
+        z0: -34.061,
+      },
+      {
+        _id: "663b7e3e2bdcc11befd77344",
+        hip: 76333,
+        ra: 15.592105,
+        dec: -14.789537,
+        dist: 49.3601,
+        x0: -28.132,
+        y0: -38.552,
+        z0: -12.6,
+      },
+    ],
+    SagittariusSchütze: [
+      {
+        _id: "663b7e492bdcc11befd8572b",
+        hip: 95294,
+        ra: 19.38698243,
+        dec: -44.79978637,
+        dist: 42.806,
+        x0: 10.788,
+        y0: -28.394,
+        z0: -30.162,
+      },
+      {
+        _id: "663b7e4b2bdcc11befd87e30",
+        hip: 98032,
+        ra: 19.921027,
+        dec: -41.86827352,
+        dist: 55.7414,
+        x0: 20.007,
+        y0: -36.37,
+        z0: -37.203,
+      },
+      {
+        _id: "663b7e492bdcc11befd857e7",
+        hip: 95347,
+        ra: 19.39810471,
+        dec: -40.61593839,
+        dist: 55.2218,
+        x0: 15.003,
+        y0: -39.142,
+        z0: -35.949,
+      },
+      {
+        _id: "663b7e4b2bdcc11befd87e30",
+        hip: 98032,
+        ra: 19.921027,
+        dec: -41.86827352,
+        dist: 55.7414,
+        x0: 20.007,
+        y0: -36.37,
+        z0: -37.203,
+      },
+      {
+        _id: "663b7e4b2bdcc11befd883a8",
+        hip: 98412,
+        ra: 19.99560529,
+        dec: -35.27630705,
+        dist: 205.6676,
+        x0: 83.784,
+        y0: -145.504,
+        z0: -118.777,
+      },
+      {
+        _id: "663b7e4b2bdcc11befd8877f",
+        hip: 98688,
+        ra: 20.04429991,
+        dec: -27.70984656,
+        dist: 137.5942,
+        x0: 62.126,
+        y0: -104.781,
+        z0: -63.981,
+      },
+      {
+        _id: "663b7e492bdcc11befd8667f",
+        hip: 96406,
+        ra: 19.60045931,
+        dec: -24.71908406,
+        dist: 81.1725,
+        x0: 29.999,
+        y0: -67.356,
+        z0: -33.944,
+      },
+      {
+        _id: "663b7e482bdcc11befd843bd",
+        hip: 93864,
+        ra: 19.11566829,
+        dec: -27.67042392,
+        dist: 37.2856,
+        x0: 9.508,
+        y0: -31.623,
+        z0: -17.315,
+      },
+      {
+        _id: "663b7e472bdcc11befd83606",
+        hip: 92855,
+        ra: 18.92108797,
+        dec: -26.29659428,
+        dist: 69.8324,
+        x0: 14.951,
+        y0: -60.794,
+        z0: -30.937,
+      },
+      {
+        _id: "663b7e482bdcc11befd838ef",
+        hip: 93085,
+        ra: 18.962167,
+        dec: -21.10665345,
+        dist: 118.917,
+        x0: 27.65,
+        y0: -107.438,
+        z0: -42.823,
+      },
+      {
+        _id: "663b7e482bdcc11befd84128",
+        hip: 93683,
+        ra: 19.07805048,
+        dec: -21.7414935,
+        dist: 41.9955,
+        x0: 10.864,
+        y0: -37.465,
+        z0: -15.556,
+      },
+      {
+        _id: "663b7e492bdcc11befd85097",
+        hip: 94820,
+        ra: 19.29391079,
+        dec: -18.95291023,
+        dist: 147.5524,
+        x0: 46.374,
+        y0: -131.622,
+        z0: -47.924,
+      },
+      {
+        _id: "663b7e492bdcc11befd85578",
+        hip: 95168,
+        ra: 19.36121085,
+        dec: -17.84720025,
+        dist: 39.9982,
+        x0: 13.283,
+        y0: -35.681,
+        z0: -12.259,
+      },
+      {
+        _id: "663b7e492bdcc11befd85097",
+        hip: 94820,
+        ra: 19.29391079,
+        dec: -18.95291023,
+        dist: 147.5524,
+        x0: 46.374,
+        y0: -131.622,
+        z0: -47.924,
+      },
+      {
+        _id: "663b7e482bdcc11befd84128",
+        hip: 93683,
+        ra: 19.07805048,
+        dec: -21.7414935,
+        dist: 41.9955,
+        x0: 10.864,
+        y0: -37.465,
+        z0: -15.556,
+      },
+      {
+        _id: "663b7e482bdcc11befd838ef",
+        hip: 93085,
+        ra: 18.962167,
+        dec: -21.10665345,
+        dist: 118.917,
+        x0: 27.65,
+        y0: -107.438,
+        z0: -42.823,
+      },
+      {
+        _id: "663b7e472bdcc11befd83606",
+        hip: 92855,
+        ra: 18.92108797,
+        dec: -26.29659428,
+        dist: 69.8324,
+        x0: 14.951,
+        y0: -60.794,
+        z0: -30.937,
+      },
+      {
+        _id: "663b7e472bdcc11befd82ab7",
+        hip: 92041,
+        ra: 18.76094075,
+        dec: -26.99077697,
+        dist: 73.3676,
+        x0: 12.938,
+        y0: -64.084,
+        z0: -33.298,
+      },
+      {
+        _id: "663b7e482bdcc11befd83eb2",
+        hip: 93506,
+        ra: 19.043532,
+        dec: -29.880105,
+        dist: 27.0416,
+        x0: 6.326,
+        y0: -22.578,
+        z0: -13.472,
+      },
+      {
+        _id: "663b7e482bdcc11befd843bd",
+        hip: 93864,
+        ra: 19.11566829,
+        dec: -27.67042392,
+        dist: 37.2856,
+        x0: 9.508,
+        y0: -31.623,
+        z0: -17.315,
+      },
+      {
+        _id: "663b7e472bdcc11befd82ab7",
+        hip: 92041,
+        ra: 18.76094075,
+        dec: -26.99077697,
+        dist: 73.3676,
+        x0: 12.938,
+        y0: -64.084,
+        z0: -33.298,
+      },
+      {
+        _id: "663b7e452bdcc11befd8118f",
+        hip: 90185,
+        ra: 18.40287398,
+        dec: -34.3843146,
+        dist: 43.9367,
+        x0: 3.817,
+        y0: -36.058,
+        z0: -24.813,
+      },
+      {
+        _id: "663b7e452bdcc11befd809a6",
+        hip: 89642,
+        ra: 18.29378698,
+        dec: -36.76168819,
+        dist: 44.7427,
+        x0: 2.754,
+        y0: -35.739,
+        z0: -26.778,
+      },
+      {
+        _id: "663b7e452bdcc11befd8118f",
+        hip: 90185,
+        ra: 18.40287398,
+        dec: -34.3843146,
+        dist: 43.9367,
+        x0: 3.817,
+        y0: -36.058,
+        z0: -24.813,
+      },
+      {
+        _id: "663b7e442bdcc11befd7fb5c",
+        hip: 88635,
+        ra: 18.09680182,
+        dec: -30.42409858,
+        dist: 29.7,
+        x0: 0.649,
+        y0: -25.602,
+        z0: -15.04,
+      },
+      {
+        _id: "663b7e432bdcc11befd7e698",
+        hip: 87072,
+        ra: 17.7926735,
+        dec: -27.83079164,
+        dist: 356.4158,
+        x0: -17.099,
+        y0: -314.725,
+        z0: -166.397,
+      },
+      {
+        _id: "663b7e442bdcc11befd7fb5c",
+        hip: 88635,
+        ra: 18.09680182,
+        dec: -30.42409858,
+        dist: 29.7,
+        x0: 0.649,
+        y0: -25.602,
+        z0: -15.04,
+      },
+      {
+        _id: "663b7e452bdcc11befd80dd5",
+        hip: 89931,
+        ra: 18.34990047,
+        dec: -29.8281024,
+        dist: 127.441,
+        x0: 10.113,
+        y0: -110.094,
+        z0: -63.389,
+      },
+      {
+        _id: "663b7e452bdcc11befd8118f",
+        hip: 90185,
+        ra: 18.40287398,
+        dec: -34.3843146,
+        dist: 43.9367,
+        x0: 3.817,
+        y0: -36.058,
+        z0: -24.813,
+      },
+      {
+        _id: "663b7e452bdcc11befd80dd5",
+        hip: 89931,
+        ra: 18.34990047,
+        dec: -29.8281024,
+        dist: 127.441,
+        x0: 10.113,
+        y0: -110.094,
+        z0: -63.389,
+      },
+      {
+        _id: "663b7e472bdcc11befd82ab7",
+        hip: 92041,
+        ra: 18.76094075,
+        dec: -26.99077697,
+        dist: 73.3676,
+        x0: 12.938,
+        y0: -64.084,
+        z0: -33.298,
+      },
+
+      {
+        _id: "663b7e462bdcc11befd81624",
+        hip: 90496,
+        ra: 18.46617795,
+        dec: -25.42170006,
+        dist: 23.2993,
+        x0: 2.562,
+        y0: -20.887,
+        z0: -10.002,
+      },
+
+      {
+        _id: "663b7e452bdcc11befd804f4",
+        hip: 89341,
+        ra: 18.229392,
+        dec: -21.058834,
+      },
+      {
+        _id: "663b7e462bdcc11befd81624",
+        hip: 90496,
+        ra: 18.46617795,
+        dec: -25.42170006,
+        dist: 23.2993,
+        x0: 2.562,
+        y0: -20.887,
+        z0: -10.002,
+      },
+      {
+        _id: "663b7e452bdcc11befd80dd5",
+        hip: 89931,
+        ra: 18.34990047,
+        dec: -29.8281024,
+        dist: 127.441,
+        x0: 10.113,
+        y0: -110.094,
+        z0: -63.389,
+      },
+    ],
   };
 
   let selectedArray;
   $: if (selectedArray) {
     updateLines(selectedArray);
-    console.log("debug");
-  } 
+  }
 
   function updateLines(arrayName) {
     // lineGroup.clear(); // Löscht nur die Linien in der Gruppe
@@ -664,7 +1488,7 @@ async function jumpToStar() {
     let line = new THREE.Line(geometry, material);
     lineGroup.add(line); // Füge die Linie zur Gruppe hinzu
     scene.add(lineGroup);
-    console.log(center);
+    // console.log(center);
     moveToConstellation(new THREE.Vector3(center.y, center.z, center.x));
   }
 
@@ -691,18 +1515,72 @@ async function jumpToStar() {
       }
     }
   }
+
+  let translateX = "-100%"; // Zustand der X-Translation des Containers
+
+  function toggleContainer() {
+    translateX = translateX === "-100%" ? "-73%" : "-100%"; // Schaltet zwischen den Positionen um
+  }
+
+
+  let infoContent = ""; // Inhalt für das info-overlay
+  let displayInfoOverlay = "none"; // Steuert die Anzeige des info-overlays
+  let showInfoOverlay = false;
+
+
+  function showInfo(element) {
+    infoContent = element;
+    selectedArray = element;
+    showInfoOverlay = true;
+    displayInfoOverlay = "block"; // Zeigt das info-overlay an
+    console.log("show info");
+  }
+
+  function hideInfo() {
+    displayInfoOverlay = "none"; // Verbirgt das info-overlay
+    showInfoOverlay = false;
+  }
+  import svgURL from "./assets/constel.svg";
+  import sunURL from "./assets/sun.svg";
+  import eyeURL from './assets/eye.svg';
 </script>
 
 <main>
-  <select bind:value={selectedArray}>
+  <div
+    id="info-overlay"
+    class="overlay"
+    style="--displayInfoOverlay: {displayInfoOverlay};"
+  >
+  {infoContent}
+  <p>Stern 1</p>
+  <p>Stern 2</p>
+  <p>Stern 3</p>
+  <p>Stern 4</p>
+  </div>
+  <div id="container" style="--translateX: {translateX};">
+    <div id="selection-overlay" class="overlay2">
+      <button class='constbtn' on:click={() => showInfo("Wassermann")}><img src={svgURL}></button>
+      <button class='constbtn' on:click={() => showInfo("Widder")}><img src={svgURL}></button>
+    </div>
+    <div id="options">
+      <button class='constbtn' on:click={toggleContainer}><img src={svgURL}></button>
+      <button class='constbtn' on:click={returnToSun}><img src={sunURL}></button>
+      <button class='constbtn'><img src={eyeURL}></button>
+    </div>
+  </div>
+  <!-- <select bind:value={selectedArray}>
     <option value="">Tierkreiszeichen</option>
     {#each Object.keys(arrays) as arrayName}
       <option value={arrayName}>{arrayName}</option>
     {/each}
   </select>
 
-  <button on:click={returnToSun}>Sonne</button>
-  <div class="overlay">
+  <button on:click={returnToSun}>Sonne</button> -->
+  <div
+    class="overlay"
+    id="singleStar-overlay"
+    style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
+  >
     <h2>Stern: {selectedStar.id}</h2>
     <p>Magnitude: {selectedStar.mag}</p>
     <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
@@ -724,13 +1602,21 @@ async function jumpToStar() {
 </svelte:head>
 
 <style>
+  .constbtn {
+    padding: 5px;
+  }
+  img {
+    width: 25px;
+    height: 25px;
+  }
   main {
     position: absolute;
     width: 100%;
     /* border: 2px solid pink;   */
     display: flex;
-    justify-content: start;
-    gap: 5px;
+    /* height: 98vh; */
+    align-items: end;
+    /* justify-content: center; */
   }
   .overlay {
     position: absolute;
@@ -741,5 +1627,47 @@ async function jumpToStar() {
     border: 2px solid black;
     border-radius: 8px;
     cursor: pointer;
+  }
+  #container {
+    display: flex;
+    position: absolute;
+    z-index: 20;
+    width: auto;
+    top: 0px;
+    left: 150px;
+    transform: translateX(var(--translateX));
+    transition: transform 0.5s ease;
+  }
+
+  #selection-overlay {
+    display: flex;
+    flex-direction: column;
+    border-bottom-right-radius: 10px;
+  }
+
+  .overlay2 {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.1);
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  #options {
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    max-height: 40px;
+    border-bottom-right-radius: 10px;
+    margin:0;
+    display: flex;
+    gap: 10px;
+  }
+
+  #info-overlay {
+    position: absolute;
+    display: var(--displayInfoOverlay, none);
+    right: 10px;
+    top: 10px;
   }
 </style>
