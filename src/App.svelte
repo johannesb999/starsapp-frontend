@@ -91,12 +91,13 @@
       });
   }
 
-  function addStars(stars) {
+  async function addStars(stars) {
     if (stars.length === 0) {
       console.error("Keine gültigen Sterndaten verfügbar.");
       return;
     }
 
+    const top100 = await axios.get("");
     // Materialien definieren
     // const greenMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     // const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
@@ -125,6 +126,11 @@
         console.log("ignored");
         return;
       }
+
+      top100.map()
+      // top100.array.forEach(element => {
+        
+      // });
       // console.log(star);
       let starGeometry;
 
