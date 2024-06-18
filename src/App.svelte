@@ -105,26 +105,26 @@
     axios
       .get("https://starsapi.johannes-biess.com/top111")
       .then((response) => {
-        const starIds = response.data;
+        const starIds = response.data; 
         starIds.forEach((star) => {
-          applyGlowEffect(star.id);
+          applyGlowEffect(star.id); 
         });
       })
       .catch((error) => {
         console.error("Fehler beim Abrufen der Sterndaten:", error);
       });
-  }
+}
+
 
   function applyGlowEffect(starId) {
-    const starElement = document.getElementById(`star-${starId}`);
+    const starElement = document.getElementById(starId.toString()); // Direkte Verwendung der ID ohne Präfix
     if (starElement) {
-      starElement.classList.add("glow");
+        starElement.classList.add("glow"); 
     } else {
-      console.log(
-        "Stern-Element mit ID star-" + starId + " wurde nicht gefunden."
-      );
+        console.log("Stern-Element mit ID " + starId + " wurde nicht gefunden.");
     }
-  }
+}
+
 
   async function addStars(stars) {
     if (stars.length === 0) {
@@ -702,6 +702,10 @@
     padding-right: 10px;
   }
 
+  .glow {
+    box-shadow: 0 0 20px rgb(3, 164, 0); /* Anpassen für den gewünschten Effekt */
+  }
+
   #options {
     padding-left: 10px;
     padding-right: 10px;
@@ -723,7 +727,6 @@
     flex-direction: column;
     align-content: center;
   }
-  .glow {
-    box-shadow: 0 0 8px white; /* Anpassen für den gewünschten Effekt */
-  }
+  
+  
 </style>
