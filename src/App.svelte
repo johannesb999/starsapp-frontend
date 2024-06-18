@@ -22,10 +22,19 @@
     z: 0,
     absmag: 4.85,
     ci: 0.9,
-    mag:-26.7,
-    dist:0,
+    mag: -26.7,
+    dist: 0,
   };
-  let selectedStar = { id: 1, x: 0.000005, dist:0, mag:-26.7, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
+  let selectedStar = {
+    id: 1,
+    x: 0.000005,
+    dist: 0,
+    mag: -26.7,
+    y: 0,
+    z: 0,
+    absmag: 4.85,
+    ci: 0.9,
+  };
   let sunIgnored = false;
 
   let lineGroup = new THREE.Group();
@@ -33,6 +42,7 @@
   onMount(() => {
     init();
     loadStars();
+    glow100();
   });
 
   function init() {
@@ -91,13 +101,37 @@
       });
   }
 
+  function glow100() {
+    axios
+      .get("https://starsapi.johannes-biess.com/top111")
+      .then((response) => {
+        const starIds = response.data;
+        starIds.forEach((star) => {
+          applyGlowEffect(star.id);
+        });
+      })
+      .catch((error) => {
+        console.error("Fehler beim Abrufen der Sterndaten:", error);
+      });
+  }
+
+  function applyGlowEffect(starId) {
+    const starElement = document.getElementById(`star-${starId}`);
+    if (starElement) {
+      starElement.classList.add("glow");
+    } else {
+      console.log(
+        "Stern-Element mit ID star-" + starId + " wurde nicht gefunden."
+      );
+    }
+  }
+
   async function addStars(stars) {
     if (stars.length === 0) {
       console.error("Keine gültigen Sterndaten verfügbar.");
       return;
     }
 
-    const top100 = await axios.get("");
     // Materialien definieren
     // const greenMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     // const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
@@ -127,11 +161,6 @@
         return;
       }
 
-      top100.map()
-      // top100.array.forEach(element => {
-        
-      // });
-      // console.log(star);
       let starGeometry;
 
       const originalRadius = berechneSternRadius(star.ci, star.absmag);
@@ -267,7 +296,7 @@
       console.log("adding Stars", lastRemovedStar);
       addStars([lastRemovedStar]);
     }
-    if(selectedStar == lastRemovedStar) {
+    if (selectedStar == lastRemovedStar) {
       console.log("nothing happens");
     } else {
       console.log("selectedStar", selectedStar);
@@ -303,9 +332,27 @@
     // OrbitControls neu ausrichten
     controls.target.copy(newPosition);
     controls.update();
-    selectedStar = { id: 1, x: 0.000005, dist:0, mag:-26.7, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
+    selectedStar = {
+      id: 1,
+      x: 0.000005,
+      dist: 0,
+      mag: -26.7,
+      y: 0,
+      z: 0,
+      absmag: 4.85,
+      ci: 0.9,
+    };
     if (lastRemovedStar != null) addStars([lastRemovedStar]);
-    lastRemovedStar = { id: 1, x: 0.000005,dist:0, mag:-26.7, y: 0, z: 0, absmag: 4.85, ci: 0.9 };
+    lastRemovedStar = {
+      id: 1,
+      x: 0.000005,
+      dist: 0,
+      mag: -26.7,
+      y: 0,
+      z: 0,
+      absmag: 4.85,
+      ci: 0.9,
+    };
     console.log(scene.children);
     const sce = scene.children.reverse();
     const sun = sce.find((child) => {
@@ -402,7 +449,7 @@
       console.log("adding Stars", lastRemovedStar);
       addStars([lastRemovedStar]);
     }
-    if(selectedStar == lastRemovedStar) {
+    if (selectedStar == lastRemovedStar) {
       console.log("nothing happens");
     } else {
       console.log("selectedStar", selectedStar);
@@ -410,20 +457,19 @@
     }
     const sce = scene.children.reverse();
     const starToRemove = sce.find((child) => {
-      if (child.type === 'Mesh') {
+      if (child.type === "Mesh") {
         console.log("-");
         console.log(child);
         if (child.userData.starData.id === selectedStar.id) console.log("hit");
-        return child.userData.starData && child.userData.starData.id === selectedStar.id;
+        return (
+          child.userData.starData &&
+          child.userData.starData.id === selectedStar.id
+        );
       }
     });
     scene.remove(starToRemove);
     disposeMaterial(starToRemove);
   }
-
-
-
-
 
   let selectedArray;
   // $: if (selectedArray) {
@@ -497,17 +543,12 @@
     const angle = THREE.MathUtils.degToRad(337.5);
     const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
     const rfcc = camera.position;
-    let originalPosition = new THREE.Vector3(
-      rfcc.y,
-      rfcc.z,
-      rfcc.x + 0.11
-    );
+    let originalPosition = new THREE.Vector3(rfcc.y, rfcc.z, rfcc.x + 0.11);
 
     let newPosition = originalPosition.applyMatrix4(rotationMatrix);
     controls.target.copy(newPosition);
-    controls.update(); 
+    controls.update();
   }
-
 
   let translateX = "-100%"; // Zustand der X-Translation des Containers
 
@@ -535,29 +576,44 @@
   import svgURL from "./assets/constel.svg";
   import sunURL from "./assets/sun.svg";
   import eyeURL from "./assets/eye.svg";
+  import app from "./main";
 </script>
 
 <main>
-  <div id="info-overlay" class="overlay" style="display: {showInfoOverlay ? 'flex' : 'none'} !important;">
+  <div
+    id="info-overlay"
+    class="overlay"
+    style="display: {showInfoOverlay ? 'flex' : 'none'} !important;"
+  >
     {infoContent}
 
-  {#if selectedArray && selectedArray.length > 0}
-    {#each selectedArray as star}
-      <button on:click={() => jumpToStar2(star)}>
-        {star.id}
-      </button>
-    {/each}
-  {/if}
+    {#if selectedArray && selectedArray.length > 0}
+      {#each selectedArray as star}
+        <button on:click={() => jumpToStar2(star)}>
+          {star.id}
+        </button>
+      {/each}
+    {/if}
   </div>
   <div id="container" style="--translateX: {translateX};">
     <div id="selection-overlay" class="overlay2">
-      <button class="constbtn" on:click={() => resetTest()}><img src={svgURL} /></button>
-      <button class="constbtn" on:click={() => showInfo("Wassermann")}><img src={svgURL} /></button>
-      <button class="constbtn" on:click={() => showInfo("Widder")}><img src={svgURL} /></button>
+      <button class="constbtn" on:click={() => resetTest()}
+        ><img src={svgURL} /></button
+      >
+      <button class="constbtn" on:click={() => showInfo("Wassermann")}
+        ><img src={svgURL} /></button
+      >
+      <button class="constbtn" on:click={() => showInfo("Widder")}
+        ><img src={svgURL} /></button
+      >
     </div>
     <div id="options">
-      <button class="constbtn" on:click={toggleContainer}><img src={svgURL} /></button>
-      <button class="constbtn" on:click={returnToSun}><img src={sunURL} /></button>
+      <button class="constbtn" on:click={toggleContainer}
+        ><img src={svgURL} /></button
+      >
+      <button class="constbtn" on:click={returnToSun}
+        ><img src={sunURL} /></button
+      >
       <button class="constbtn"><img src={eyeURL} /></button>
     </div>
   </div>
@@ -666,5 +722,8 @@
     /* display: flex; */
     flex-direction: column;
     align-content: center;
+  }
+  .glow {
+    box-shadow: 0 0 8px white; /* Anpassen für den gewünschten Effekt */
   }
 </style>
