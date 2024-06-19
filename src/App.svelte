@@ -3,13 +3,18 @@
   import axios from "axios";
   import * as THREE from "three";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+  import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
   import gsap from "gsap";
   import { arrays } from "./data/tierkreis";
 
   let raycaster = new THREE.Raycaster();
   let mouse = new THREE.Vector2();
 
+
   let camera, scene, renderer, controls;
+  let composer, bloomPass, BLOOM_LAYER;
   const maxMag = 8;
   const minRadius = 0.17;
   const maxRadius = 1587.37;
@@ -42,7 +47,7 @@
   onMount(() => {
     init();
     loadStars();
-    glow100();
+    // glow100();
   });
 
   function init() {
@@ -63,6 +68,14 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement); // Stellen Sie sicher, dass dies ausgeführt wird
     controls = new OrbitControls(camera, renderer.domElement);
+
+    composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+
+    bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    composer.addPass(bloomPass);
+    BLOOM_LAYER = 1;
+    camera.layers.enable(BLOOM_LAYER);
   }
 
   function loadStars() {
@@ -106,8 +119,8 @@
       .get("https://starsapi.johannes-biess.com/top111")
       .then((response) => {
         const starIds = response.data; 
+        applyGlowEffect(starIds); 
         starIds.forEach((star) => {
-          applyGlowEffect(star.id); 
         });
       })
       .catch((error) => {
@@ -116,13 +129,15 @@
 }
 
 
-  function applyGlowEffect(starId) {
-    const starElement = document.getElementById(starId.toString()); // Direkte Verwendung der ID ohne Präfix
-    if (starElement) {
-        starElement.classList.add("glow"); 
-    } else {
-        console.log("Stern-Element mit ID " + starId + " wurde nicht gefunden.");
+  function applyGlowEffect(starIds) {
+    scene.traverse((object) => {
+    // Überprüfe, ob das Objekt ein Stern mit passender ID ist
+    if (object.isMesh && object.userData && starIds.includes(object.userData.starData.id)) {
+      console.log("Glowing star", object.userData.starData.id);
+      object.layers.enable(BLOOM_LAYER);
     }
+  });
+
 }
 
 
@@ -193,7 +208,7 @@
       const starMaterial = new THREE.MeshStandardMaterial({
         color: color,
         emissive: color,
-        emissiveIntensity: intensity,
+        emissiveIntensity: 1.5,
       });
 
       const sphere = new THREE.Mesh(starGeometry, starMaterial);
@@ -211,12 +226,14 @@
       }; // Daten anhängen
       scene.add(sphere);
     });
+    glow100();
   }
 
   function animate() {
     requestAnimationFrame(animate);
     updateVisibility();
     renderer.render(scene, camera);
+    composer.render();
     controls.update();
   }
 
