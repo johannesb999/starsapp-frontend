@@ -3,20 +3,20 @@
   import axios from "axios";
   import * as THREE from "three";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-  import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-  import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-  import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+  import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+  import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+  import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+  // @ts-ignore einfach löschen für fehleranzeige
   import gsap from "gsap";
   import { arrays } from "./data/tierkreis";
-  import Switch from './components/Switch.svelte'
-	
+  import Switch from "./components/Switch.svelte";
 
   let raycaster = new THREE.Raycaster();
   let mouse = new THREE.Vector2();
   let centerKoords = {
-    "x":0,
-    "y":0,
-    "z":0,
+    x: 0,
+    y: 0,
+    z: 0,
   };
   let sliderValue = false;
   let selectedArray;
@@ -55,7 +55,6 @@
   onMount(() => {
     init();
     loadStars();
-    // glow100();
   });
 
   function init() {
@@ -64,12 +63,12 @@
       window.innerWidth / window.innerHeight,
       0.1,
       300
-    );
+    ); // @ts-ignore einfach löschen für fehleranzeige
     camera.position.z = 0.0001;
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000); // Setzen Sie explizit eine Hintergrundfarbe
-
+    // @ts-ignore einfach löschen für fehleranzeige
     scene.rotation.z = THREE.MathUtils.degToRad(337.5);
 
     renderer = new THREE.WebGLRenderer();
@@ -80,7 +79,12 @@
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
 
-    bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      1.5,
+      0.4,
+      0.85
+    );
     composer.addPass(bloomPass);
     BLOOM_LAYER = 1;
     camera.layers.enable(BLOOM_LAYER);
@@ -123,61 +127,13 @@
       });
   }
 
-  function glow100() {
-    axios
-      .get("https://starsapi.johannes-biess.com/top111")
-      .then((response) => {
-        const starIds = response.data; 
-        applyGlowEffect(starIds); 
-        starIds.forEach((star) => {
-        });
-      })
-      .catch((error) => {
-        console.error("Fehler beim Abrufen der Sterndaten:", error);
-      });
-}
-
-
-  function applyGlowEffect(starIds) {
-    scene.traverse((object) => {
-    // Überprüfe, ob das Objekt ein Stern mit passender ID ist
-    if (object.isMesh && object.userData && starIds.includes(object.userData.starData.id)) {
-      console.log("Glowing star", object.userData.starData.id);
-      object.layers.enable(BLOOM_LAYER);
-    }
-  });
-
-}
-
-
   async function addStars(stars) {
     if (stars.length === 0) {
       console.error("Keine gültigen Sterndaten verfügbar.");
       return;
     }
 
-    // Materialien definieren
-    // const greenMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-    // const redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-    // // Geometrie definieren
-    // const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-
-    // // Quader erstellen
-    // const greenCube = new THREE.Mesh(geometry, greenMaterial);
-    // greenCube.position.set(1, 0, 0);
-    // scene.add(greenCube);
-
-    // const blueCube = new THREE.Mesh(geometry, blueMaterial);
-    // blueCube.position.set(0, 1, 0);
-    // scene.add(blueCube);
-
-    // const redCube = new THREE.Mesh(geometry, redMaterial);
-    // redCube.position.set(0, 0, 1);
-    // scene.add(redCube);
-
-    console.log(stars);
+    // console.log(stars);
     stars.forEach((star) => {
       if (star.id === 1 && sunIgnored == false) {
         sunIgnored = true;
@@ -219,8 +175,9 @@
         emissive: color,
         emissiveIntensity: intensity,
       });
-
+      // @ts-ignore einfach löschen für fehleranzeige
       const sphere = new THREE.Mesh(starGeometry, starMaterial);
+      // @ts-ignore einfach löschen für fehleranzeige
       sphere.position.set(star.y, star.z, star.x);
       // console.log("adding user data");
       sphere.userData.starData = {
@@ -236,7 +193,6 @@
       }; // Daten anhängen
       scene.add(sphere);
     });
-    glow100();
   }
 
   function animate() {
@@ -314,7 +270,7 @@
       z: newPosition.z,
       duration: 2,
     });
-    customLookAt(0,0,0);
+    customLookAt(0, 0, 0);
 
     if (selectedStar.object) {
       scene.remove(selectedStar.object);
@@ -345,7 +301,7 @@
     }
   }
 
-  async function returnToSun() {  
+  async function returnToSun() {
     hideInfo();
     console.log("button pressed");
     let newPosition = new THREE.Vector3(0.000005, 0, 0);
@@ -391,35 +347,36 @@
     });
     scene.remove(sun);
     disposeMaterial(sun);
-    if(centerAvailable) customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
-    sliderValue = false;  
+    if (centerAvailable)
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+    sliderValue = false;
   }
-
 
   function getColorByCI(B_V) {
     // Berechnung der Temperatur basierend auf dem B-V Farbindex
-    const temperature = 4600 * (1 / (0.92 * B_V + 1.7) + 1 / (0.92 * B_V + 0.62));
+    const temperature =
+      4600 * (1 / (0.92 * B_V + 1.7) + 1 / (0.92 * B_V + 0.62));
 
     // Zuordnung der Temperatur zu einer visuellen Farbe
     let color;
     if (temperature > 33000) {
-        color = 0x9db4ff; // Blau
+      color = 0x9db4ff; // Blau
     } else if (temperature > 10000) {
-        color = 0xcad8ff; // Blauweiß
+      color = 0xcad8ff; // Blauweiß
     } else if (temperature > 7500) {
-        color = 0xf8f7ff; // Weiß
+      color = 0xf8f7ff; // Weiß
     } else if (temperature > 6000) {
-        color = 0xfff4ea; // Gelbweiß
+      color = 0xfff4ea; // Gelbweiß
     } else if (temperature > 5200) {
-        color = 0xffd2a1; // Gelb
+      color = 0xffd2a1; // Gelb
     } else if (temperature > 3700) {
-        color = 0xffcc6f; // Orange
+      color = 0xffcc6f; // Orange
     } else {
-        color = 0xff6f61; // Rot
+      color = 0xff6f61; // Rot
     }
 
     return color;
-}
+  }
   // function getColorByCI(ci) {
   //   if (ci < 0)
   //     return 0x9db4ff; // Blau
@@ -429,7 +386,7 @@
   //     return 0xfbfbfb; // Weiß
   //   else if (ci < 1.5)
   //     return 0xfff4ea; // Gelblich
-    // else return 0xffd2a1; // Orange/Rot
+  // else return 0xffd2a1; // Orange/Rot
   // }
 
   function getIntensityByMag(mag) {
@@ -469,11 +426,6 @@
     );
   }
 
-
-
-
-
-
   async function jumpToStar2(star) {
     console.log(selectedStar);
     console.log(star);
@@ -511,7 +463,7 @@
     });
 
     // const a = new THREE.Vector3( 0, 0, 0 );
-    customLookAt( 0, 0, 0 );
+    customLookAt(0, 0, 0);
 
     if (selectedStar.object) {
       scene.remove(selectedStar.object);
@@ -532,7 +484,6 @@
     disposeMaterial(starToRemove);
   }
 
-
   // $: if (selectedArray) {
   //   updateLines(selectedArray);
   // }
@@ -546,12 +497,12 @@
     selectedArray = removeDuplicates(array);
     centerKoords = array[0];
     centerAvailable = true;
-    console.log("centerkoords",centerKoords);
+    console.log("centerkoords", centerKoords);
     if (array) {
       for (let i = 1; i < array.length - 1; i++) {
         addLine(array[i], array[i + 1]);
       }
-      customLookAt(centerKoords.y,centerKoords.z,centerKoords.x);
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
     } else {
       console.error("Unbekanntes Array:", arrayName);
     }
@@ -583,7 +534,7 @@
     controls.target.copy(newTarget);
 
     // Setze die Kameraposition zurück, um sicherzustellen, dass die Kamera nicht bewegt wird
-    
+
     // camera.position.set(0, 0, 0.00005);
 
     // Notwendig, um die Änderungen zu verarbeiten
@@ -609,14 +560,14 @@
     centerAvailable = false;
   }
 
-  let translateX = "-100%"; // Zustand der X-Translation des Containers
+  let translateX = "-100%"; // Zustand der X-Translation des zodiacSelectionContainers
 
-  function toggleContainer() {
+  function togglezodiacSelectionContainer() {
     translateX = translateX === "-100%" ? "-73%" : "-100%"; // Schaltet zwischen den Positionen um
   }
 
-  let infoContent = ""; // Inhalt für das info-overlay
-  let displayInfoOverlay = "none"; // Steuert die Anzeige des info-overlays
+  let infoContent = ""; // Inhalt für das infoBoxSmall
+  let displaySmallBox = "none"; // Steuert die Anzeige des infoBoxSmalls
   let showInfoOverlay = false;
 
   function showInfo(element) {
@@ -625,65 +576,62 @@
     updateLines(element);
     infoContent = element;
     showInfoOverlay = true;
-    displayInfoOverlay = "block"; // Zeigt das info-overlay an
+    displaySmallBox = "block"; // Zeigt das infoBoxSmall an
     console.log("show info");
   }
 
   function hideInfo() {
-    displayInfoOverlay = "none"; // Verbirgt das info-overlay
+    displaySmallBox = "none"; // Verbirgt das infoBoxSmall
     showInfoOverlay = false;
   }
-
 
   function customLookAt(x, y, z) {
     const CameraPosition = camera.position;
     const controlPosition = controls.target;
     console.log(CameraPosition);
-    console.log('Kameraposition:', camera?.position.y);
-    console.log('Ziel der OrbitControls:', controls?.target);
+    console.log("Kameraposition:", camera?.position.y);
+    console.log("Ziel der OrbitControls:", controls?.target);
 
     let dirVector = {
-        x: x - controlPosition.x,
-        y: y - controlPosition.y,
-        z: z - controlPosition.z
+      x: x - controlPosition.x,
+      y: y - controlPosition.y,
+      z: z - controlPosition.z,
     };
 
-    let length = Math.sqrt(dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2);
+    let length = Math.sqrt(
+      dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2
+    );
 
     dirVector.x /= length;
     dirVector.y /= length;
     dirVector.z /= length;
 
     const distance = 0.01;
-    // let newPoint1 = {
-    //     x: controlPosition.x + dirVector.x * distance,
-    //     y: controlPosition.y + dirVector.y * distance,
-    //     z: controlPosition.z + dirVector.z * distance
-    // };
+
     let newPoint2 = {
-        x: controlPosition.x - dirVector.x * distance,
-        y: controlPosition.y - dirVector.y * distance,
-        z: controlPosition.z - dirVector.z * distance
+      x: controlPosition.x - dirVector.x * distance,
+      y: controlPosition.y - dirVector.y * distance,
+      z: controlPosition.z - dirVector.z * distance,
     };
     // console.log(newPoint2);
     camera.position.set(newPoint2.x, newPoint2.y, newPoint2.z);
-}
+  }
 
-
-
-function changeToPov() {
+  function changeToPov() {
     const cameraPosition = camera.position;
     const controlPosition = controls.target;
-    console.log('Kameraposition:', camera?.position);
-    console.log('Ziel der OrbitControls:', controls?.target);
+    console.log("Kameraposition:", camera?.position);
+    console.log("Ziel der OrbitControls:", controls?.target);
 
     let dirVector = {
-        x: controlPosition.x - cameraPosition.x,
-        y: controlPosition.y - cameraPosition.y,
-        z: controlPosition.z - cameraPosition.z 
+      x: controlPosition.x - cameraPosition.x,
+      y: controlPosition.y - cameraPosition.y,
+      z: controlPosition.z - cameraPosition.z,
     };
 
-    let length = Math.sqrt(dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2);
+    let length = Math.sqrt(
+      dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2
+    );
 
     dirVector.x /= length;
     dirVector.y /= length;
@@ -691,59 +639,58 @@ function changeToPov() {
 
     const distance = 0.01;
     let newPoint1 = {
-        x: cameraPosition.x + dirVector.x * distance,
-        y: cameraPosition.y + dirVector.y * distance,
-        z: cameraPosition.z + dirVector.z * distance
+      x: cameraPosition.x + dirVector.x * distance,
+      y: cameraPosition.y + dirVector.y * distance,
+      z: cameraPosition.z + dirVector.z * distance,
     };
-    // let newPoint2 = {
-    //     x: cameraPosition.x - dirVector.x * distance,
-    //     y: cameraPosition.y - dirVector.y * distance,
-    //     z: cameraPosition.z - dirVector.z * distance
-    // };
+
     console.log(newPoint1);
-    moveToConstellation(new THREE.Vector3(newPoint1.x, newPoint1.y, newPoint1.z));
-}
-
-function togglePov() {
-  //false == Pov-pov && true == orbit
-  sliderValue = !sliderValue;
-  if(sliderValue === true) {
-    console.log("using  Orbit");
-    moveToConstellation(new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x));
-  } else {
-    console.log("using POV");
-    changeToPov();
+    moveToConstellation(
+      new THREE.Vector3(newPoint1.x, newPoint1.y, newPoint1.z)
+    );
   }
-}
-let name;
 
-function submit() {
-  const sce = scene.children.reverse();
-  console.log(name);
+  function togglePov() {
+    //false == Pov-pov && true == orbit
+    sliderValue = !sliderValue;
+    if (sliderValue === true) {
+      console.log("using  Orbit");
+      moveToConstellation(
+        new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x)
+      );
+    } else {
+      console.log("using POV");
+      changeToPov();
+    }
+  }
+  let name;
+
+  function submit() {
+    const sce = scene.children.reverse();
+    console.log(name);
     const starResult = sce.find((child) => {
       if (child.type === "Mesh") {
         // console.log("-");
         // console.log(child);
-        if (child.userData.starData.proper === name) console.log(`found star ${name}`);
+        if (child.userData.starData.proper === name)
+          console.log(`found star ${name}`);
         return (
-          child.userData.starData &&
-          child.userData.starData.proper === name
+          child.userData.starData && child.userData.starData.proper === name
         );
       }
     });
     console.log(starResult);
     //hier auf Stern ausrichten
-}
-
-
+  }
 
   import svgURL from "./assets/constel.svg";
   import sunURL from "./assets/sun.svg";
 </script>
 
+<!-- HTML -->
 <main>
   <div
-    id="info-overlay"
+    id="infoBoxSmall"
     class="overlay"
     style="display: {showInfoOverlay ? 'flex' : 'none'} !important;"
   >
@@ -757,39 +704,43 @@ function submit() {
       {/each}
     {/if}
   </div>
-  <div id="container" style="--translateX: {translateX};">
-    <div id="selection-overlay" class="overlay2">
-      <button class="constbtn" on:click={() => resetTest()}
-        ><img src={svgURL} /></button
+
+  <div id="zodiacSelectionContainer" style="--translateX: {translateX};">
+    <div id="zodiacSelectionOverlay">
+      <button class="quickSelectButtons" on:click={() => resetTest()}
+        ><img src={svgURL} alt="reset to sun" /></button
       >
-      <button class="constbtn" on:click={() => showInfo("Wassermann")}
-        ><img src={svgURL} /></button
+      <button class="quickSelectButtons" on:click={() => showInfo("Wassermann")}
+        ><img src={svgURL} alt="Wassermann" /></button
       >
-      <button class="constbtn" on:click={() => showInfo("Widder")}
-        ><img src={svgURL} /></button
+      <button class="quickSelectButtons" on:click={() => showInfo("Widder")}
+        ><img src={svgURL} alt="Widder" /></button
       >
     </div>
-    <div id="options">
-      <button class="constbtn" on:click={toggleContainer}
-        ><img src={svgURL} /></button
+
+    <div id="quickSelectBar">
+      <button
+        class="quickSelectButtons"
+        on:click={togglezodiacSelectionContainer}
+        ><img src={svgURL} alt="non-visible" /></button
       >
-      <button class="constbtn" on:click={returnToSun}
-        ><img src={sunURL} /></button
+      <button class="quickSelectButtons" on:click={returnToSun}
+        ><img src={sunURL} alt="return to Sun" /></button
       >
-      <button class="constbtn"><img src={sunURL} on:click={() => {customLookAt(0,0,0)}}/></button>
+      <button class="quickSelectButtons"
+        ><img
+          alt="look at sun"
+          src={sunURL}
+          on:click={() => {
+            customLookAt(0, 0, 0);
+          }}
+        /></button
+      >
     </div>
   </div>
-  <!-- <select bind:value={selectedArray}>
-    <option value="">Tierkreiszeichen</option>
-    {#each Object.keys(arrays) as arrayName}
-      <option value={arrayName}>{arrayName}</option>
-    {/each}
-  </select>
 
-  <button on:click={returnToSun}>Sonne</button> -->
   <div
-    class="overlay"
-    id="singleStar-overlay"
+    class="infoBoxLookAtStar"
     style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
   >
     <h2>Stern: {selectedStar.id}</h2>
@@ -797,12 +748,21 @@ function submit() {
     <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
     <button on:click={jumpToStar}>Sprung</button>
   </div>
-  <div id='search'>
+
+  <div id="searchBar">
     <input bind:value={name} placeholder="enter name of star" />
     <button on:click={submit}>Submit</button>
   </div>
-  <button id="moin" style="background-color: {sliderValue ? 'red' : 'green'} !important; display: {centerAvailable ? 'block' : 'none'}" on:click={togglePov}>toggle</button>
+  <button
+    id="togglePovButton"
+    style="background-color: {sliderValue
+      ? 'red'
+      : 'green'} !important; display: {centerAvailable ? 'block' : 'none'}"
+    on:click={togglePov}>toggle</button
+  >
 </main>
+
+<!-- CSS -->
 
 <svelte:head>
   <style>
@@ -818,20 +778,20 @@ function submit() {
 </svelte:head>
 
 <style>
-  #search {
+  #searchBar {
     position: absolute;
-    top:50px;
-    left:10px;
-
+    top: 50px;
+    left: 10px;
   }
-  #moin {
+  #togglePovButton {
     position: absolute;
     top: 500px;
   }
-  .constbtn {
+  .quickSelectButtons {
     padding: 5px;
     background-color: transparent;
   }
+  /* icons */
   img {
     width: 25px;
     height: 25px;
@@ -845,7 +805,7 @@ function submit() {
     align-items: end;
     /* justify-content: center; */
   }
-  .overlay {
+  .infoBoxLookAtStar {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -854,8 +814,10 @@ function submit() {
     border: 2px solid black;
     border-radius: 8px;
     cursor: pointer;
+    border: 2px solid rgb(79, 204, 245);
   }
-  #container {
+
+  #zodiacSelectionContainer {
     display: flex;
     position: absolute;
     z-index: 20;
@@ -864,26 +826,20 @@ function submit() {
     left: 150px;
     transform: translateX(var(--translateX));
     transition: transform 0.5s ease;
+    /* border: 6px solid pink; */
   }
 
-  #selection-overlay {
+  #zodiacSelectionOverlay {
     display: flex;
     flex-direction: column;
     border-bottom-right-radius: 10px;
-  }
-
-  .overlay2 {
-    display: flex;
     background-color: rgba(255, 255, 255, 0.1);
     padding-left: 10px;
     padding-right: 10px;
+    border: 2px solid rgb(205, 242, 38);
   }
 
-  .glow {
-    box-shadow: 0 0 20px rgb(3, 164, 0); /* Anpassen für den gewünschten Effekt */
-  }
-
-  #options {
+  #quickSelectBar {
     padding-left: 10px;
     padding-right: 10px;
     background-color: rgba(255, 255, 255, 0.1);
@@ -893,17 +849,17 @@ function submit() {
     margin: 0;
     display: flex;
     gap: 10px;
+    /* border: 2px solid rgb(41, 44, 220); */
   }
 
-  #info-overlay {
+  #infoBoxSmall {
     position: absolute;
-    /* display: var(--displayInfoOverlay, none); */
+    /* display: var(--displaySmallBox, none); */
     right: 10px;
     top: 10px;
     /* display: flex; */
     flex-direction: column;
     align-content: center;
+    border: 2px solid rgb(57, 222, 77);
   }
-  
-  
 </style>
