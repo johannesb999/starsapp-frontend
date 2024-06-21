@@ -18,7 +18,7 @@
     y: 0,
     z: 0,
   };
-  let sliderValue = false;
+  let toggleValue = false;
   let selectedArray;
   let centerAvailable = false;
   let camera, scene, renderer, controls;
@@ -37,16 +37,22 @@
     ci: 0.9,
     mag: -26.7,
     dist: 0,
+    proper: "Sun",
+    hip: 1,
+    wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
   };
   let selectedStar = {
     id: 1,
     x: 0.000005,
-    dist: 0,
-    mag: -26.7,
     y: 0,
     z: 0,
     absmag: 4.85,
     ci: 0.9,
+    mag: -26.7,
+    dist: 0,
+    proper: "Sun",
+    hip: 1,
+    wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
   };
   let sunIgnored = false;
 
@@ -98,7 +104,7 @@
       .post(url, body)
       .then((response) => {
         scene.clear(); // Leert die Szene vor dem Hinzufügen neuer Sterne
-        console.log(response.data);
+        // console.log(response.data);
         const starsData = response.data
           .filter(
             (star) =>
@@ -118,6 +124,8 @@
             ra: star.ra,
             dec: star.dec,
             proper: star.proper,
+            wikiUrl: star.wikiUrl,
+            hip: star.hip,
           }));
         addStars(starsData);
         animate();
@@ -190,6 +198,8 @@
         mag: star.mag,
         dist: star.dist,
         proper: star.proper,
+        hip: star.hip,
+        wikiUrl: star.wikiUrl,
       }; // Daten anhängen
       scene.add(sphere);
     });
@@ -325,7 +335,11 @@
       z: 0,
       absmag: 4.85,
       ci: 0.9,
+      proper: "Sun",
+      hip: 1,
+      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
     };
+
     if (lastRemovedStar != null) addStars([lastRemovedStar]);
     lastRemovedStar = {
       id: 1,
@@ -336,12 +350,17 @@
       z: 0,
       absmag: 4.85,
       ci: 0.9,
+      proper: "Sun",
+      hip: 1,
+      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
     };
-    console.log(scene.children);
+
+    console.log("lastRemovedStar", lastRemovedStar);
+    // console.log(scene.children);
     const sce = scene.children.reverse();
     const sun = sce.find((child) => {
       console.log("-");
-      console.log(child);
+      // console.log(child);
       if (child.userData.starData.id === 1) console.log("hit");
       return child.userData.starData && child.userData.starData.id === 1;
     });
@@ -349,7 +368,7 @@
     disposeMaterial(sun);
     if (centerAvailable)
       customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
-    sliderValue = false;
+    toggleValue = false;
   }
 
   function getColorByCI(B_V) {
@@ -447,7 +466,7 @@
     const starToRemove = sce.find((child) => {
       if (child.type === "Mesh") {
         console.log("-");
-        console.log(child);
+        // console.log(child);
         if (child.userData.starData.id === selectedStar.id) console.log("hit");
         return (
           child.userData.starData &&
@@ -470,7 +489,7 @@
       disposeMaterial(selectedStar.object);
     }
     if (lastRemovedStar != null) {
-      console.log("adding Stars", lastRemovedStar);
+      // console.log("adding Stars", lastRemovedStar);
       addStars([lastRemovedStar]);
     }
     if (selectedStar == lastRemovedStar) {
@@ -492,12 +511,12 @@
     lineGroup.clear(); // Löscht nur die Linien in der Gruppe
     console.log(arrayName);
     let array = arrays[arrayName];
-    console.log(array);
-    console.log(removeDuplicates(array));
+    // console.log(array);
+    // console.log(removeDuplicates(array));
     selectedArray = removeDuplicates(array);
     centerKoords = array[0];
     centerAvailable = true;
-    console.log("centerkoords", centerKoords);
+    // console.log("centerkoords", centerKoords);
     if (array) {
       for (let i = 1; i < array.length - 1; i++) {
         addLine(array[i], array[i + 1]);
@@ -518,6 +537,7 @@
       end.z,
       end.x,
     ]);
+
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     let color = Math.floor(Math.random() * 0xffffff);
     let material = new THREE.LineBasicMaterial({ color: color });
@@ -527,18 +547,13 @@
     // console.log(center);
   }
 
+  // Aktuelle Position der Kamera speichern
   function moveToConstellation(newTarget) {
-    // Aktuelle Position der Kamera speichern
-
-    // Setze das neue Ziel für die OrbitControls
-    controls.target.copy(newTarget);
+    controls.target.copy(newTarget); // Setze das neue Ziel für die OrbitControls
 
     // Setze die Kameraposition zurück, um sicherzustellen, dass die Kamera nicht bewegt wird
-
     // camera.position.set(0, 0, 0.00005);
-
-    // Notwendig, um die Änderungen zu verarbeiten
-    controls.update();
+    controls.update(); // Notwendig, um die Änderungen zu verarbeiten
   }
 
   function removeDuplicates(array) {
@@ -572,7 +587,7 @@
 
   function showInfo(element) {
     // selectedArray = element;
-    sliderValue = false;
+    toggleValue = false;
     updateLines(element);
     infoContent = element;
     showInfoOverlay = true;
@@ -652,8 +667,8 @@
 
   function togglePov() {
     //false == Pov-pov && true == orbit
-    sliderValue = !sliderValue;
-    if (sliderValue === true) {
+    toggleValue = !toggleValue;
+    if (toggleValue === true) {
       console.log("using  Orbit");
       moveToConstellation(
         new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x)
@@ -679,12 +694,33 @@
         );
       }
     });
-    console.log(starResult);
+    // console.log(starResult);
     //hier auf Stern ausrichten
   }
 
   import svgURL from "./assets/constel.svg";
   import sunURL from "./assets/sun.svg";
+
+  let headerIndex = 0;
+  const headerMappings = [
+    { key: "id", label: "ID" },
+    { key: "proper", label: "Proper" },
+    { key: "hip", label: "HIP" },
+  ];
+
+  // Reaktive Berechnung für den Kopfzeileninhalt
+  $: currentHeader = `${headerMappings[headerIndex].label}: ${selectedStar[headerMappings[headerIndex].key] || "Nicht Verfügbar"}`;
+
+  function toggleHeaderDisplay() {
+    headerIndex = (headerIndex + 1) % headerMappings.length;
+  }
+  // lastRemovedStar
+  // Reaktive Berechnung für den Kopfzeileninhalt
+  $: currentHeaderLastRemoved = `${headerMappings[headerIndex].label}: ${lastRemovedStar[headerMappings[headerIndex].key] || "Nicht Verfügbar"}`;
+
+  function toggleHeaderDisplayLastRemoved() {
+    headerIndex = (headerIndex + 1) % headerMappings.length;
+  }
 </script>
 
 <!-- HTML -->
@@ -743,10 +779,22 @@
     class="infoBoxLookAtStar"
     style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
   >
-    <h2>Stern: {selectedStar.id}</h2>
+    <h2 on:click={toggleHeaderDisplay}>{currentHeader}</h2>
+
+    <!-- <h2>Stern: {selectedStar.hip}</h2> -->
     <p>Magnitude: {selectedStar.mag}</p>
     <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
+    <p>Farbindex: {selectedStar.ci}</p>
     <button on:click={jumpToStar}>Sprung</button>
+  </div>
+
+  <div
+    class="infoBoxPosition"
+    style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
+  >
+    <h2 on:click={toggleHeaderDisplayLastRemoved}>{currentHeaderLastRemoved}</h2>
+
+    <!-- <h2>Stern: {lastRemovedStar.id}</h2> -->
   </div>
 
   <div id="searchBar">
@@ -755,7 +803,7 @@
   </div>
   <button
     id="togglePovButton"
-    style="background-color: {sliderValue
+    style="background-color: {toggleValue
       ? 'red'
       : 'green'} !important; display: {centerAvailable ? 'block' : 'none'}"
     on:click={togglePov}>toggle</button
@@ -783,19 +831,23 @@
     top: 50px;
     left: 10px;
   }
+
   #togglePovButton {
     position: absolute;
     top: 500px;
   }
+
   .quickSelectButtons {
     padding: 5px;
     background-color: transparent;
   }
+
   /* icons */
   img {
     width: 25px;
     height: 25px;
   }
+
   main {
     position: absolute;
     width: 100%;
@@ -805,6 +857,7 @@
     align-items: end;
     /* justify-content: center; */
   }
+
   .infoBoxLookAtStar {
     position: absolute;
     top: 10px;
@@ -813,8 +866,24 @@
     padding: 10px;
     border: 2px solid black;
     border-radius: 8px;
-    cursor: pointer;
+    /* cursor: pointer; */
     border: 2px solid rgb(79, 204, 245);
+    text-align: left; /* Add this line to align the content to the left */
+  }
+
+  .infoBoxPosition {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border: 2px solid rgb(187, 79, 245);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 100;
+    max-height: 100px;
+    max-width: 500px;
   }
 
   #zodiacSelectionContainer {
