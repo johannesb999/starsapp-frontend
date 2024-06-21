@@ -539,7 +539,7 @@
     ]);
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    let color = Math.floor(Math.random() * 0xffffff);
+    let color = 0xffff; //Math.floor(Math.random() * 0xffffff);
     let material = new THREE.LineBasicMaterial({ color: color });
     let line = new THREE.Line(geometry, material);
     lineGroup.add(line); // Füge die Linie zur Gruppe hinzu
@@ -752,26 +752,50 @@
       <button class="quickSelectButtons" on:click={() => showInfo("Widder")}
         ><img src={svgURL} alt="Widder" /></button
       >
+      <button class="quickSelectButtons" on:click={() => showInfo("leoLines")}
+        ><img src={svgURL} alt="leoLines" /></button
+      >
+      <button class="quickSelectButtons" on:click={() => showInfo("Zwilling")}
+        ><img src={svgURL} alt="Zwilling" /></button
+      >
+      <button class="quickSelectButtons" on:click={() => showInfo("Skorpion")}
+        ><img src={svgURL} alt="Skorpion" /></button
+      >
+      <button class="quickSelectButtons" on:click={() => showInfo("Fische")}
+        ><img src={svgURL} alt="Fische" /></button
+      >
+      <button class="quickSelectButtons" on:click={() => showInfo("taurus")}
+        ><img src={svgURL} alt="taurus" /></button
+      >
+      <button class="quickSelectButtons" on:click={() => showInfo("Cancer")}
+        ><img src={svgURL} alt="Cancer" /></button
+      >
+      <button class="quickSelectButtons" on:click={() => showInfo("virgo")}
+        ><img src={svgURL} alt="virgo" /></button
+      >
+      <button class="quickSelectButtons" on:click={() => showInfo("libra")}
+        ><img src={svgURL} alt="libra" /></button
+      >
+      <button
+        class="quickSelectButtons"
+        on:click={() => showInfo("SagittariusSchütze")}
+        ><img src={svgURL} alt="SagittariusSchütze" /></button
+      >
     </div>
 
     <div id="quickSelectBar">
       <button
         class="quickSelectButtons"
         on:click={togglezodiacSelectionContainer}
-        ><img src={svgURL} alt="non-visible" /></button
       >
-      <button class="quickSelectButtons" on:click={returnToSun}
-        ><img src={sunURL} alt="return to Sun" /></button
-      >
-      <button class="quickSelectButtons"
-        ><img
-          alt="look at sun"
-          src={sunURL}
-          on:click={() => {
-            customLookAt(0, 0, 0);
-          }}
-        /></button
-      >
+        <img src={svgURL} alt="Toggle visibility" />
+      </button>
+      <button class="quickSelectButtons" on:click={returnToSun}>
+        <img src={sunURL} alt="Return to Sun" />
+      </button>
+      <button class="quickSelectButtons" on:click={() => customLookAt(0, 0, 0)}>
+        <img src={sunURL} alt="Look at Sun" />
+      </button>
     </div>
   </div>
 
@@ -779,20 +803,40 @@
     class="infoBoxLookAtStar"
     style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
   >
-    <h2 on:click={toggleHeaderDisplay}>{currentHeader}</h2>
+    <button
+      class="headerButton"
+      on:click={toggleHeaderDisplay}
+      on:keydown={(event) => event.key === "Enter" && toggleHeaderDisplay()}
+    >
+      {currentHeader}
+    </button>
 
     <!-- <h2>Stern: {selectedStar.hip}</h2> -->
     <p>Magnitude: {selectedStar.mag}</p>
     <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
     <p>Farbindex: {selectedStar.ci}</p>
-    <button on:click={jumpToStar}>Sprung</button>
+    <p>Leuchtkraft: {selectedStar.absmag}</p>
+
+    <button id="jumpButton" on:click={jumpToStar}>Sprung</button>
+    <button
+      id="wikiLinkButton"
+      on:click={() => window.open(selectedStar.wikiUrl, "_blank")}
+      >Wikipedia</button
+    >
   </div>
 
   <div
     class="infoBoxPosition"
     style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
   >
-    <h2 on:click={toggleHeaderDisplayLastRemoved}>{currentHeaderLastRemoved}</h2>
+    <button
+      class="headerButton"
+      on:click={toggleHeaderDisplayLastRemoved}
+      on:keydown={(event) =>
+        event.key === "Enter" && toggleHeaderDisplayLastRemoved()}
+    >
+      {currentHeaderLastRemoved}
+    </button>
 
     <!-- <h2>Stern: {lastRemovedStar.id}</h2> -->
   </div>
@@ -801,13 +845,14 @@
     <input bind:value={name} placeholder="enter name of star" />
     <button on:click={submit}>Submit</button>
   </div>
+
   <button
     id="togglePovButton"
-    style="background-color: {toggleValue
-      ? 'red'
-      : 'green'} !important; display: {centerAvailable ? 'block' : 'none'}"
-    on:click={togglePov}>toggle</button
+    style="display: {centerAvailable ? 'block' : 'none'}"
+    on:click={togglePov}
   >
+    {toggleValue ? "Orbit" : "POV"}
+  </button>
 </main>
 
 <!-- CSS -->
@@ -826,15 +871,43 @@
 </svelte:head>
 
 <style>
+  /* CSS */
+
   #searchBar {
     position: absolute;
     top: 50px;
     left: 10px;
   }
-
+  #wikiLinkButton {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+  #jumpButton {
+    background-color: #cccccc;
+    border: none;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
   #togglePovButton {
     position: absolute;
-    top: 500px;
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
   }
 
   .quickSelectButtons {
