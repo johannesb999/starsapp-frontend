@@ -42,6 +42,7 @@ export const arrays = {
     { x: -0.785, y: 43.678, z: 18.781 },
   ],
   Widder: [
+    "https://example.com/steinbock",
     { x: 26.385749999999998, y: 17.72025, z: 13.57625 },
     {
       _id: "663b7e1c2bdcc11befd4a1a5",

@@ -373,7 +373,7 @@
     };
 
     console.log("lastRemovedStar", lastRemovedStar);
-    // console.log(scene.children);
+    console.log(scene.children);
     const sce = scene.children.reverse();
     const sun = sce.find((child) => {
       if (child.type === "Mesh") {
@@ -431,8 +431,8 @@
   function getIntensityByMag(mag) {
     const minMag = 0; // Minimal erwarteter 'mag'-Wert
     const maxMag = 10; // Maximal sinnvoller 'mag'-Wert für diese Skala
-    const minIntensity = 0.5; // Minimale Intensität
-    const maxIntensity = 2; // Maximale Intensität
+    const minIntensity = 1; // Minimale Intensität
+    const maxIntensity = 2.5; // Maximale Intensität
 
     // Skaliere 'mag' auf den Intensitätsbereich
     if (mag > maxMag) mag = maxMag; // Begrenze den 'mag'-Wert, um Überintensitäten zu vermeiden
@@ -529,18 +529,21 @@
   //   updateLines(selectedArray);
   // }
 
+  let zodiacWiki = '';
   function updateLines(arrayName) {
     lineGroup.clear(); // Löscht nur die Linien in der Gruppe
     console.log(arrayName);
     let array = arrays[arrayName];
-    // console.log(array);
+    console.log(array);
+    zodiacWiki = array[0];
     // console.log(removeDuplicates(array));
     selectedArray = removeDuplicates(array);
-    centerKoords = array[0];
+    // console.log(selectedArray);
+    centerKoords = array[1];
     centerAvailable = true;
     // console.log("centerkoords", centerKoords);
     if (array) {
-      for (let i = 1; i < array.length - 1; i++) {
+      for (let i = 2; i < array.length - 2; i++) {
         addLine(array[i], array[i + 1]);
       }
       customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
@@ -826,7 +829,7 @@
     let targetCoordinates = adjustCoordinatesForSceneRotation(x, y, z);
     const controlPosition = camera.position;
     // console.log(CameraPosition);
-    // console.log("Kameraposition:", camera?.position.y);
+    console.log("Kameraposition:", camera?.position);
     console.log("Ziel der OrbitControls:", controls?.target);
 
     let dirVector = {
@@ -858,49 +861,49 @@
 
 
 
-//   async function lookAtSun() {
-//     const center = new THREE.Vector3(0, 0, 0); // Zentralpunkt, der betrachtet wird
-//     const distance = camera.position.distanceTo(center); // Distanz von der Kamera zum Zentrum
-//     const sce = scene.children.reverse();
-//     const sun = sce.find((child) => {
-//       if (child.type === "Mesh") {
-//         console.log("-");
-//         // console.log(child);
-//         if (child.userData.starData.id === 1) console.log("hit");
-//         return (child.userData.starData && child.userData.starData.id === 1);
-//       }
-//     });
+  async function lookAtSun() {
+    const center = new THREE.Vector3(0, 0, 0); // Zentralpunkt, der betrachtet wird
+    const distance = camera.position.distanceTo(center); // Distanz von der Kamera zum Zentrum
+    const sce = scene.children.reverse();
+    const sun = sce.find((child) => {
+      if (child.type === "Mesh") {
+        console.log("-");
+        // console.log(child);
+        if (child.userData.starData.id === 1) console.log("hit");
+        return (child.userData.starData && child.userData.starData.id === 1);
+      }
+    });
     
-//     console.log(sun);
-//     if (distance > 1 && sun === undefined) {
-//       console.log(
-//         "Kamera ist mehr als 10 Einheiten vom Zentrum entfernt. Aktion wird durchgeführt."
-//       );
-//       const Sonne = {
-//       id: 1,
-//       x: 0.000005,
-//       dist: 0,
-//       mag: -26.7,
-//       y: 0,
-//       z: 0,
-//       absmag: 4.85,
-//       ci: 0.9,
-//       proper: "Sun",
-//       hip: 1,
-//       wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
-//     };
-//     addStars([Sonne]);
-//     lastRemovedStar = null;
-//   } else if(distance > 1 && sun) {
-//     console.log(
-//       "Kamera befindet sich außerhalb des Radius von 10 Einheiten um das Zentrum, aber Sonne existiert bereits."
-//     );
-//     // Optional: Führe eine andere Aktion aus oder mache nichts
-//   } else {
-//     console.log("Kamera befindet sich innerhalb des Radius von 10 Einheiten um das Zentrum"); 
-//   }
-//   customLookAtControls(0, 0, 0);
-// }
+    console.log(sun);
+    if (distance > 1 && sun === undefined) {
+      console.log(
+        "Kamera ist mehr als 10 Einheiten vom Zentrum entfernt. Aktion wird durchgeführt."
+      );
+      const Sonne = {
+      id: 1,
+      x: 0.000005,
+      dist: 0,
+      mag: -26.7,
+      y: 0,
+      z: 0,
+      absmag: 4.85,
+      ci: 0.9,
+      proper: "Sun",
+      hip: 1,
+      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
+    };
+    addStars([Sonne]);
+    lastRemovedStar = null;
+  } else if(distance > 1 && sun) {
+    console.log(
+      "Kamera befindet sich außerhalb des Radius von 10 Einheiten um das Zentrum, aber Sonne existiert bereits."
+    );
+    // Optional: Führe eine andere Aktion aus oder mache nichts
+  } else {
+    console.log("Kamera befindet sich innerhalb des Radius von 10 Einheiten um das Zentrum"); 
+  }
+  customLookAtControls(0, 0, 0);
+}
 </script>
 
 <!-- HTML -->
@@ -913,6 +916,7 @@
     <!-- Stellen Sie sicher, dass alle Inhalte hier innerhalb sind -->
     <div class="zodiacStarLinksHeader">{infoContent}</div>
     {#if selectedArray && selectedArray.length > 0}
+    <p>{zodiacWiki}</p>
       {#each selectedArray as star}
         <button class="jumpToStar2Button" on:click={() => jumpToStar2(star)}>
           {star.id}
@@ -992,6 +996,7 @@
       <button class="quickSelectButtons" on:click={returnToSun}>
         <img class="quickSelectIcons" src={Erde} alt="Return to Sun" />
       </button>
+      <!-- <button class="quickSelectButtons" on:click={lookAtSun}> -->
       <button class="quickSelectButtons" on:click={() => customLookAt(0,0,0)}>
         <img class="quickSelectIcons" src={ErdeMitAuge} alt="Look at Sun" />
       </button>
