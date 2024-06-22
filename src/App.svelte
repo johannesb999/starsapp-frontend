@@ -242,9 +242,9 @@
 
     const meshObjects = [];
     scene.traverse(function (object) {
-        if (object instanceof THREE.Mesh) {
-            meshObjects.push(object);
-        }
+      if (object instanceof THREE.Mesh) {
+        meshObjects.push(object);
+      }
     });
 
     // Berechnen von Objekten, die vom Raycaster geschnitten werden
@@ -254,11 +254,11 @@
       console.log("click registered");
       let firstObject = intersects[0].object;
       if (firstObject.userData.starData) {
-        console.log(firstObject.userData.starData);
         selectedStar = {
           ...firstObject.userData.starData,
           object: firstObject,
         };
+        console.log(selectedStar);
         showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
         showzodiacInfosBox = false;
       }
@@ -290,13 +290,13 @@
       z: newPosition.z,
       duration: 2,
     });
-    if(centerAvailable) {
-      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x)
+    if (centerAvailable) {
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
     } else {
       customLookAt(0, 0, 0);
     }
 
-    if(selectedStar != lastRemovedStar) {
+    if (selectedStar != lastRemovedStar) {
       if (selectedStar.object) {
         scene.remove(selectedStar.object);
         disposeMaterial(selectedStar.object);
@@ -335,7 +335,7 @@
     // OrbitControls neu ausrichten
     controls.target.copy(newPosition);
     controls.update();
-    
+
     await gsap.to(camera.position, {
       x: newPosition.x,
       y: newPosition.y,
@@ -376,15 +376,18 @@
     // console.log(scene.children);
     const sce = scene.children.reverse();
     const sun = sce.find((child) => {
+      if (child.type === "Mesh") {
       console.log("-");
       // console.log(child);
       if (child.userData.starData.id === 1) console.log("hit");
       return child.userData.starData && child.userData.starData.id === 1;
+      }
     });
     scene.remove(sun);
     disposeMaterial(sun);
-    if (centerAvailable) customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
-    else customLookAt(0,0,0);
+    if (centerAvailable)
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+    else customLookAt(0, 0, 0);
     toggleValue = false;
   }
 
@@ -501,8 +504,7 @@
     // const a = new THREE.Vector3( 0, 0, 0 );
     customLookAt(0, 0, 0);
 
-    if(selectedStar != lastRemovedStar) {
-
+    if (selectedStar != lastRemovedStar) {
       if (starToRemove) {
         scene.remove(starToRemove);
         disposeMaterial(starToRemove);
@@ -630,7 +632,6 @@
     console.log("hide info");
   }
 
-
   function adjustCoordinatesForSceneRotation(x, y, z) {
     const angle = THREE.MathUtils.degToRad(337.5); // Negative für Drehung gegen den Uhrzeigersinn
     const cos = Math.cos(angle);
@@ -642,7 +643,7 @@
     const newZ = z; // Z bleibt unverändert
 
     return { x: newX, y: newY, z: newZ };
-}
+  }
 
   async function customLookAt(x, y, z) {
     let targetCoordinates = adjustCoordinatesForSceneRotation(x, y, z);
@@ -656,7 +657,7 @@
       y: targetCoordinates.y - controlPosition.y,
       z: targetCoordinates.z - controlPosition.z,
     };
-    
+
     let length = Math.sqrt(
       dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2
     );
@@ -720,9 +721,17 @@
     toggleValue = !toggleValue;
     if (toggleValue === true) {
       console.log("using  Orbit");
-      let targetCoordinates = adjustCoordinatesForSceneRotation(centerKoords.y, centerKoords.z, centerKoords.x);
+      let targetCoordinates = adjustCoordinatesForSceneRotation(
+        centerKoords.y,
+        centerKoords.z,
+        centerKoords.x
+      );
       moveToConstellation(
-        new THREE.Vector3(targetCoordinates.x, targetCoordinates.y, targetCoordinates.z)
+        new THREE.Vector3(
+          targetCoordinates.x,
+          targetCoordinates.y,
+          targetCoordinates.z
+        )
       );
     } else {
       console.log("using POV");
@@ -766,7 +775,7 @@
   import Teleskop from "./assets/Teleskop.svg";
   import Lupe from "./assets/Lupe.svg";
   import Erde from "./assets/Erde.svg";
-  import ErdeMitAuge from './assets/Erde_mit_Auge.svg'
+  import ErdeMitAuge from "./assets/Erde_mit_Auge.svg";
 
   let headerIndex = 0;
   const headerMappings = [
@@ -784,9 +793,9 @@
     ? `Name: ${selectedStar.proper}`
     : `HIP-Katalog: ${selectedStar.hip || "Nicht Verfügbar"}`;
   // lastRemovedStar
-  $: currentHeaderLastRemoved = lastRemovedStar.proper
-    ? `Aktuell auf ${lastRemovedStar.proper}`
-    : `HIP-Katalog: ${lastRemovedStar.hip || "Nicht Verfügbar"}`;
+  $: currentHeaderLastRemoved = lastRemovedStar?.proper
+    ? `Aktuell auf ${lastRemovedStar?.proper}`
+    : `HIP-Katalog: ${lastRemovedStar?.hip || "Nicht Verfügbar"}`;
 
   function toggleinfoBoxHeaderLastRemoved() {
     headerIndex = (headerIndex + 1) % headerMappings.length;
@@ -811,6 +820,87 @@
       window.removeEventListener("click", handleOutsideClick);
     }
   }
+
+
+  async function customLookAtControls(x, y, z) {
+    let targetCoordinates = adjustCoordinatesForSceneRotation(x, y, z);
+    const controlPosition = camera.position;
+    // console.log(CameraPosition);
+    // console.log("Kameraposition:", camera?.position.y);
+    console.log("Ziel der OrbitControls:", controls?.target);
+
+    let dirVector = {
+      x: targetCoordinates.x - controlPosition.x,
+      y: targetCoordinates.y - controlPosition.y,
+      z: targetCoordinates.z - controlPosition.z,
+    };
+
+    let length = Math.sqrt(
+      dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2
+    );
+
+    dirVector.x /= length;
+    dirVector.y /= length;
+    dirVector.z /= length;
+
+    const distance = 0.01;
+
+    let newPoint2 = {
+      x: controlPosition.x + dirVector.x * distance,
+      y: controlPosition.y + dirVector.y * distance,
+      z: controlPosition.z + dirVector.z * distance,
+    };
+    console.log(newPoint2);
+    controls.target.copy(newPoint2.y, newPoint2.z, newPoint2.x);
+    controls.update();
+  }
+
+
+
+
+//   async function lookAtSun() {
+//     const center = new THREE.Vector3(0, 0, 0); // Zentralpunkt, der betrachtet wird
+//     const distance = camera.position.distanceTo(center); // Distanz von der Kamera zum Zentrum
+//     const sce = scene.children.reverse();
+//     const sun = sce.find((child) => {
+//       if (child.type === "Mesh") {
+//         console.log("-");
+//         // console.log(child);
+//         if (child.userData.starData.id === 1) console.log("hit");
+//         return (child.userData.starData && child.userData.starData.id === 1);
+//       }
+//     });
+    
+//     console.log(sun);
+//     if (distance > 1 && sun === undefined) {
+//       console.log(
+//         "Kamera ist mehr als 10 Einheiten vom Zentrum entfernt. Aktion wird durchgeführt."
+//       );
+//       const Sonne = {
+//       id: 1,
+//       x: 0.000005,
+//       dist: 0,
+//       mag: -26.7,
+//       y: 0,
+//       z: 0,
+//       absmag: 4.85,
+//       ci: 0.9,
+//       proper: "Sun",
+//       hip: 1,
+//       wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
+//     };
+//     addStars([Sonne]);
+//     lastRemovedStar = null;
+//   } else if(distance > 1 && sun) {
+//     console.log(
+//       "Kamera befindet sich außerhalb des Radius von 10 Einheiten um das Zentrum, aber Sonne existiert bereits."
+//     );
+//     // Optional: Führe eine andere Aktion aus oder mache nichts
+//   } else {
+//     console.log("Kamera befindet sich innerhalb des Radius von 10 Einheiten um das Zentrum"); 
+//   }
+//   customLookAtControls(0, 0, 0);
+// }
 </script>
 
 <!-- HTML -->
@@ -902,7 +992,7 @@
       <button class="quickSelectButtons" on:click={returnToSun}>
         <img class="quickSelectIcons" src={Erde} alt="Return to Sun" />
       </button>
-      <button class="quickSelectButtons" on:click={() => customLookAt(0, 0, 0)}>
+      <button class="quickSelectButtons" on:click={() => customLookAt(0,0,0)}>
         <img class="quickSelectIcons" src={ErdeMitAuge} alt="Look at Sun" />
       </button>
       <button class="quickSelectButtons" on:click={toggleSearch}>
@@ -1020,7 +1110,12 @@
   }
 
   .quickSelectButtons:hover {
-    background-color: rgba(255, 255, 255, 0.2); /* Hervorhebung beim Darüberfahren */
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    ); /* Hervorhebung beim Darüberfahren */
   }
 
   /* icons */
@@ -1071,7 +1166,7 @@
 
   :focus {
     outline: none;
-}
+  }
 
   .zodiacButtons:hover {
     background-color: rgba(
@@ -1178,7 +1273,7 @@
     display: flex;
     position: absolute;
     z-index: 1000;
-    width: 150px; 
+    width: 150px;
     top: 0px;
     left: 140px;
     transform: translateX(var(--translateX));
@@ -1198,12 +1293,12 @@
     border-bottom-right-radius: 8px;
     -webkit-backdrop-filter: blur(4px);
     max-height: 97vh;
-    overflow-y: auto; 
+    overflow-y: auto;
   }
 
   #zodiacSelectionOverlay::-webkit-scrollbar {
-  display: none; /* Für WebKit-Browser wie Chrome und Safari */
-}
+    display: none; /* Für WebKit-Browser wie Chrome und Safari */
+  }
   /* ende sternzeichen auswahl Kontainer ende */
 
   #zodiacInfosBox {
