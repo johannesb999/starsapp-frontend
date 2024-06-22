@@ -585,6 +585,7 @@
     // Automatisch die zodiacInfosBox ausblenden, wenn der Container geschlossen wird
     if (!showZodiacSelection) {
       showzodiacInfosBox = false;
+      resetTest();
     }
   }
 
@@ -775,31 +776,27 @@
 
 <!-- HTML -->
 <main>
-  <div id="zodiacInfosBox" class="overlay" style=  "display: {showzodiacInfosBox ? 'flex' : 'none'} !important; border: 2px solid pink;">
-    <!-- Stellen Sie sicher, dass alle Inhalte hier innerhalb sind -->
-    <div>Informationen zum Sternzeichen</div>
-    <div class="zodiacStarLinks" style="border: 5px solid red;">{infoContent}</div>
-    
-    {#if selectedArray && selectedArray.length > 0}
-    {#each selectedArray as star}
-    <button style="border: 3px solid pink;" on:click={() => jumpToStar2(star)}>
-      {star.id}
-    </button>
-    {/each}
-    {/if}
-  </div>
-  <!-- <div
+  <div
     id="zodiacInfosBox"
     class="overlay"
     style="display: {showzodiacInfosBox ? 'flex' : 'none'} !important;"
-  ></div> -->
-  <!-- zodiac -->
-  <div
-  id="zodiacSelectionContainer"
-  style="--translateX: {showZodiacSelection ? '0%' : '-100%'};"
->
-    <div id="zodiacSelectionOverlay">
+  >
+    <!-- Stellen Sie sicher, dass alle Inhalte hier innerhalb sind -->
+    <div class="zodiacStarLinksHeader">{infoContent}</div>
+    {#if selectedArray && selectedArray.length > 0}
+      {#each selectedArray as star}
+        <button class="jumpToStar2Button" on:click={() => jumpToStar2(star)}>
+          {star.id}
+        </button>
+      {/each}
+    {/if}
+  </div>
 
+  <div
+    id="zodiacSelectionContainer"
+    style="--translateX: {showZodiacSelection ? '0%' : '-100%'};"
+  >
+    <div id="zodiacSelectionOverlay">
       <button class="zodiacButtons" on:click={() => showInfo("Steinbock")}
         ><img class="svgIcon" src={Steinbock} alt="Steinbock" />
         <span>Steinbock</span>
@@ -846,7 +843,7 @@
         <span>Schhütze</span>
       </button>
       <!-- more -->
-       <!-- ansicht in raster -->
+      <!-- ansicht in raster -->
     </div>
     <!-- <button class="quickSelectButtons" on:click={() => resetTest()}
       ><img class="svgIcon" src={constellation} alt="reset to sun" /></button
@@ -897,20 +894,13 @@
   </div>
 
   <div
-  id="zodiacInfosBox"
-  
-  style="display: {showzodiacInfosBox ? 'flex' : 'none'} !important;"
-></div>
-
-  <!-- <div
     class="infoBoxPosition"
     style="display: {showzodiacInfosBox ? 'none' : 'block'} !important;"
   >
-  
-  <div class="currentPosition">
-    {currentHeaderLastRemoved}
+    <div class="currentPosition">
+      {currentHeaderLastRemoved}
+    </div>
   </div>
-  </div> -->
 
   <div
     id="searchBar"
@@ -957,9 +947,6 @@
     /* justify-content: center; */
   }
 
-  
-
- 
   #togglePovButton {
     position: absolute;
     top: 3px;
@@ -1000,7 +987,7 @@
       0.2
     ); /* Hervorhebung beim Darüberfahren */
   }
-  
+
   /* icons */
   .quickSelectIcons {
     width: 35px;
@@ -1069,9 +1056,7 @@
     border: none;
   }
 
-
-  
-/* inhalt der Info box welche den Stern anzeigt den man anklickt */
+  /* inhalt der Info box welche den Stern anzeigt den man anklickt */
   .infoBoxLookAtStarTitle {
     position: absolute;
     top: 10px;
@@ -1121,7 +1106,6 @@
   }
   /* ende inhalt der Info box welche den Stern anzeigt den man anklickt ende */
 
-
   /* infobox die aktuelle Position enzeigt */
   .infoBoxPosition {
     position: fixed;
@@ -1146,7 +1130,7 @@
     padding: 10px;
     color: white;
   }
-    /* ende infobox die aktuelle Position enzeigt ende */
+  /* ende infobox die aktuelle Position enzeigt ende */
 
   /* sternzeichen auswahl Kontainer */
   #zodiacSelectionContainer {
@@ -1171,30 +1155,43 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
-/* ende sternzeichen auswahl Kontainer ende */
+  /* ende sternzeichen auswahl Kontainer ende */
 
-#zodiacInfosBox {
-    position: fixed;
-    right: 0;
-    top: 50px;
-    width: 250px;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 10px;
+  #zodiacInfosBox {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     background-color: rgba(166, 166, 166, 0.093);
+    padding: 10px;
     border: 0.5px solid rgba(72, 72, 72, 0.248);
+    border-radius: 8px;
+    /* cursor: pointer; */
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    text-align: left; /* Add this line to align the content to the left */
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
   }
-  #zodiacInfosBox button {
-  padding: 10px;
-  margin: 5px;
-  width: calc(100% - 10px); /* Passt die Breite an, um innerhalb der Box zu bleiben */
-  background-color: #f0f0f0;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
 
+  .zodiacStarLinksHeader {
+    color: white;
+    font-size: 28px;
+  }
 
-
+  .jumpToStar2Button {
+    border-radius: 5px;
+    cursor: pointer;
+    gap: 5px;
+    background-color: #cccccc;
+    border: none;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
 </style>
