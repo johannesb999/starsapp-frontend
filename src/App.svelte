@@ -245,7 +245,6 @@
 
     if (intersects.length > 0) {
       console.log("click registered");
-      hideInfo();
       let firstObject = intersects[0].object;
       if (firstObject.userData.starData) {
         console.log(firstObject.userData.starData);
@@ -254,7 +253,11 @@
           object: firstObject,
         };
         console.log(selectedStar);
+        showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
       }
+    } else {
+      // Wenn kein Stern getroffen wird, die Info-Box ausblenden
+      showInfoBox = false;
     }
   }
   window.addEventListener("click", onMouseClick);
@@ -575,29 +578,30 @@
     centerAvailable = false;
   }
 
-  let translateX = "-100%"; // Zustand der X-Translation des zodiacSelectionContainers
+  let showZodiacSelection = false;
 
-  function togglezodiacSelectionContainer() {
-    translateX = translateX === "-100%" ? "-73%" : "-100%"; // Schaltet zwischen den Positionen um
+  function toggleZodiacSelectionContainer() {
+    showZodiacSelection = !showZodiacSelection; // Umschalten des Zustands
   }
 
-  let infoContent = ""; // Inhalt für das infoBoxSmall
-  let displaySmallBox = "none"; // Steuert die Anzeige des infoBoxSmalls
-  let showInfoOverlay = false;
+  let infoContent = ""; // Inhalt für das zodiacInfoBox
+  let displaySmallBox = "none"; // Steuert die Anzeige des zodiacInfoBoxs
+  let showZodiacInfoBox = false;
+  let showInfoBox = false; //steuert die Anzeige der lookAtStarInfoBox
 
   function showInfo(element) {
     // selectedArray = element;
     toggleValue = false;
     updateLines(element);
     infoContent = element;
-    showInfoOverlay = true;
-    displaySmallBox = "block"; // Zeigt das infoBoxSmall an
+    showZodiacInfoBox = true;
+    displaySmallBox = "block"; // Zeigt das zodiacInfoBox an
     console.log("show info");
   }
 
   function hideInfo() {
-    displaySmallBox = "none"; // Verbirgt das infoBoxSmall
-    showInfoOverlay = false;
+    displaySmallBox = "none"; // Verbirgt das zodiacInfoBox
+    showZodiacInfoBox = false;
   }
 
   function customLookAt(x, y, z) {
@@ -698,8 +702,23 @@
     //hier auf Stern ausrichten
   }
 
-  import svgURL from "./assets/constel.svg";
-  import sunURL from "./assets/sun.svg";
+  import constellation from "./assets/constel.svg";
+  import SunIcon from "./assets/sun.svg";
+  import Fische from "./assets/Fische.svg";
+  import Jungfrau from "./assets/Jungfrau.svg";
+  import Krebs from "./assets/Krebs.svg";
+  import Löwe from "./assets/Löwe.svg";
+  import Schütze from "./assets/Schütze.svg";
+  import Skorpion from "./assets/Skorpion.svg";
+  import Stier from "./assets/Stier.svg";
+  import Waage from "./assets/Waage.svg";
+  import Wassermann from "./assets/Wassermann.svg";
+  import Widder from "./assets/Widder.svg";
+  import Zwillinge from "./assets/Zwillinge.svg";
+  import Steinbock from "./assets/Steinbock.svg";
+  import Teleskop from "./assets/Teleskop.svg";
+  import Lupe from "./assets/Lupe.svg";
+  import Erde from "./assets/Erde.svg";
 
   let headerIndex = 0;
   const headerMappings = [
@@ -707,111 +726,149 @@
     { key: "proper", label: "Proper" },
     { key: "hip", label: "HIP" },
   ];
-
-  // Reaktive Berechnung für den Kopfzeileninhalt
-  $: currentHeader = `${headerMappings[headerIndex].label}: ${selectedStar[headerMappings[headerIndex].key] || "Nicht Verfügbar"}`;
-
-  function toggleHeaderDisplay() {
+  function toggleinfoBoxHeader() {
     headerIndex = (headerIndex + 1) % headerMappings.length;
   }
-  // lastRemovedStar
-  // Reaktive Berechnung für den Kopfzeileninhalt
-  $: currentHeaderLastRemoved = `${headerMappings[headerIndex].label}: ${lastRemovedStar[headerMappings[headerIndex].key] || "Nicht Verfügbar"}`;
 
-  function toggleHeaderDisplayLastRemoved() {
+  //infoBoxLookAtStarTitle
+  $: currentHeader = selectedStar.proper
+    ? `Name: ${selectedStar.proper}`
+    : `HIP-Katalog: ${selectedStar.hip || "Nicht Verfügbar"}`;
+  // lastRemovedStar
+  $: currentHeaderLastRemoved = lastRemovedStar.proper
+    ? `Aktuell auf ${lastRemovedStar.proper}`
+    : `HIP-Katalog: ${lastRemovedStar.hip || "Nicht Verfügbar"}`;
+
+  function toggleinfoBoxHeaderLastRemoved() {
     headerIndex = (headerIndex + 1) % headerMappings.length;
+  }
+
+  let showSearch = false;
+  let searchRef;
+
+  function toggleSearch(event) {
+    showSearch = !showSearch;
+    event.stopPropagation(); // Verhindert das Auslösen von handleOutsideClick beim ersten Klick
+
+    if (showSearch) {
+      // Fügt einen Event-Listener hinzu, wenn die Suchleiste gezeigt wird
+      setTimeout(() => window.addEventListener("click", handleOutsideClick), 0);
+    }
+  }
+
+  function handleOutsideClick(event) {
+    if (searchRef && !searchRef.contains(event.target)) {
+      showSearch = false;
+      window.removeEventListener("click", handleOutsideClick);
+    }
   }
 </script>
 
 <!-- HTML -->
 <main>
+  {infoContent}
+
+  {#if selectedArray && selectedArray.length > 0}
+    {#each selectedArray as star}
+      <button on:click={() => jumpToStar2(star)}>
+        {star.id}
+      </button>
+    {/each}
+  {/if}
   <div
-    id="infoBoxSmall"
+    id="zodiacInfoBox"
     class="overlay"
-    style="display: {showInfoOverlay ? 'flex' : 'none'} !important;"
+    style="display: {showZodiacInfoBox ? 'flex' : 'none'} !important;"
+  ></div>
+  <!-- zodiac -->
+  <div
+    id="zodiacSelectionContainer"
+    style="--translateX: {showZodiacSelection ? '0%' : '-100%'};"
   >
-    {infoContent}
-
-    {#if selectedArray && selectedArray.length > 0}
-      {#each selectedArray as star}
-        <button on:click={() => jumpToStar2(star)}>
-          {star.id}
-        </button>
-      {/each}
-    {/if}
-  </div>
-
-  <div id="zodiacSelectionContainer" style="--translateX: {translateX};">
     <div id="zodiacSelectionOverlay">
-      <button class="quickSelectButtons" on:click={() => resetTest()}
-        ><img src={svgURL} alt="reset to sun" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("Wassermann")}
-        ><img src={svgURL} alt="Wassermann" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("Widder")}
-        ><img src={svgURL} alt="Widder" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("leoLines")}
-        ><img src={svgURL} alt="leoLines" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("Zwilling")}
-        ><img src={svgURL} alt="Zwilling" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("Skorpion")}
-        ><img src={svgURL} alt="Skorpion" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("Fische")}
-        ><img src={svgURL} alt="Fische" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("taurus")}
-        ><img src={svgURL} alt="taurus" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("Cancer")}
-        ><img src={svgURL} alt="Cancer" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("virgo")}
-        ><img src={svgURL} alt="virgo" /></button
-      >
-      <button class="quickSelectButtons" on:click={() => showInfo("libra")}
-        ><img src={svgURL} alt="libra" /></button
-      >
-      <button
-        class="quickSelectButtons"
-        on:click={() => showInfo("SagittariusSchütze")}
-        ><img src={svgURL} alt="SagittariusSchütze" /></button
-      >
+      <!-- <button class="quickSelectButtons" on:click={() => resetTest()}
+        ><img class="svgIcon" src={constellation} alt="reset to sun" /></button
+      > -->
+      <button class="zodiacButtons" on:click={() => showInfo("Steinbock")}
+        ><img class="svgIcon" src={Steinbock} alt="Steinbock" />
+        <span>Steinbock</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Wassermann")}
+        ><img class="svgIcon" src={Wassermann} alt="Wassermann" />
+        <span>Wassermann</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Fische")}
+        ><img class="svgIcon" src={Fische} alt="Fische" />
+        <span>Fische</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Widder")}
+        ><img class="svgIcon" src={Widder} alt="Widder" />
+        <span>Widder</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Stier")}
+        ><img class="svgIcon" src={Stier} alt="Stier" /> <span>Stier</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Zwillinge")}
+        ><img class="svgIcon" src={Zwillinge} alt="Zwillinge" />
+        <span>Zwillinge</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Krebs")}
+        ><img class="svgIcon" src={Krebs} alt="Krebs" /> <span>Krebs</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Löwe")}
+        ><img class="svgIcon" src={Löwe} alt="Löwe" /> <span>Löwe</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Jungfrau")}
+        ><img class="svgIcon" src={Jungfrau} alt="Jungfrau" />
+        <span>Jungfrau</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Waage")}
+        ><img class="svgIcon" src={Waage} alt="Waage" /> <span>Waage</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Skorpion")}
+        ><img class="svgIcon" src={Skorpion} alt="Skorpion" />
+        <span>Skorpion</span>
+      </button>
+      <!-- schlangenträger -->
+      <button class="zodiacButtons" on:click={() => showInfo("Schütze")}
+        ><img class="svgIcon" src={Schütze} alt="Schütze" />
+        <span>Schhütze</span>
+      </button>
+      <!-- more -->
+       <!-- ansicht in raster -->
     </div>
-
+    <!-- quickBar -->
     <div id="quickSelectBar">
       <button
         class="quickSelectButtons"
-        on:click={togglezodiacSelectionContainer}
+        on:click={toggleZodiacSelectionContainer}
       >
-        <img src={svgURL} alt="Toggle visibility" />
+        <img
+          class="quickSelectIcons"
+          src={constellation}
+          alt="Toggle visibility"
+        />
       </button>
       <button class="quickSelectButtons" on:click={returnToSun}>
-        <img src={sunURL} alt="Return to Sun" />
+        <img class="quickSelectIcons" src={Erde} alt="Return to Sun" />
       </button>
       <button class="quickSelectButtons" on:click={() => customLookAt(0, 0, 0)}>
-        <img src={sunURL} alt="Look at Sun" />
+        <img class="quickSelectIcons" src={SunIcon} alt="Look at Sun" />
+      </button>
+      <button class="quickSelectButtons" on:click={toggleSearch}>
+        <img class="quickSelectIcons" src={Lupe} alt="searchbar" />
       </button>
     </div>
   </div>
-
+  <!-- infobox -->
   <div
-    class="infoBoxLookAtStar"
-    style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
+    class="infoBoxLookAtStarTitle"
+    style="display: {showInfoBox ? 'block' : 'none'}; !important;"
   >
-    <button
-      class="headerButton"
-      on:click={toggleHeaderDisplay}
-      on:keydown={(event) => event.key === "Enter" && toggleHeaderDisplay()}
-    >
+    <div class="infoBoxHeader">
       {currentHeader}
-    </button>
-
-    <!-- <h2>Stern: {selectedStar.hip}</h2> -->
+    </div>
+    <!-- weitere infos -->
     <p>Magnitude: {selectedStar.mag}</p>
     <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
     <p>Farbindex: {selectedStar.ci}</p>
@@ -827,21 +884,20 @@
 
   <div
     class="infoBoxPosition"
-    style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
+    style="display: {showZodiacInfoBox ? 'none' : 'block'} !important;"
   >
-    <button
-      class="headerButton"
-      on:click={toggleHeaderDisplayLastRemoved}
-      on:keydown={(event) =>
-        event.key === "Enter" && toggleHeaderDisplayLastRemoved()}
-    >
+    <div class="currentPosition">
       {currentHeaderLastRemoved}
-    </button>
+    </div>
 
     <!-- <h2>Stern: {lastRemovedStar.id}</h2> -->
   </div>
 
-  <div id="searchBar">
+  <div
+    id="searchBar"
+    bind:this={searchRef}
+    style="display: {showSearch ? 'block' : 'none'};"
+  >
     <input bind:value={name} placeholder="enter name of star" />
     <button on:click={submit}>Submit</button>
   </div>
@@ -875,9 +931,29 @@
 
   #searchBar {
     position: absolute;
-    top: 50px;
-    left: 10px;
+    top: 75px;
+    left: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+
+  #searchBar input {
+    padding: 10px;
+    border: 2px solid #b7b7b7;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+
+  #searchBar button {
+    padding: 10px 20px;
+    background-color: #8a8a8a;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+  }
+
   #wikiLinkButton {
     background-color: transparent;
     border: none;
@@ -906,19 +982,56 @@
     position: absolute;
     top: 3px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: showZodiacSelection (-50%);
     z-index: 100;
   }
 
   .quickSelectButtons {
-    padding: 5px;
+    padding: 20px;
     background-color: transparent;
+    width: 100%;
+    margin-bottom: 5px;
+  }
+
+  .zodiacButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+  }
+
+  .zodiacButtons:hover {
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    ); /* Hervorhebung beim Darüberfahren */
+  }
+
+  .svgIcon {
+    width: 40px;
+    height: 40px;
+    transition: transform 0.3s ease;
+    transform-origin: left center;
+  }
+
+  .svgIcon:hover {
+    transform: scale(3) translateX(45px) translateY(5px);
   }
 
   /* icons */
-  img {
-    width: 25px;
-    height: 25px;
+  .quickSelectIcons {
+    width: 35px;
+    height: 35px;
   }
 
   main {
@@ -931,77 +1044,107 @@
     /* justify-content: center; */
   }
 
-  .infoBoxLookAtStar {
+  .infoBoxLookAtStarTitle {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(166, 166, 166, 0.093);
     padding: 10px;
-    border: 2px solid black;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
     border-radius: 8px;
     /* cursor: pointer; */
-    border: 2px solid rgb(79, 204, 245);
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
     text-align: left; /* Add this line to align the content to the left */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .infoBoxHeader {
+    font-size: 24px; /* Größere Schrift */
+    padding-bottom: 10px;
+    font-weight: bold;
+
+    color: white; /* Textfarbe */
+    text-align: left;
   }
 
   .infoBoxPosition {
     position: fixed;
-    bottom: 10px;
+    bottom: 0px;
     left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%);
+    background-color: rgba(166, 166, 166, 0.093);
     padding: 10px;
-    border: 2px solid rgb(187, 79, 245);
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
     border-radius: 8px;
     cursor: pointer;
     z-index: 100;
-    max-height: 100px;
-    max-width: 500px;
+    min-height: 75px;
+    min-width: 250px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .currentPosition {
+    font-size: 28px;
+    font-weight: bold;
+    padding: 10px;
+    color: white;
   }
 
   #zodiacSelectionContainer {
     display: flex;
     position: absolute;
-    z-index: 20;
-    width: auto;
+    z-index: 1000;
+    width: 150px;
     top: 0px;
-    left: 150px;
+    left: 0px;
     transform: translateX(var(--translateX));
     transition: transform 0.5s ease;
-    /* border: 6px solid pink; */
   }
 
   #zodiacSelectionOverlay {
     display: flex;
     flex-direction: column;
-    border-bottom-right-radius: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding-left: 10px;
-    padding-right: 10px;
-    border: 2px solid rgb(205, 242, 38);
+    background-color: rgba(166, 166, 166, 0.093);
+    padding: 10px;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    width: 100%;
+    left: 0px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   #quickSelectBar {
-    padding-left: 10px;
+    padding-left: 50px;
     padding-right: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(166, 166, 166, 0.093);
     color: white;
-    max-height: 40px;
-    border-bottom-right-radius: 10px;
-    margin: 0;
+    max-height: 70px;
+    /* border-bottom-right-radius: 10px; */
+    /* margin: 0; */
     display: flex;
     gap: 10px;
-    /* border: 2px solid rgb(41, 44, 220); */
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
-  #infoBoxSmall {
-    position: absolute;
-    /* display: var(--displaySmallBox, none); */
-    right: 10px;
-    top: 10px;
-    /* display: flex; */
-    flex-direction: column;
-    align-content: center;
-    border: 2px solid rgb(57, 222, 77);
+  #zodiacInfoBox {
+    position: fixed;
+    bottom: 0px;
+    right: 50%;
+    transform: translate(-50%);
+    background-color: rgba(166, 166, 166, 0.093);
+    padding: 10px;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 100;
+    min-height: 75px;
+    min-width: 250px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 </style>
