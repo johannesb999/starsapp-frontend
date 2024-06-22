@@ -78,7 +78,7 @@
     scene.rotation.z = THREE.MathUtils.degToRad(337.5);
 
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight - 1);
     document.body.appendChild(renderer.domElement); // Stellen Sie sicher, dass dies ausgeführt wird
     controls = new OrbitControls(camera, renderer.domElement);
 
@@ -240,8 +240,15 @@
     // Aktualisieren des Raycasters mit der Kamera und Mausposition
     raycaster.setFromCamera(mouse, camera);
 
+    const meshObjects = [];
+    scene.traverse(function (object) {
+        if (object instanceof THREE.Mesh) {
+            meshObjects.push(object);
+        }
+    });
+
     // Berechnen von Objekten, die vom Raycaster geschnitten werden
-    const intersects = raycaster.intersectObjects(scene.children);
+    const intersects = raycaster.intersectObjects(meshObjects);
 
     if (intersects.length > 0) {
       console.log("click registered");
@@ -252,8 +259,8 @@
           ...firstObject.userData.starData,
           object: firstObject,
         };
-        console.log(selectedStar);
         showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
+        showzodiacInfosBox = false;
       }
     } else {
       // Wenn kein Stern getroffen wird, die Info-Box ausblenden
@@ -283,23 +290,29 @@
       z: newPosition.z,
       duration: 2,
     });
-    customLookAt(0, 0, 0);
-
-    if (selectedStar.object) {
-      scene.remove(selectedStar.object);
-      disposeMaterial(selectedStar.object);
-    }
-    if (lastRemovedStar != null) {
-      console.log("adding Stars", lastRemovedStar);
-      addStars([lastRemovedStar]);
-    }
-    if (selectedStar == lastRemovedStar) {
-      console.log("nothing happens");
+    if(centerAvailable) {
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x)
     } else {
-      console.log("selectedStar", selectedStar);
-      console.log("lastRemovedStar", lastRemovedStar);
-      lastRemovedStar = null;
-      lastRemovedStar = selectedStar;
+      customLookAt(0, 0, 0);
+    }
+
+    if(selectedStar != lastRemovedStar) {
+      if (selectedStar.object) {
+        scene.remove(selectedStar.object);
+        disposeMaterial(selectedStar.object);
+      }
+      if (lastRemovedStar != null) {
+        console.log("adding Stars", lastRemovedStar);
+        addStars([lastRemovedStar]);
+      }
+      if (selectedStar == lastRemovedStar) {
+        console.log("nothing happens");
+      } else {
+        console.log("selectedStar", selectedStar);
+        console.log("lastRemovedStar", lastRemovedStar);
+        lastRemovedStar = null;
+        lastRemovedStar = selectedStar;
+      }
     }
   }
 
@@ -319,16 +332,17 @@
     console.log("button pressed");
     let newPosition = new THREE.Vector3(0.000005, 0, 0);
     console.log(newPosition);
-    await gsap.to(camera.position, {
-      x: newPosition.x,
-      y: newPosition.y,
-      z: newPosition.z + 0.01,
-      duration: 2,
-    }); // Etwas zurücksetzen, um den Stern zu betrachten
-
     // OrbitControls neu ausrichten
     controls.target.copy(newPosition);
     controls.update();
+    
+    await gsap.to(camera.position, {
+      x: newPosition.x,
+      y: newPosition.y,
+      z: newPosition.z,
+      duration: 2,
+    });
+
     selectedStar = {
       id: 1,
       x: 0.000005,
@@ -369,8 +383,8 @@
     });
     scene.remove(sun);
     disposeMaterial(sun);
-    if (centerAvailable)
-      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+    if (centerAvailable) customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+    else customLookAt(0,0,0);
     toggleValue = false;
   }
 
@@ -468,7 +482,7 @@
     const sce = scene.children.reverse();
     const starToRemove = sce.find((child) => {
       if (child.type === "Mesh") {
-        console.log("-");
+        // console.log("-");
         // console.log(child);
         if (child.userData.starData.id === selectedStar.id) console.log("hit");
         return (
@@ -487,23 +501,26 @@
     // const a = new THREE.Vector3( 0, 0, 0 );
     customLookAt(0, 0, 0);
 
-    if (selectedStar.object) {
-      scene.remove(selectedStar.object);
-      disposeMaterial(selectedStar.object);
-    }
-    if (lastRemovedStar != null) {
-      // console.log("adding Stars", lastRemovedStar);
-      addStars([lastRemovedStar]);
-    }
-    if (selectedStar == lastRemovedStar) {
-      console.log("nothing happens");
-    } else {
-      console.log("selectedStar", selectedStar);
-      lastRemovedStar = selectedStar;
+    if(selectedStar != lastRemovedStar) {
+
+      if (starToRemove) {
+        scene.remove(starToRemove);
+        disposeMaterial(starToRemove);
+      }
+      if (lastRemovedStar != null) {
+        // console.log("adding Stars", lastRemovedStar);
+        addStars([lastRemovedStar]);
+      }
+      if (selectedStar == lastRemovedStar) {
+        console.log("nothing happens");
+      } else {
+        console.log("selectedStar", selectedStar);
+        lastRemovedStar = selectedStar;
+      }
     }
 
-    scene.remove(starToRemove);
-    disposeMaterial(starToRemove);
+    // scene.remove(starToRemove);
+    // disposeMaterial(starToRemove);
   }
 
   // $: if (selectedArray) {
@@ -613,19 +630,33 @@
     console.log("hide info");
   }
 
-  function customLookAt(x, y, z) {
-    const CameraPosition = camera.position;
+
+  function adjustCoordinatesForSceneRotation(x, y, z) {
+    const angle = THREE.MathUtils.degToRad(337.5); // Negative für Drehung gegen den Uhrzeigersinn
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+
+    // Anwenden der Drehung
+    const newX = x * cos - y * sin;
+    const newY = x * sin + y * cos;
+    const newZ = z; // Z bleibt unverändert
+
+    return { x: newX, y: newY, z: newZ };
+}
+
+  async function customLookAt(x, y, z) {
+    let targetCoordinates = adjustCoordinatesForSceneRotation(x, y, z);
     const controlPosition = controls.target;
-    console.log(CameraPosition);
-    console.log("Kameraposition:", camera?.position.y);
+    // console.log(CameraPosition);
+    // console.log("Kameraposition:", camera?.position.y);
     console.log("Ziel der OrbitControls:", controls?.target);
 
     let dirVector = {
-      x: x - controlPosition.x,
-      y: y - controlPosition.y,
-      z: z - controlPosition.z,
+      x: targetCoordinates.x - controlPosition.x,
+      y: targetCoordinates.y - controlPosition.y,
+      z: targetCoordinates.z - controlPosition.z,
     };
-
+    
     let length = Math.sqrt(
       dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2
     );
@@ -641,8 +672,14 @@
       y: controlPosition.y - dirVector.y * distance,
       z: controlPosition.z - dirVector.z * distance,
     };
-    // console.log(newPoint2);
-    camera.position.set(newPoint2.x, newPoint2.y, newPoint2.z);
+    console.log(newPoint2);
+    await gsap.to(camera.position, {
+      x: newPoint2.x,
+      y: newPoint2.y,
+      z: newPoint2.z,
+      duration: 2,
+    });
+    // camera.position.set(newPoint2.x, newPoint2.y, newPoint2.z);
   }
 
   function changeToPov() {
@@ -683,8 +720,9 @@
     toggleValue = !toggleValue;
     if (toggleValue === true) {
       console.log("using  Orbit");
+      let targetCoordinates = adjustCoordinatesForSceneRotation(centerKoords.y, centerKoords.z, centerKoords.x);
       moveToConstellation(
-        new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x)
+        new THREE.Vector3(targetCoordinates.x, targetCoordinates.y, targetCoordinates.z)
       );
     } else {
       console.log("using POV");
@@ -728,6 +766,7 @@
   import Teleskop from "./assets/Teleskop.svg";
   import Lupe from "./assets/Lupe.svg";
   import Erde from "./assets/Erde.svg";
+  import ErdeMitAuge from './assets/Erde_mit_Auge.svg'
 
   let headerIndex = 0;
   const headerMappings = [
@@ -816,9 +855,9 @@
       <button class="zodiacButtons" on:click={() => showInfo("Stier")}
         ><img class="svgIcon" src={Stier} alt="Stier" /> <span>Stier</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Zwillinge")}
-        ><img class="svgIcon" src={Zwillinge} alt="Zwillinge" />
-        <span>Zwillinge</span>
+      <button class="zodiacButtons" on:click={() => showInfo("Zwilling")}
+        ><img class="svgIcon" src={Zwillinge} alt="Zwilling" />
+        <span>Zwilling</span>
       </button>
       <button class="zodiacButtons" on:click={() => showInfo("Krebs")}
         ><img class="svgIcon" src={Krebs} alt="Krebs" /> <span>Krebs</span>
@@ -864,7 +903,7 @@
         <img class="quickSelectIcons" src={Erde} alt="Return to Sun" />
       </button>
       <button class="quickSelectButtons" on:click={() => customLookAt(0, 0, 0)}>
-        <img class="quickSelectIcons" src={SunIcon} alt="Look at Sun" />
+        <img class="quickSelectIcons" src={ErdeMitAuge} alt="Look at Sun" />
       </button>
       <button class="quickSelectButtons" on:click={toggleSearch}>
         <img class="quickSelectIcons" src={Lupe} alt="searchbar" />
@@ -956,7 +995,7 @@
   }
 
   #quickSelectBar {
-    padding-left: 50px;
+    padding-left: 10px;
     padding-right: 10px;
     background-color: rgba(166, 166, 166, 0.093);
     color: white;
@@ -966,7 +1005,8 @@
     display: flex;
     /* gap: 10px; */
     border: 0.5px solid rgba(72, 72, 72, 0.248);
-    border-radius: 8px;
+    /* border-top-right-radius: 8px; */
+    border-bottom-right-radius: 8px;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
@@ -980,12 +1020,7 @@
   }
 
   .quickSelectButtons:hover {
-    background-color: rgba(
-      255,
-      255,
-      255,
-      0.2
-    ); /* Hervorhebung beim Darüberfahren */
+    background-color: rgba(255, 255, 255, 0.2); /* Hervorhebung beim Darüberfahren */
   }
 
   /* icons */
@@ -1023,7 +1058,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 20px;
+    padding: 10px 5px;
     background-color: transparent;
     width: 100%;
     border: none;
@@ -1033,6 +1068,10 @@
     transition: background-color 0.3s ease;
     position: relative;
   }
+
+  :focus {
+    outline: none;
+}
 
   .zodiacButtons:hover {
     background-color: rgba(
@@ -1109,14 +1148,16 @@
   /* infobox die aktuelle Position enzeigt */
   .infoBoxPosition {
     position: fixed;
-    bottom: 0px;
+    bottom: 2px;
     left: 50%;
     transform: translate(-50%);
     background-color: rgba(166, 166, 166, 0.093);
     padding: 10px;
     border: 0.5px solid rgba(72, 72, 72, 0.248);
-    border-radius: 8px;
-    cursor: pointer;
+    /* border-radius: 8px; */
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    cursor: default;
     z-index: 100;
     min-height: 75px;
     min-width: 250px;
@@ -1137,24 +1178,32 @@
     display: flex;
     position: absolute;
     z-index: 1000;
-    width: 150px;
+    width: 150px; 
     top: 0px;
-    left: 0px;
+    left: 140px;
     transform: translateX(var(--translateX));
     transition: transform 0.5s ease;
   }
 
   #zodiacSelectionOverlay {
+    position: absolute;
     display: flex;
     flex-direction: column;
     background-color: rgba(166, 166, 166, 0.093);
     padding: 10px;
     border: 0.5px solid rgba(72, 72, 72, 0.248);
-    width: 100%;
-    left: 0px;
+    width: 80%;
+    left: -142px;
     backdrop-filter: blur(4px);
+    border-bottom-right-radius: 8px;
     -webkit-backdrop-filter: blur(4px);
+    max-height: 97vh;
+    overflow-y: auto; 
   }
+
+  #zodiacSelectionOverlay::-webkit-scrollbar {
+  display: none; /* Für WebKit-Browser wie Chrome und Safari */
+}
   /* ende sternzeichen auswahl Kontainer ende */
 
   #zodiacInfosBox {

@@ -10,4 +10,17 @@
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
+  <style>
+    /* Entfernt Scrollbalken aus dem gesamten Dokument */
+    html, body {
+      scrollbar-width: none; /* Für Firefox */
+      -ms-overflow-style: none; /* Für Internet Explorer und Edge */
+    }
+
+    /* Für WebKit-Browser wie Safari und Chrome */
+    html::-webkit-scrollbar, 
+    body::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
 </html>
