@@ -3,22 +3,22 @@
   import axios from "axios";
   import * as THREE from "three";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-  import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-  import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-  import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+  import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+  import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+  import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+  // @ts-ignore einfach löschen für fehleranzeige
   import gsap from "gsap";
   import { arrays } from "./data/tierkreis";
-  import Switch from './components/Switch.svelte'
-	
+  import Switch from "./components/Switch.svelte";
 
   let raycaster = new THREE.Raycaster();
   let mouse = new THREE.Vector2();
   let centerKoords = {
-    "x":0,
-    "y":0,
-    "z":0,
+    x: 0,
+    y: 0,
+    z: 0,
   };
-  let sliderValue = false;
+  let toggleValue = false;
   let selectedArray;
   let centerAvailable = false;
   let camera, scene, renderer, controls;
@@ -37,16 +37,22 @@
     ci: 0.9,
     mag: -26.7,
     dist: 0,
+    proper: "Sun",
+    hip: 1,
+    wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
   };
   let selectedStar = {
     id: 1,
     x: 0.000005,
-    dist: 0,
-    mag: -26.7,
     y: 0,
     z: 0,
     absmag: 4.85,
     ci: 0.9,
+    mag: -26.7,
+    dist: 0,
+    proper: "Sun",
+    hip: 1,
+    wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
   };
   let sunIgnored = false;
 
@@ -55,7 +61,6 @@
   onMount(() => {
     init();
     loadStars();
-    // glow100();
   });
 
   function init() {
@@ -64,12 +69,12 @@
       window.innerWidth / window.innerHeight,
       0.1,
       300
-    );
+    ); // @ts-ignore einfach löschen für fehleranzeige
     camera.position.z = 0.0001;
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000); // Setzen Sie explizit eine Hintergrundfarbe
-
+    // @ts-ignore einfach löschen für fehleranzeige
     scene.rotation.z = THREE.MathUtils.degToRad(337.5);
 
     renderer = new THREE.WebGLRenderer();
@@ -80,7 +85,12 @@
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
 
-    bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    bloomPass = new UnrealBloomPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      1.5,
+      0.4,
+      0.85
+    );
     composer.addPass(bloomPass);
     BLOOM_LAYER = 1;
     camera.layers.enable(BLOOM_LAYER);
@@ -94,7 +104,7 @@
       .post(url, body)
       .then((response) => {
         scene.clear(); // Leert die Szene vor dem Hinzufügen neuer Sterne
-        console.log(response.data);
+        // console.log(response.data);
         const starsData = response.data
           .filter(
             (star) =>
@@ -114,6 +124,8 @@
             ra: star.ra,
             dec: star.dec,
             proper: star.proper,
+            wikiUrl: star.wikiUrl,
+            hip: star.hip,
           }));
         addStars(starsData);
         animate();
@@ -123,61 +135,13 @@
       });
   }
 
-  function glow100() {
-    axios
-      .get("https://starsapi.johannes-biess.com/top111")
-      .then((response) => {
-        const starIds = response.data; 
-        applyGlowEffect(starIds); 
-        starIds.forEach((star) => {
-        });
-      })
-      .catch((error) => {
-        console.error("Fehler beim Abrufen der Sterndaten:", error);
-      });
-}
-
-
-  function applyGlowEffect(starIds) {
-    scene.traverse((object) => {
-    // Überprüfe, ob das Objekt ein Stern mit passender ID ist
-    if (object.isMesh && object.userData && starIds.includes(object.userData.starData.id)) {
-      console.log("Glowing star", object.userData.starData.id);
-      object.layers.enable(BLOOM_LAYER);
-    }
-  });
-
-}
-
-
   async function addStars(stars) {
     if (stars.length === 0) {
       console.error("Keine gültigen Sterndaten verfügbar.");
       return;
     }
 
-    // Materialien definieren
-    // const greenMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    // const blueMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-    // const redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-
-    // // Geometrie definieren
-    // const geometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-
-    // // Quader erstellen
-    // const greenCube = new THREE.Mesh(geometry, greenMaterial);
-    // greenCube.position.set(1, 0, 0);
-    // scene.add(greenCube);
-
-    // const blueCube = new THREE.Mesh(geometry, blueMaterial);
-    // blueCube.position.set(0, 1, 0);
-    // scene.add(blueCube);
-
-    // const redCube = new THREE.Mesh(geometry, redMaterial);
-    // redCube.position.set(0, 0, 1);
-    // scene.add(redCube);
-
-    console.log(stars);
+    // console.log(stars);
     stars.forEach((star) => {
       if (star.id === 1 && sunIgnored == false) {
         sunIgnored = true;
@@ -219,8 +183,9 @@
         emissive: color,
         emissiveIntensity: intensity,
       });
-
+      // @ts-ignore einfach löschen für fehleranzeige
       const sphere = new THREE.Mesh(starGeometry, starMaterial);
+      // @ts-ignore einfach löschen für fehleranzeige
       sphere.position.set(star.y, star.z, star.x);
       // console.log("adding user data");
       sphere.userData.starData = {
@@ -233,10 +198,11 @@
         mag: star.mag,
         dist: star.dist,
         proper: star.proper,
+        hip: star.hip,
+        wikiUrl: star.wikiUrl,
       }; // Daten anhängen
       scene.add(sphere);
     });
-    glow100();
   }
 
   function animate() {
@@ -279,7 +245,6 @@
 
     if (intersects.length > 0) {
       console.log("click registered");
-      hideInfo();
       let firstObject = intersects[0].object;
       if (firstObject.userData.starData) {
         console.log(firstObject.userData.starData);
@@ -288,7 +253,11 @@
           object: firstObject,
         };
         console.log(selectedStar);
+        showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
       }
+    } else {
+      // Wenn kein Stern getroffen wird, die Info-Box ausblenden
+      showInfoBox = false;
     }
   }
   window.addEventListener("click", onMouseClick);
@@ -314,7 +283,7 @@
       z: newPosition.z,
       duration: 2,
     });
-    customLookAt(0,0,0);
+    customLookAt(0, 0, 0);
 
     if (selectedStar.object) {
       scene.remove(selectedStar.object);
@@ -345,7 +314,7 @@
     }
   }
 
-  async function returnToSun() {  
+  async function returnToSun() {
     hideInfo();
     console.log("button pressed");
     let newPosition = new THREE.Vector3(0.000005, 0, 0);
@@ -369,7 +338,11 @@
       z: 0,
       absmag: 4.85,
       ci: 0.9,
+      proper: "Sun",
+      hip: 1,
+      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
     };
+
     if (lastRemovedStar != null) addStars([lastRemovedStar]);
     lastRemovedStar = {
       id: 1,
@@ -380,46 +353,52 @@
       z: 0,
       absmag: 4.85,
       ci: 0.9,
+      proper: "Sun",
+      hip: 1,
+      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
     };
-    console.log(scene.children);
+
+    console.log("lastRemovedStar", lastRemovedStar);
+    // console.log(scene.children);
     const sce = scene.children.reverse();
     const sun = sce.find((child) => {
       console.log("-");
-      console.log(child);
+      // console.log(child);
       if (child.userData.starData.id === 1) console.log("hit");
       return child.userData.starData && child.userData.starData.id === 1;
     });
     scene.remove(sun);
     disposeMaterial(sun);
-    if(centerAvailable) customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
-    sliderValue = false;  
+    if (centerAvailable)
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+    toggleValue = false;
   }
-
 
   function getColorByCI(B_V) {
     // Berechnung der Temperatur basierend auf dem B-V Farbindex
-    const temperature = 4600 * (1 / (0.92 * B_V + 1.7) + 1 / (0.92 * B_V + 0.62));
+    const temperature =
+      4600 * (1 / (0.92 * B_V + 1.7) + 1 / (0.92 * B_V + 0.62));
 
     // Zuordnung der Temperatur zu einer visuellen Farbe
     let color;
     if (temperature > 33000) {
-        color = 0x9db4ff; // Blau
+      color = 0x9db4ff; // Blau
     } else if (temperature > 10000) {
-        color = 0xcad8ff; // Blauweiß
+      color = 0xcad8ff; // Blauweiß
     } else if (temperature > 7500) {
-        color = 0xf8f7ff; // Weiß
+      color = 0xf8f7ff; // Weiß
     } else if (temperature > 6000) {
-        color = 0xfff4ea; // Gelbweiß
+      color = 0xfff4ea; // Gelbweiß
     } else if (temperature > 5200) {
-        color = 0xffd2a1; // Gelb
+      color = 0xffd2a1; // Gelb
     } else if (temperature > 3700) {
-        color = 0xffcc6f; // Orange
+      color = 0xffcc6f; // Orange
     } else {
-        color = 0xff6f61; // Rot
+      color = 0xff6f61; // Rot
     }
 
     return color;
-}
+  }
   // function getColorByCI(ci) {
   //   if (ci < 0)
   //     return 0x9db4ff; // Blau
@@ -429,7 +408,7 @@
   //     return 0xfbfbfb; // Weiß
   //   else if (ci < 1.5)
   //     return 0xfff4ea; // Gelblich
-    // else return 0xffd2a1; // Orange/Rot
+  // else return 0xffd2a1; // Orange/Rot
   // }
 
   function getIntensityByMag(mag) {
@@ -469,11 +448,6 @@
     );
   }
 
-
-
-
-
-
   async function jumpToStar2(star) {
     console.log(selectedStar);
     console.log(star);
@@ -495,7 +469,7 @@
     const starToRemove = sce.find((child) => {
       if (child.type === "Mesh") {
         console.log("-");
-        console.log(child);
+        // console.log(child);
         if (child.userData.starData.id === selectedStar.id) console.log("hit");
         return (
           child.userData.starData &&
@@ -511,14 +485,14 @@
     });
 
     // const a = new THREE.Vector3( 0, 0, 0 );
-    customLookAt( 0, 0, 0 );
+    customLookAt(0, 0, 0);
 
     if (selectedStar.object) {
       scene.remove(selectedStar.object);
       disposeMaterial(selectedStar.object);
     }
     if (lastRemovedStar != null) {
-      console.log("adding Stars", lastRemovedStar);
+      // console.log("adding Stars", lastRemovedStar);
       addStars([lastRemovedStar]);
     }
     if (selectedStar == lastRemovedStar) {
@@ -532,7 +506,6 @@
     disposeMaterial(starToRemove);
   }
 
-
   // $: if (selectedArray) {
   //   updateLines(selectedArray);
   // }
@@ -541,17 +514,17 @@
     lineGroup.clear(); // Löscht nur die Linien in der Gruppe
     console.log(arrayName);
     let array = arrays[arrayName];
-    console.log(array);
-    console.log(removeDuplicates(array));
+    // console.log(array);
+    // console.log(removeDuplicates(array));
     selectedArray = removeDuplicates(array);
     centerKoords = array[0];
     centerAvailable = true;
-    console.log("centerkoords",centerKoords);
+    // console.log("centerkoords", centerKoords);
     if (array) {
       for (let i = 1; i < array.length - 1; i++) {
         addLine(array[i], array[i + 1]);
       }
-      customLookAt(centerKoords.y,centerKoords.z,centerKoords.x);
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
     } else {
       console.error("Unbekanntes Array:", arrayName);
     }
@@ -567,8 +540,9 @@
       end.z,
       end.x,
     ]);
+
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    let color = Math.floor(Math.random() * 0xffffff);
+    let color = 0xffff; //Math.floor(Math.random() * 0xffffff);
     let material = new THREE.LineBasicMaterial({ color: color });
     let line = new THREE.Line(geometry, material);
     lineGroup.add(line); // Füge die Linie zur Gruppe hinzu
@@ -576,18 +550,13 @@
     // console.log(center);
   }
 
+  // Aktuelle Position der Kamera speichern
   function moveToConstellation(newTarget) {
-    // Aktuelle Position der Kamera speichern
-
-    // Setze das neue Ziel für die OrbitControls
-    controls.target.copy(newTarget);
+    controls.target.copy(newTarget); // Setze das neue Ziel für die OrbitControls
 
     // Setze die Kameraposition zurück, um sicherzustellen, dass die Kamera nicht bewegt wird
-    
     // camera.position.set(0, 0, 0.00005);
-
-    // Notwendig, um die Änderungen zu verarbeiten
-    controls.update();
+    controls.update(); // Notwendig, um die Änderungen zu verarbeiten
   }
 
   function removeDuplicates(array) {
@@ -609,81 +578,88 @@
     centerAvailable = false;
   }
 
-  let translateX = "-100%"; // Zustand der X-Translation des Containers
+  let showZodiacSelection = false;
 
-  function toggleContainer() {
-    translateX = translateX === "-100%" ? "-73%" : "-100%"; // Schaltet zwischen den Positionen um
+  function toggleZodiacSelectionContainer() {
+    showZodiacSelection = !showZodiacSelection;
+    // Automatisch die zodiacInfosBox ausblenden, wenn der Container geschlossen wird
+    if (!showZodiacSelection) {
+      showzodiacInfosBox = false;
+      resetTest();
+    }
   }
 
-  let infoContent = ""; // Inhalt für das info-overlay
-  let displayInfoOverlay = "none"; // Steuert die Anzeige des info-overlays
-  let showInfoOverlay = false;
+  let infoContent = ""; // Inhalt für das zodiacInfosBox
+  // let displaySmallBox = "none"; // Steuert die Anzeige des zodiacInfosBoxs
+  let showzodiacInfosBox = false;
+  let showInfoBox = false; //steuert die Anzeige der lookAtStarInfoBox
 
   function showInfo(element) {
     // selectedArray = element;
-    sliderValue = false;
+    toggleValue = false;
     updateLines(element);
     infoContent = element;
-    showInfoOverlay = true;
-    displayInfoOverlay = "block"; // Zeigt das info-overlay an
+    showzodiacInfosBox = true;
+    // displaySmallBox = "block"; // Zeigt das zodiacInfosBox an
+    if (!showZodiacSelection) {
+      showZodiacSelection = true;
+    }
     console.log("show info");
   }
 
   function hideInfo() {
-    displayInfoOverlay = "none"; // Verbirgt das info-overlay
-    showInfoOverlay = false;
+    // displaySmallBox = "none"; // Verbirgt das zodiacInfosBox
+    showzodiacInfosBox = false;
+    console.log("hide info");
   }
-
 
   function customLookAt(x, y, z) {
     const CameraPosition = camera.position;
     const controlPosition = controls.target;
     console.log(CameraPosition);
-    console.log('Kameraposition:', camera?.position.y);
-    console.log('Ziel der OrbitControls:', controls?.target);
+    console.log("Kameraposition:", camera?.position.y);
+    console.log("Ziel der OrbitControls:", controls?.target);
 
     let dirVector = {
-        x: x - controlPosition.x,
-        y: y - controlPosition.y,
-        z: z - controlPosition.z
+      x: x - controlPosition.x,
+      y: y - controlPosition.y,
+      z: z - controlPosition.z,
     };
 
-    let length = Math.sqrt(dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2);
+    let length = Math.sqrt(
+      dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2
+    );
 
     dirVector.x /= length;
     dirVector.y /= length;
     dirVector.z /= length;
 
     const distance = 0.01;
-    // let newPoint1 = {
-    //     x: controlPosition.x + dirVector.x * distance,
-    //     y: controlPosition.y + dirVector.y * distance,
-    //     z: controlPosition.z + dirVector.z * distance
-    // };
+
     let newPoint2 = {
-        x: controlPosition.x - dirVector.x * distance,
-        y: controlPosition.y - dirVector.y * distance,
-        z: controlPosition.z - dirVector.z * distance
+      x: controlPosition.x - dirVector.x * distance,
+      y: controlPosition.y - dirVector.y * distance,
+      z: controlPosition.z - dirVector.z * distance,
     };
     // console.log(newPoint2);
     camera.position.set(newPoint2.x, newPoint2.y, newPoint2.z);
-}
+  }
 
-
-
-function changeToPov() {
+  function changeToPov() {
     const cameraPosition = camera.position;
     const controlPosition = controls.target;
-    console.log('Kameraposition:', camera?.position);
-    console.log('Ziel der OrbitControls:', controls?.target);
+    console.log("Kameraposition:", camera?.position);
+    console.log("Ziel der OrbitControls:", controls?.target);
 
     let dirVector = {
-        x: controlPosition.x - cameraPosition.x,
-        y: controlPosition.y - cameraPosition.y,
-        z: controlPosition.z - cameraPosition.z 
+      x: controlPosition.x - cameraPosition.x,
+      y: controlPosition.y - cameraPosition.y,
+      z: controlPosition.z - cameraPosition.z,
     };
 
-    let length = Math.sqrt(dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2);
+    let length = Math.sqrt(
+      dirVector.x ** 2 + dirVector.y ** 2 + dirVector.z ** 2
+    );
 
     dirVector.x /= length;
     dirVector.y /= length;
@@ -691,118 +667,260 @@ function changeToPov() {
 
     const distance = 0.01;
     let newPoint1 = {
-        x: cameraPosition.x + dirVector.x * distance,
-        y: cameraPosition.y + dirVector.y * distance,
-        z: cameraPosition.z + dirVector.z * distance
+      x: cameraPosition.x + dirVector.x * distance,
+      y: cameraPosition.y + dirVector.y * distance,
+      z: cameraPosition.z + dirVector.z * distance,
     };
-    // let newPoint2 = {
-    //     x: cameraPosition.x - dirVector.x * distance,
-    //     y: cameraPosition.y - dirVector.y * distance,
-    //     z: cameraPosition.z - dirVector.z * distance
-    // };
+
     console.log(newPoint1);
-    moveToConstellation(new THREE.Vector3(newPoint1.x, newPoint1.y, newPoint1.z));
-}
-
-function togglePov() {
-  //false == Pov-pov && true == orbit
-  sliderValue = !sliderValue;
-  if(sliderValue === true) {
-    console.log("using  Orbit");
-    moveToConstellation(new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x));
-  } else {
-    console.log("using POV");
-    changeToPov();
+    moveToConstellation(
+      new THREE.Vector3(newPoint1.x, newPoint1.y, newPoint1.z)
+    );
   }
-}
-let name;
 
-function submit() {
-  const sce = scene.children.reverse();
-  console.log(name);
+  function togglePov() {
+    //false == Pov-pov && true == orbit
+    toggleValue = !toggleValue;
+    if (toggleValue === true) {
+      console.log("using  Orbit");
+      moveToConstellation(
+        new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x)
+      );
+    } else {
+      console.log("using POV");
+      changeToPov();
+    }
+  }
+  let name;
+
+  function submit() {
+    const sce = scene.children.reverse();
+    console.log(name);
     const starResult = sce.find((child) => {
       if (child.type === "Mesh") {
         // console.log("-");
         // console.log(child);
-        if (child.userData.starData.proper === name) console.log(`found star ${name}`);
+        if (child.userData.starData.proper === name)
+          console.log(`found star ${name}`);
         return (
-          child.userData.starData &&
-          child.userData.starData.proper === name
+          child.userData.starData && child.userData.starData.proper === name
         );
       }
     });
-    console.log(starResult);
+    // console.log(starResult);
     //hier auf Stern ausrichten
-}
+  }
 
+  import constellation from "./assets/constel.svg";
+  import SunIcon from "./assets/sun.svg";
+  import Fische from "./assets/Fische.svg";
+  import Jungfrau from "./assets/Jungfrau.svg";
+  import Krebs from "./assets/Krebs.svg";
+  import Löwe from "./assets/Löwe.svg";
+  import Schütze from "./assets/Schütze.svg";
+  import Skorpion from "./assets/Skorpion.svg";
+  import Stier from "./assets/Stier.svg";
+  import Waage from "./assets/Waage.svg";
+  import Wassermann from "./assets/Wassermann.svg";
+  import Widder from "./assets/Widder.svg";
+  import Zwillinge from "./assets/Zwillinge.svg";
+  import Steinbock from "./assets/Steinbock.svg";
+  import Teleskop from "./assets/Teleskop.svg";
+  import Lupe from "./assets/Lupe.svg";
+  import Erde from "./assets/Erde.svg";
 
+  let headerIndex = 0;
+  const headerMappings = [
+    { key: "id", label: "ID" },
+    { key: "proper", label: "Proper" },
+    { key: "hip", label: "HIP" },
+  ];
 
-  import svgURL from "./assets/constel.svg";
-  import sunURL from "./assets/sun.svg";
+  // function toggleinfoBoxHeader() {
+  //   headerIndex = (headerIndex + 1) % headerMappings.length;
+  // }
+
+  //infoBoxLookAtStarTitle
+  $: currentHeader = selectedStar.proper
+    ? `Name: ${selectedStar.proper}`
+    : `HIP-Katalog: ${selectedStar.hip || "Nicht Verfügbar"}`;
+  // lastRemovedStar
+  $: currentHeaderLastRemoved = lastRemovedStar.proper
+    ? `Aktuell auf ${lastRemovedStar.proper}`
+    : `HIP-Katalog: ${lastRemovedStar.hip || "Nicht Verfügbar"}`;
+
+  function toggleinfoBoxHeaderLastRemoved() {
+    headerIndex = (headerIndex + 1) % headerMappings.length;
+  }
+
+  let showSearch = false;
+  let searchRef;
+
+  function toggleSearch(event) {
+    showSearch = !showSearch;
+    event.stopPropagation(); // Verhindert das Auslösen von handleOutsideClick beim ersten Klick
+
+    if (showSearch) {
+      // Fügt einen Event-Listener hinzu, wenn die Suchleiste gezeigt wird
+      setTimeout(() => window.addEventListener("click", handleOutsideClick), 0);
+    }
+  }
+
+  function handleOutsideClick(event) {
+    if (searchRef && !searchRef.contains(event.target)) {
+      showSearch = false;
+      window.removeEventListener("click", handleOutsideClick);
+    }
+  }
 </script>
 
+<!-- HTML -->
 <main>
   <div
-    id="info-overlay"
+    id="zodiacInfosBox"
     class="overlay"
-    style="display: {showInfoOverlay ? 'flex' : 'none'} !important;"
+    style="display: {showzodiacInfosBox ? 'flex' : 'none'} !important;"
   >
-    {infoContent}
-
+    <!-- Stellen Sie sicher, dass alle Inhalte hier innerhalb sind -->
+    <div class="zodiacStarLinksHeader">{infoContent}</div>
     {#if selectedArray && selectedArray.length > 0}
       {#each selectedArray as star}
-        <button on:click={() => jumpToStar2(star)}>
+        <button class="jumpToStar2Button" on:click={() => jumpToStar2(star)}>
           {star.id}
         </button>
       {/each}
     {/if}
   </div>
-  <div id="container" style="--translateX: {translateX};">
-    <div id="selection-overlay" class="overlay2">
-      <button class="constbtn" on:click={() => resetTest()}
-        ><img src={svgURL} /></button
-      >
-      <button class="constbtn" on:click={() => showInfo("Wassermann")}
-        ><img src={svgURL} /></button
-      >
-      <button class="constbtn" on:click={() => showInfo("Widder")}
-        ><img src={svgURL} /></button
-      >
+
+  <div
+    id="zodiacSelectionContainer"
+    style="--translateX: {showZodiacSelection ? '0%' : '-100%'};"
+  >
+    <div id="zodiacSelectionOverlay">
+      <button class="zodiacButtons" on:click={() => showInfo("Steinbock")}
+        ><img class="svgIcon" src={Steinbock} alt="Steinbock" />
+        <span>Steinbock</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Wassermann")}
+        ><img class="svgIcon" src={Wassermann} alt="Wassermann" />
+        <span>Wassermann</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Fische")}
+        ><img class="svgIcon" src={Fische} alt="Fische" />
+        <span>Fische</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Widder")}
+        ><img class="svgIcon" src={Widder} alt="Widder" />
+        <span>Widder</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Stier")}
+        ><img class="svgIcon" src={Stier} alt="Stier" /> <span>Stier</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Zwillinge")}
+        ><img class="svgIcon" src={Zwillinge} alt="Zwillinge" />
+        <span>Zwillinge</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Krebs")}
+        ><img class="svgIcon" src={Krebs} alt="Krebs" /> <span>Krebs</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Löwe")}
+        ><img class="svgIcon" src={Löwe} alt="Löwe" /> <span>Löwe</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Jungfrau")}
+        ><img class="svgIcon" src={Jungfrau} alt="Jungfrau" />
+        <span>Jungfrau</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Waage")}
+        ><img class="svgIcon" src={Waage} alt="Waage" /> <span>Waage</span>
+      </button>
+      <button class="zodiacButtons" on:click={() => showInfo("Skorpion")}
+        ><img class="svgIcon" src={Skorpion} alt="Skorpion" />
+        <span>Skorpion</span>
+      </button>
+      <!-- schlangenträger -->
+      <button class="zodiacButtons" on:click={() => showInfo("Schütze")}
+        ><img class="svgIcon" src={Schütze} alt="Schütze" />
+        <span>Schhütze</span>
+      </button>
+      <!-- more -->
+      <!-- ansicht in raster -->
     </div>
-    <div id="options">
-      <button class="constbtn" on:click={toggleContainer}
-        ><img src={svgURL} /></button
+    <!-- <button class="quickSelectButtons" on:click={() => resetTest()}
+      ><img class="svgIcon" src={constellation} alt="reset to sun" /></button
+    > -->
+    <!-- quickBar -->
+    <div id="quickSelectBar">
+      <button
+        class="quickSelectButtons"
+        on:click={toggleZodiacSelectionContainer}
       >
-      <button class="constbtn" on:click={returnToSun}
-        ><img src={sunURL} /></button
-      >
-      <button class="constbtn"><img src={sunURL} on:click={() => {customLookAt(0,0,0)}}/></button>
+        <img
+          class="quickSelectIcons"
+          src={constellation}
+          alt="Toggle visibility"
+        />
+      </button>
+      <button class="quickSelectButtons" on:click={returnToSun}>
+        <img class="quickSelectIcons" src={Erde} alt="Return to Sun" />
+      </button>
+      <button class="quickSelectButtons" on:click={() => customLookAt(0, 0, 0)}>
+        <img class="quickSelectIcons" src={SunIcon} alt="Look at Sun" />
+      </button>
+      <button class="quickSelectButtons" on:click={toggleSearch}>
+        <img class="quickSelectIcons" src={Lupe} alt="searchbar" />
+      </button>
     </div>
   </div>
-  <!-- <select bind:value={selectedArray}>
-    <option value="">Tierkreiszeichen</option>
-    {#each Object.keys(arrays) as arrayName}
-      <option value={arrayName}>{arrayName}</option>
-    {/each}
-  </select>
-
-  <button on:click={returnToSun}>Sonne</button> -->
+  <!-- infobox -->
   <div
-    class="overlay"
-    id="singleStar-overlay"
-    style="display: {showInfoOverlay ? 'none' : 'block'} !important;"
+    class="infoBoxLookAtStarTitle"
+    style="display: {showInfoBox ? 'block' : 'none'}; !important;"
   >
-    <h2>Stern: {selectedStar.id}</h2>
+    <div class="infoBoxHeader">
+      {currentHeader}
+    </div>
+    <!-- weitere infos -->
     <p>Magnitude: {selectedStar.mag}</p>
     <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
-    <button on:click={jumpToStar}>Sprung</button>
+    <p>Farbindex: {selectedStar.ci}</p>
+    <p>Leuchtkraft: {selectedStar.absmag}</p>
+
+    <button id="jumpButton" on:click={jumpToStar}>Sprung</button>
+    <button
+      id="wikiLinkButton"
+      on:click={() => window.open(selectedStar.wikiUrl, "_blank")}
+      >Wikipedia</button
+    >
   </div>
-  <div id='search'>
+
+  <div
+    class="infoBoxPosition"
+    style="display: {showzodiacInfosBox ? 'none' : 'block'} !important;"
+  >
+    <div class="currentPosition">
+      {currentHeaderLastRemoved}
+    </div>
+  </div>
+
+  <div
+    id="searchBar"
+    bind:this={searchRef}
+    style="display: {showSearch ? 'block' : 'none'};"
+  >
     <input bind:value={name} placeholder="enter name of star" />
     <button on:click={submit}>Submit</button>
   </div>
-  <button id="moin" style="background-color: {sliderValue ? 'red' : 'green'} !important; display: {centerAvailable ? 'block' : 'none'}" on:click={togglePov}>toggle</button>
+
+  <button
+    id="togglePovButton"
+    style="display: {centerAvailable ? 'block' : 'none'}"
+    on:click={togglePov}
+  >
+    {toggleValue ? "Orbit" : "POV"}
+  </button>
 </main>
+
+<!-- CSS -->
 
 <svelte:head>
   <style>
@@ -818,24 +936,7 @@ function submit() {
 </svelte:head>
 
 <style>
-  #search {
-    position: absolute;
-    top:50px;
-    left:10px;
-
-  }
-  #moin {
-    position: absolute;
-    top: 500px;
-  }
-  .constbtn {
-    padding: 5px;
-    background-color: transparent;
-  }
-  img {
-    width: 25px;
-    height: 25px;
-  }
+  /* CSS */
   main {
     position: absolute;
     width: 100%;
@@ -845,65 +946,252 @@ function submit() {
     align-items: end;
     /* justify-content: center; */
   }
-  .overlay {
+
+  #togglePovButton {
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    transform: showZodiacSelection (-50%);
+    z-index: 100;
+  }
+
+  #quickSelectBar {
+    padding-left: 50px;
+    padding-right: 10px;
+    background-color: rgba(166, 166, 166, 0.093);
+    color: white;
+    max-height: 70px;
+    /* border-bottom-right-radius: 10px; */
+    margin: 0;
+    display: flex;
+    /* gap: 10px; */
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .quickSelectButtons {
+    padding: 20px;
+    background-color: transparent;
+    width: 100%;
+    margin-bottom: 5px;
+    border: none;
+  }
+
+  .quickSelectButtons:hover {
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    ); /* Hervorhebung beim Darüberfahren */
+  }
+
+  /* icons */
+  .quickSelectIcons {
+    width: 35px;
+    height: 35px;
+  }
+
+  #searchBar {
+    position: absolute;
+    top: 75px;
+    left: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #searchBar input {
+    padding: 10px;
+    border: 2px solid #b7b7b7;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+
+  #searchBar button {
+    padding: 10px 20px;
+    background-color: #8a8a8a;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .zodiacButtons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+  }
+
+  .zodiacButtons:hover {
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    ); /* Hervorhebung beim Darüberfahren */
+  }
+
+  .svgIcon {
+    width: 40px;
+    height: 40px;
+    border: none;
+    transition: transform 0.3s ease;
+    transform-origin: left center;
+  }
+
+  .svgIcon:hover {
+    /* transform: scale(3) translateX(45px) translateY(5px); */
+    border: none;
+  }
+
+  /* inhalt der Info box welche den Stern anzeigt den man anklickt */
+  .infoBoxLookAtStarTitle {
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(166, 166, 166, 0.093);
     padding: 10px;
-    border: 2px solid black;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
     border-radius: 8px;
+    /* cursor: pointer; */
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    text-align: left; /* Add this line to align the content to the left */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .infoBoxHeader {
+    font-size: 24px; /* Größere Schrift */
+    padding-bottom: 10px;
+    font-weight: bold;
+
+    color: white; /* Textfarbe */
+    text-align: left;
+  }
+  #wikiLinkButton {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
     cursor: pointer;
   }
-  #container {
+  #jumpButton {
+    background-color: #cccccc;
+    border: none;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+  /* ende inhalt der Info box welche den Stern anzeigt den man anklickt ende */
+
+  /* infobox die aktuelle Position enzeigt */
+  .infoBoxPosition {
+    position: fixed;
+    bottom: 0px;
+    left: 50%;
+    transform: translate(-50%);
+    background-color: rgba(166, 166, 166, 0.093);
+    padding: 10px;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 100;
+    min-height: 75px;
+    min-width: 250px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  .currentPosition {
+    font-size: 28px;
+    font-weight: bold;
+    padding: 10px;
+    color: white;
+  }
+  /* ende infobox die aktuelle Position enzeigt ende */
+
+  /* sternzeichen auswahl Kontainer */
+  #zodiacSelectionContainer {
     display: flex;
     position: absolute;
-    z-index: 20;
-    width: auto;
+    z-index: 1000;
+    width: 150px;
     top: 0px;
-    left: 150px;
+    left: 0px;
     transform: translateX(var(--translateX));
     transition: transform 0.5s ease;
   }
 
-  #selection-overlay {
+  #zodiacSelectionOverlay {
     display: flex;
     flex-direction: column;
-    border-bottom-right-radius: 10px;
+    background-color: rgba(166, 166, 166, 0.093);
+    padding: 10px;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    width: 100%;
+    left: 0px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
+  /* ende sternzeichen auswahl Kontainer ende */
 
-  .overlay2 {
-    display: flex;
-    background-color: rgba(255, 255, 255, 0.1);
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-
-  .glow {
-    box-shadow: 0 0 20px rgb(3, 164, 0); /* Anpassen für den gewünschten Effekt */
-  }
-
-  #options {
-    padding-left: 10px;
-    padding-right: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    color: white;
-    max-height: 40px;
-    border-bottom-right-radius: 10px;
-    margin: 0;
-    display: flex;
-    gap: 10px;
-  }
-
-  #info-overlay {
+  #zodiacInfosBox {
     position: absolute;
-    /* display: var(--displayInfoOverlay, none); */
-    right: 10px;
     top: 10px;
-    /* display: flex; */
+    right: 10px;
+    background-color: rgba(166, 166, 166, 0.093);
+    padding: 10px;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    border-radius: 8px;
+    /* cursor: pointer; */
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    text-align: left; /* Add this line to align the content to the left */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
     flex-direction: column;
-    align-content: center;
   }
-  
-  
+
+  .zodiacStarLinksHeader {
+    color: white;
+    font-size: 28px;
+  }
+
+  .jumpToStar2Button {
+    border-radius: 5px;
+    cursor: pointer;
+    gap: 5px;
+    background-color: #cccccc;
+    border: none;
+    color: rgb(0, 0, 0);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
 </style>
