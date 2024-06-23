@@ -543,10 +543,10 @@
     centerAvailable = true;
     // console.log("centerkoords", centerKoords);
     if (array) {
-      for (let i = 2; i < array.length - 2; i++) {
+      for (let i = 2; i < array.length - 1; i++) {
         addLine(array[i], array[i + 1]);
       }
-      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+      customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
     } else {
       console.error("Unbekanntes Array:", arrayName);
     }
@@ -574,11 +574,16 @@
 
   // Aktuelle Position der Kamera speichern
   function moveToConstellation(newTarget) {
-    controls.target.copy(newTarget); // Setze das neue Ziel für die OrbitControls
-
-    // Setze die Kameraposition zurück, um sicherzustellen, dass die Kamera nicht bewegt wird
-    // camera.position.set(0, 0, 0.00005);
-    controls.update(); // Notwendig, um die Änderungen zu verarbeiten
+    gsap.to(controls.target, {
+      x: newTarget.x,
+      y: newTarget.y,
+      z: newTarget.z,
+      duration: 2,
+      onUpdate: function() {
+        // Nach jedem Update der Position muss controls.update() aufgerufen werden, um die Änderungen anzuwenden
+        controls.update();
+      }
+    });
   }
 
   function removeDuplicates(array) {
@@ -854,8 +859,16 @@
       z: controlPosition.z + dirVector.z * distance,
     };
     console.log(newPoint2);
-    controls.target.copy(newPoint2.y, newPoint2.z, newPoint2.x);
-    controls.update();
+    gsap.to(controls.target, {
+      x: newPoint2.x,
+      y: newPoint2.y,
+      z: newPoint2.z,
+      duration: 2,
+      onUpdate: function() {
+        // Nach jedem Update der Position muss controls.update() aufgerufen werden, um die Änderungen anzuwenden
+        controls.update();
+      }
+    });
   }
 
 
@@ -916,7 +929,7 @@
     <!-- Stellen Sie sicher, dass alle Inhalte hier innerhalb sind -->
     <div class="zodiacStarLinksHeader">{infoContent}</div>
     {#if selectedArray && selectedArray.length > 0}
-    <p>{zodiacWiki}</p>
+    <href>{zodiacWiki}</href>
       {#each selectedArray as star}
         <button class="jumpToStar2Button" on:click={() => jumpToStar2(star)}>
           {star.id}
@@ -996,8 +1009,8 @@
       <button class="quickSelectButtons" on:click={returnToSun}>
         <img class="quickSelectIcons" src={Erde} alt="Return to Sun" />
       </button>
-      <!-- <button class="quickSelectButtons" on:click={lookAtSun}> -->
-      <button class="quickSelectButtons" on:click={() => customLookAt(0,0,0)}>
+      <button class="quickSelectButtons" on:click={lookAtSun}>  
+      <!-- <button class="quickSelectButtons" on:click={() => customLookAtControls(0,0,0)}> -->
         <img class="quickSelectIcons" src={ErdeMitAuge} alt="Look at Sun" />
       </button>
       <button class="quickSelectButtons" on:click={toggleSearch}>
