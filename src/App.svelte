@@ -55,7 +55,7 @@
     wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
   };
   let sunIgnored = false;
-
+  let showCurrentInfosBox = true;
   let lineGroup = new THREE.Group();
 
   onMount(() => {
@@ -494,6 +494,11 @@
         );
       }
     });
+    selectedStar = {
+          ...selectedStar,
+          object: starToRemove,
+        };
+    console.log(starToRemove);
     await gsap.to(camera.position, {
       x: newPosition.x,
       y: newPosition.y,
@@ -518,6 +523,7 @@
       } else {
         console.log("selectedStar", selectedStar);
         lastRemovedStar = selectedStar;
+        console.log("lastRemoved", lastRemovedStar);
       }
     }
 
@@ -620,6 +626,12 @@
   // let displaySmallBox = "none"; // Steuert die Anzeige des zodiacInfosBoxs
   let showzodiacInfosBox = false;
   let showInfoBox = false; //steuert die Anzeige der lookAtStarInfoBox
+    $: if (showInfoBox) {
+      console.log(showInfoBox);
+    }
+    $: if (showzodiacInfosBox) {
+      console.log(showzodiacInfosBox);
+    }
 
   function showInfo(element) {
     // selectedArray = element;
@@ -748,22 +760,26 @@
   }
   let name;
 
-  function submit() {
+  async function submit() {
     const sce = scene.children.reverse();
     console.log(name);
-    const starResult = sce.find((child) => {
+    const starResult = await sce.find((child) => {
       if (child.type === "Mesh") {
-        // console.log("-");
-        // console.log(child);
-        if (child.userData.starData.proper === name)
-          console.log(`found star ${name}`);
+        if (child.userData.starData.proper === name) console.log(`found star ${name}`);
         return (
           child.userData.starData && child.userData.starData.proper === name
         );
       }
     });
-    // console.log(starResult);
-    //hier auf Stern ausrichten
+    if (starResult.userData.starData) {
+        selectedStar = {
+          ...starResult.userData.starData,
+          object: starResult,
+        };
+        showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
+        showzodiacInfosBox = false;
+        showSearch = false;
+      }
   }
 
   import constellation from "./assets/constel.svg";
@@ -784,6 +800,7 @@
   import Lupe from "./assets/Lupe.svg";
   import Erde from "./assets/Erde.svg";
   import ErdeMitAuge from "./assets/Erde_mit_Auge.svg";
+  import constellationX from "./assets/constelX.svg"
 
   let headerIndex = 0;
   const headerMappings = [
@@ -801,9 +818,9 @@
     ? `Name: ${selectedStar.proper}`
     : `HIP-Katalog: ${selectedStar.hip || "Nicht Verfügbar"}`;
   // lastRemovedStar
-  $: currentHeaderLastRemoved = lastRemovedStar?.proper
-    ? `Aktuell auf ${lastRemovedStar?.proper}`
-    : `HIP-Katalog: ${lastRemovedStar?.hip || "Nicht Verfügbar"}`;
+  $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper
+    ? `Aktuell auf ${lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper}`
+    : `HIP-Katalog: ${lastRemovedStar?.hip || lastRemovedStar?.object.userData.starData.hip}`;
 
   function toggleinfoBoxHeaderLastRemoved() {
     headerIndex = (headerIndex + 1) % headerMappings.length;
@@ -931,7 +948,7 @@
     {#if selectedArray && selectedArray.length > 0}
     <href>{zodiacWiki}</href>
       {#each selectedArray as star}
-        <button class="jumpToStar2Button" on:click={() => jumpToStar2(star)}>
+        <button class="jumpToStar2Button" on:click|stopPropagation={() => jumpToStar2(star)}>
           {star.id}
         </button>
       {/each}
@@ -943,48 +960,48 @@
     style="--translateX: {showZodiacSelection ? '0%' : '-100%'};"
   >
     <div id="zodiacSelectionOverlay">
-      <button class="zodiacButtons" on:click={() => showInfo("Steinbock")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Steinbock")}
         ><img class="svgIcon" src={Steinbock} alt="Steinbock" />
         <span>Steinbock</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Wassermann")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Wassermann")}
         ><img class="svgIcon" src={Wassermann} alt="Wassermann" />
         <span>Wassermann</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Fische")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Fische")}
         ><img class="svgIcon" src={Fische} alt="Fische" />
         <span>Fische</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Widder")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Widder")}
         ><img class="svgIcon" src={Widder} alt="Widder" />
         <span>Widder</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Stier")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Stier")}
         ><img class="svgIcon" src={Stier} alt="Stier" /> <span>Stier</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Zwilling")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Zwilling")}
         ><img class="svgIcon" src={Zwillinge} alt="Zwilling" />
         <span>Zwilling</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Krebs")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Krebs")}
         ><img class="svgIcon" src={Krebs} alt="Krebs" /> <span>Krebs</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Löwe")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Löwe")}
         ><img class="svgIcon" src={Löwe} alt="Löwe" /> <span>Löwe</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Jungfrau")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Jungfrau")}
         ><img class="svgIcon" src={Jungfrau} alt="Jungfrau" />
         <span>Jungfrau</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Waage")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Waage")}
         ><img class="svgIcon" src={Waage} alt="Waage" /> <span>Waage</span>
       </button>
-      <button class="zodiacButtons" on:click={() => showInfo("Skorpion")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Skorpion")}
         ><img class="svgIcon" src={Skorpion} alt="Skorpion" />
         <span>Skorpion</span>
       </button>
       <!-- schlangenträger -->
-      <button class="zodiacButtons" on:click={() => showInfo("Schütze")}
+      <button class="zodiacButtons" on:click|stopPropagation={() => showInfo("Schütze")}
         ><img class="svgIcon" src={Schütze} alt="Schütze" />
         <span>Schhütze</span>
       </button>
@@ -994,26 +1011,42 @@
     <!-- <button class="quickSelectButtons" on:click={() => resetTest()}
       ><img class="svgIcon" src={constellation} alt="reset to sun" /></button
     > -->
+    <div
+    id="searchBar"
+    bind:this={searchRef}
+    style="display: {showSearch ? 'flex' : 'none'};"
+  >
+    <input bind:value={name} placeholder="enter name of star" />
+    <button on:click|stopPropagation={submit}>Submit</button>
+  </div>
     <!-- quickBar -->
     <div id="quickSelectBar">
       <button
         class="quickSelectButtons"
         on:click={toggleZodiacSelectionContainer}
       >
+      {#if showZodiacSelection}
+        <img
+          class="quickSelectIcons"
+          src={constellationX}
+          alt="Toggle visibility"
+        />
+      {:else}
         <img
           class="quickSelectIcons"
           src={constellation}
           alt="Toggle visibility"
         />
+      {/if}
       </button>
-      <button class="quickSelectButtons" on:click={returnToSun}>
+      <button class="quickSelectButtons" on:click|stopPropagation={returnToSun}>
         <img class="quickSelectIcons" src={Erde} alt="Return to Sun" />
       </button>
-      <button class="quickSelectButtons" on:click={lookAtSun}>  
-      <!-- <button class="quickSelectButtons" on:click={() => customLookAtControls(0,0,0)}> -->
+      <button class="quickSelectButtons" on:click|stopPropagation={lookAtSun}>  
+      <!-- <button class="quickSelectButtons" on:click|stopPropagation={() => customLookAtControls(0,0,0)}> -->
         <img class="quickSelectIcons" src={ErdeMitAuge} alt="Look at Sun" />
       </button>
-      <button class="quickSelectButtons" on:click={toggleSearch}>
+      <button class="quickSelectButtons" on:click|stopPropagation={toggleSearch}>
         <img class="quickSelectIcons" src={Lupe} alt="searchbar" />
       </button>
     </div>
@@ -1028,43 +1061,39 @@
     </div>
     <!-- weitere infos -->
     <p>Magnitude: {selectedStar.mag}</p>
-    <p>Entfernung: {selectedStar.dist} Lichtjahre</p>
+    <p>Entfernung: {selectedStar.dist * 3.26} Lichtjahre</p>
     <p>Farbindex: {selectedStar.ci}</p>
     <p>Leuchtkraft: {selectedStar.absmag}</p>
 
-    <button id="jumpButton" on:click={jumpToStar}>Sprung</button>
+    <button id="jumpButton" on:click|stopPropagation={jumpToStar}>Sprung</button>
     <button
       id="wikiLinkButton"
-      on:click={() => window.open(selectedStar.wikiUrl, "_blank")}
+      on:click|stopPropagation={() => window.open(selectedStar.wikiUrl, "_blank")}
       >Wikipedia</button
     >
   </div>
 
   <div
     class="infoBoxPosition"
-    style="display: {showzodiacInfosBox ? 'none' : 'block'} !important;"
+    style="display: {showCurrentInfosBox ? 'block' : 'none'} !important;"
   >
     <div class="currentPosition">
       {currentHeaderLastRemoved}
     </div>
   </div>
 
-  <div
-    id="searchBar"
-    bind:this={searchRef}
-    style="display: {showSearch ? 'block' : 'none'};"
-  >
-    <input bind:value={name} placeholder="enter name of star" />
-    <button on:click={submit}>Submit</button>
-  </div>
 
-  <button
-    id="togglePovButton"
-    style="display: {centerAvailable ? 'block' : 'none'}"
-    on:click={togglePov}
-  >
+
+  <div id="togglePovButton"
+  style="display: {centerAvailable ? 'block' : 'none'}">
+
+    <button
+    id='tglbtn'
+    on:click|stopPropagation={togglePov}
+    >
     {toggleValue ? "Orbit" : "POV"}
   </button>
+</div>
 </main>
 
 <!-- CSS -->
@@ -1094,13 +1123,39 @@
     /* justify-content: center; */
   }
 
+  #tglbtn {
+    background-color: transparent;
+    padding:20px; 
+    border: none;
+    font-size: 22px;
+  }
+
+  #tglbtn:hover {
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    );
+  }
+
   #togglePovButton {
     position: absolute;
-    top: 3px;
+    top: 0;
+    height: 70px;
+    width: 100px;
     left: 50%;
-    transform: showZodiacSelection (-50%);
+    transform: translateX(-50%);
     z-index: 100;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    background-color: rgba(166, 166, 166, 0.093);
+    border-radius: 0;
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
+
 
   #quickSelectBar {
     padding-left: 10px;
@@ -1144,9 +1199,10 @@
 
   #searchBar {
     position: absolute;
-    top: 75px;
-    left: 300px;
+    top: 82px;
+    left: 10px;
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
   }
@@ -1154,17 +1210,26 @@
   #searchBar input {
     padding: 10px;
     border: 2px solid #b7b7b7;
-    border-radius: 5px;
-    margin-right: 10px;
+    border-radius: 8px;
+    margin-right: 5px;
+    background-color: rgba(166, 166, 166, 0.093);
+    border-bottom-right-radius: 8px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   #searchBar button {
     padding: 10px 20px;
     background-color: #8a8a8a;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     color: #fff;
     cursor: pointer;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    background-color: rgba(166, 166, 166, 0.093);
+    border-bottom-right-radius: 8px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   .zodiacButtons {
@@ -1244,6 +1309,16 @@
     margin: 4px 2px;
     cursor: pointer;
   }
+
+  #wikiLinkButton:hover {
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    );
+  }
+
   #jumpButton {
     background-color: #cccccc;
     border: none;
@@ -1265,21 +1340,21 @@
     left: 50%;
     transform: translate(-50%);
     background-color: rgba(166, 166, 166, 0.093);
-    padding: 10px;
+    padding: 6px;
     border: 0.5px solid rgba(72, 72, 72, 0.248);
     /* border-radius: 8px; */
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     cursor: default;
     z-index: 100;
-    min-height: 75px;
-    min-width: 250px;
+    min-height: 50px;
+    min-width: 200px;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
   }
 
   .currentPosition {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     padding: 10px;
     color: white;
