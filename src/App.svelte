@@ -126,6 +126,8 @@
             proper: star.proper,
             wikiUrl: star.wikiUrl,
             hip: star.hip,
+            flam: star.flam,
+            con: star.con,
           }));
         addStars(starsData);
         animate();
@@ -189,17 +191,21 @@
       sphere.position.set(star.y, star.z, star.x);
       // console.log("adding user data");
       sphere.userData.starData = {
-        id: star.id,
         x: star.x,
         y: star.y,
         z: star.z,
+        id: star.id,
         absmag: star.absmag,
         ci: star.ci,
         mag: star.mag,
         dist: star.dist,
+        ra: star.ra,
+        dec: star.dec,
         proper: star.proper,
-        hip: star.hip,
         wikiUrl: star.wikiUrl,
+        hip: star.hip,
+        flam: star.flam,
+        con: star.con,
       }; // Daten anhängen
       scene.add(sphere);
     });
@@ -765,11 +771,27 @@
   async function submit() {
     const sce = scene.children.reverse();
     console.log(name);
+    const lowerName = name.toLowerCase();
+    name = 'Suche nach Stern';
+    console.log(`Searching for: ${lowerName}`);
     const starResult = await sce.find((child) => {
       if (child.type === "Mesh") {
-        if (child.userData.starData.proper === name) console.log(`found star ${name}`);
+        let flamConCombined;
+        if (child.userData.starData.flam && child.userData.starData.con) {
+          const flam = child.userData.starData.flam;
+          const stringFlam = flam.toString();
+          const con = child.userData.starData.con;
+          const lowerCon = con.toLowerCase();
+          flamConCombined = `${stringFlam} ${lowerCon}`
+          console.log(`${stringFlam} ${lowerCon}`)
+        }
+        // console.log(child.userData.starData.flam );
+        // console.log(child);
+        // console.log(flamConCombined);
+        const starName = child.userData.starData.proper?.toLowerCase();
+        if (starName?.includes(lowerName)) console.log(`found star ${name}`);
         return (
-          child.userData.starData && child.userData.starData.proper === name
+          child.userData.starData && (starName?.includes(lowerName) || lowerName == flamConCombined)
         );
       }
     });
@@ -781,6 +803,7 @@
         showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
         showzodiacInfosBox = false;
         showSearch = false;
+        name = null;
       }
   }
 
