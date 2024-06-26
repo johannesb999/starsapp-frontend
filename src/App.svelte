@@ -606,7 +606,9 @@
   }
 
   function resetTest() {
-    togglePov();
+    // togglePov();
+    toggleValue = false;
+    if(centerAvailable) customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
     lineGroup.clear();
     centerAvailable = false;
   }
@@ -880,7 +882,7 @@
       x: newPoint2.x,
       y: newPoint2.y,
       z: newPoint2.z,
-      duration: 2,
+      duration: 1,
       onUpdate: function() {
         // Nach jedem Update der Position muss controls.update() aufgerufen werden, um die Änderungen anzuwenden
         controls.update();
@@ -944,15 +946,25 @@
     style="display: {showzodiacInfosBox ? 'flex' : 'none'} !important;"
   >
     <!-- Stellen Sie sicher, dass alle Inhalte hier innerhalb sind -->
-    <div class="zodiacStarLinksHeader">{infoContent}</div>
-    {#if selectedArray && selectedArray.length > 0}
-    <href>{zodiacWiki}</href>
-      {#each selectedArray as star}
-        <button class="jumpToStar2Button" on:click|stopPropagation={() => jumpToStar2(star)}>
-          {star.id}
-        </button>
-      {/each}
-    {/if}
+    <div class="zodiacStarLinksHeader" id="zodiacInfosBoxName">
+      {infoContent}
+      <button
+        id="wikiLinkButton"
+        on:click|stopPropagation={() => window.open(zodiacWiki, "_blank")}
+        >Wikipedia</button
+      > 
+    </div>
+    <div class="zodiacContent"> <!-- Diese Klasse dient zur Abgrenzung des Inhaltsbereichs -->
+      {#if selectedArray && selectedArray.length > 0}
+        {#each selectedArray as star}
+          <button class="jumpToStar2Button" on:click|stopPropagation={() => jumpToStar2(star)}>
+            {star.proper ? star.proper : star.flam + star.con || star.hip}
+          </button>
+        {/each}
+      {/if}
+  </div>
+
+
   </div>
 
   <div
@@ -1394,14 +1406,34 @@
   }
   /* ende sternzeichen auswahl Kontainer ende */
 
+  #zodiacInfosBox::-webkit-scrollbar {
+    display: none; /* Für WebKit-Browser wie Chrome und Safari */
+  }
+
+  #zodiacInfosBoxName {
+    position: sticky;
+    top: 0; /* Hier stellen Sie ein, dass es am oberen Rand "kleben" bleibt */
+    color: white;
+    font-size: 28px;
+    z-index: 1; /* Stellt sicher, dass die Überschrift über den anderen Inhalten liegt */
+    display: flex;
+    flex-direction: column;
+  } 
+
   #zodiacInfosBox {
     position: absolute;
     top: 10px;
     right: 10px;
     background-color: rgba(166, 166, 166, 0.093);
     padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 0px;
+    max-height: 47vh;
+    overflow-y: auto;
     border: 0.5px solid rgba(72, 72, 72, 0.248);
     border-radius: 8px;
+    min-width: 220px;
     /* cursor: pointer; */
     border: 0.5px solid rgba(72, 72, 72, 0.248);
     text-align: left; /* Add this line to align the content to the left */
@@ -1410,6 +1442,15 @@
     display: flex;
     flex-direction: column;
   }
+
+  .zodiacContent {
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 10px;
+}
+
 
   .zodiacStarLinksHeader {
     color: white;
