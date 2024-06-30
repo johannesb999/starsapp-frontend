@@ -11,6 +11,7 @@
   import { arrays } from "./data/tierkreis";
   import Switch from "./components/Switch.svelte";
 
+  const darkZodiacMaterial = new THREE.LineBasicMaterial({ color:'#303030', transparent: true, opacity: 0})
   let raycaster = new THREE.Raycaster();
   let raycaster2 = new THREE.Raycaster();
   let mouse = new THREE.Vector2();
@@ -479,6 +480,14 @@ window.addEventListener('mousemove', onMouseMove);
   async function returnToSun() {
     hideInfo();
 
+    console.log(showZodiacSelection);
+    if(showZodiacSelection) {
+      fadeIn(darkZodiacMaterial);
+      // fadeOut(materials[0]);
+      // fadeOut(materials[1]);
+      // fadeIn(materials[0]);
+      // fadeIn(materials[1]);
+    }
     let originalPosition;
     const angle = THREE.MathUtils.degToRad(337.5);
     const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
@@ -565,10 +574,12 @@ window.addEventListener('mousemove', onMouseMove);
     toggleValue = false;
   }
 
+ 
 
 
 
   async function jumpToStar2(star) {
+    fadeOut(darkZodiacMaterial);
     console.log(selectedStar);
     console.log(star);
     selectedStar = star;
@@ -655,7 +666,6 @@ window.addEventListener('mousemove', onMouseMove);
     }
   }
 
-  const darkZodiacMaterial = new THREE.LineBasicMaterial({ color:'#303030', transparent: true, opacity: 0})
   async function add2ndLine(start, end) {
     let geometry = new THREE.BufferGeometry();
     let vertices = new Float32Array([
@@ -997,6 +1007,7 @@ window.addEventListener('mousemove', onMouseMove);
   import ErdeMitAuge from "./assets/Erde_mit_Auge.svg";
   import constellationX from "./assets/constelX.svg";
   import { draw } from "svelte/transition";
+  import { clearcoatRoughness } from "three/examples/jsm/nodes/Nodes.js";
 
   let headerIndex = 0;
   const headerMappings = [
