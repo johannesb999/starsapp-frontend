@@ -1706,7 +1706,7 @@
     font-weight: bold;
     padding: 10px;
     padding-bottom: initial;
-    color: white;
+    color: rgb(188, 0, 0);
   }
   /* ende infobox die aktuelle Position enzeigt ende */
 
