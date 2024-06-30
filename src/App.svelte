@@ -11,7 +11,11 @@
   import { arrays } from "./data/tierkreis";
   import Switch from "./components/Switch.svelte";
 
-  const darkZodiacMaterial = new THREE.LineBasicMaterial({ color:'#303030', transparent: true, opacity: 0})
+  const darkZodiacMaterial = new THREE.LineBasicMaterial({
+    color: "#303030",
+    transparent: true,
+    opacity: 0,
+  });
   let raycaster = new THREE.Raycaster();
   let raycaster2 = new THREE.Raycaster();
   let mouse = new THREE.Vector2();
@@ -474,7 +478,7 @@
     hideInfo();
 
     console.log(showZodiacSelection);
-    if(showZodiacSelection) {
+    if (showZodiacSelection) {
       fadeIn(darkZodiacMaterial);
       // fadeOut(materials[0]);
       // fadeOut(materials[1]);
@@ -570,10 +574,6 @@
     // else customLookAt(0, 0, 0);
     toggleValue = false;
   }
-
- 
-
-
 
   async function jumpToStar2(star) {
     fadeOut(darkZodiacMaterial);
@@ -721,7 +721,7 @@
         addLine(array[i], array[i + 1], currentMaterial, currentLineGroup);
       }
       scene.add(currentLineGroup);
-      fadeIn(currentMaterial);    
+      fadeIn(currentMaterial);
       previousLineGroup.clear();
       scene.remove(previousLineGroup);
     } else {
@@ -1377,9 +1377,12 @@
         <p style="margin-bottom: 5px;">
           AbsoluteMagnitude: {lastRemovedStar.absmag}
         </p>
-        <button id="wikiLinkButton2" on:click|stopPropagation={() => window.open(lastRemovedStar.wikiUrl, "_blank")}>Wikipedia</button>
+        <button
+          id="wikiLinkButton2"
+          on:click|stopPropagation={() =>
+            window.open(lastRemovedStar.wikiUrl, "_blank")}>Wikipedia</button
+        >
       </div>
-      
     </div>
   </div>
 
@@ -1764,7 +1767,7 @@
     cursor: pointer;
     gap: 5px;
     padding: 15px 32px;
-    text-align: center;
+    text-align: c   enter;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
