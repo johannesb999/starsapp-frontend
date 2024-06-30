@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import axios from "axios";
   import * as THREE from "three";
-  import TWEEN from '@tweenjs/tween.js';
+  import TWEEN from "@tweenjs/tween.js";
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
   import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
   import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
@@ -77,12 +77,12 @@
       window.innerWidth / window.innerHeight,
       0.1,
       300
-    ); 
+    );
     camera.position.z = 0.0001;
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000000); // Setzen Sie explizit eine Hintergrundfarbe
-    
+
     scene.rotation.z = THREE.MathUtils.degToRad(337.5);
 
     renderer = new THREE.WebGLRenderer();
@@ -172,7 +172,7 @@
       let color = getColorByCI(star.ci);
       let intensity = getIntensityByMag(star.absmag);
       if (star.id === 1) {
-        color = '#FFC700';
+        color = "#FFC700";
         intensity = 8;
       }
       if (isNaN(scaledRadius)) {
@@ -192,9 +192,9 @@
         emissive: color,
         emissiveIntensity: intensity,
       });
-      
+
       const sphere = new THREE.Mesh(starGeometry, starMaterial);
-      
+
       sphere.position.set(star.y, star.z, star.x);
       sphere.userData.starData = {
         x: star.x,
@@ -213,11 +213,11 @@
         flam: star.flam,
         con: star.con,
         bayer: star.bayer,
-      }; 
+      };
       scene.add(sphere);
     });
-    const radius = 290; 
-    const points = 64; 
+    const radius = 290;
+    const points = 64;
 
     const circlePoints = [];
     for (let i = 0; i <= points; i++) {
@@ -335,8 +335,6 @@
     controls.update();
   }
 
-
-
   function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -365,50 +363,45 @@
   }
   window.addEventListener("click", onMouseClick);
 
+  function onMouseMove(event) {
+    event.preventDefault();
 
-function onMouseMove(event) {
-  event.preventDefault();
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    raycaster2.setFromCamera(mouse, camera);
+    raycaster2.params.Points.threshold = 0.1; // Für PointCloud-Objekte, falls verwendet
+    raycaster2.params.Mesh.threshold = 0.1; // Für Mesh-Objekte
 
-  raycaster2.setFromCamera(mouse, camera);
-  raycaster2.params.Points.threshold = 0.1; // Für PointCloud-Objekte, falls verwendet
-  raycaster2.params.Mesh.threshold = 0.1; // Für Mesh-Objekte
-  
-  const intersects = raycaster2.intersectObjects(scene.children, true);
-  const tooltip = document.getElementById('tooltip');
-  if (intersects.length > 0) {
-    if(intersects[0].object.type == "Mesh") {
+    const intersects = raycaster2.intersectObjects(scene.children, true);
+    const tooltip = document.getElementById("tooltip");
+    if (intersects.length > 0) {
+      if (intersects[0].object.type == "Mesh") {
+        const firstObject = intersects[0].object;
+        if (
+          (firstObject.userData.starData &&
+            firstObject.userData.starData.proper) ||
+          firstObject.userData.starData.hip
+        ) {
+          tooltip.style.display = "block";
+          tooltip.innerHTML = firstObject.userData.starData.proper
+            ? firstObject.userData.starData.proper
+            : firstObject.userData.starData.bayer
+              ? `${firstObject.userData.starData.bayer} ${firstObject.userData.starData.con}`
+              : firstObject.userData.starData.flam
+                ? `${firstObject.userData.starData.flam} ${firstObject.userData.starData.con}`
+                : `HIP: ${firstObject.userData.starData.hip}`;
 
-      const firstObject = intersects[0].object;
-      if (firstObject.userData.starData && firstObject.userData.starData.proper || firstObject.userData.starData.hip) {
-        tooltip.style.display = 'block';
-        tooltip.innerHTML = firstObject.userData.starData.proper 
-  ? firstObject.userData.starData.proper 
-  : firstObject.userData.starData.bayer 
-    ? `${firstObject.userData.starData.bayer} ${firstObject.userData.starData.con}` 
-    : firstObject.userData.starData.flam 
-      ? `${firstObject.userData.starData.flam} ${firstObject.userData.starData.con}` 
-      : `HIP: ${firstObject.userData.starData.hip}`;
-
-        tooltip.style.left = event.clientX + 'px';
-        tooltip.style.top = event.clientY - 40 + 'px';
+          tooltip.style.left = event.clientX + "px";
+          tooltip.style.top = event.clientY - 40 + "px";
+        }
       }
+    } else {
+      tooltip.style.display = "none";
     }
-  } else {
-    tooltip.style.display = 'none';
   }
-}
 
-window.addEventListener('mousemove', onMouseMove);
-
-
-
-
-
-
-
+  window.addEventListener("mousemove", onMouseMove);
 
   async function jumpToStar() {
     const angle = THREE.MathUtils.degToRad(337.5);
@@ -482,16 +475,20 @@ window.addEventListener('mousemove', onMouseMove);
     let originalPosition;
     const angle = THREE.MathUtils.degToRad(337.5);
     const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
-    if(centerAvailable) {
+    if (centerAvailable) {
       console.log(centerKoords);
-      originalPosition = new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x);
+      originalPosition = new THREE.Vector3(
+        centerKoords.y,
+        centerKoords.z,
+        centerKoords.x
+      );
     } else {
       originalPosition = new THREE.Vector3(0.000005, 0, 0);
     }
 
     let newPosition = originalPosition.applyMatrix4(rotationMatrix);
-    console.log(newPosition)
-    
+    console.log(newPosition);
+
     await gsap.to(controls.target, {
       x: newPosition.x,
       y: newPosition.y,
@@ -511,10 +508,10 @@ window.addEventListener('mousemove', onMouseMove);
       duration: 2,
     });
 
-    if(centerAvailable) {
+    if (centerAvailable) {
       customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
     } else {
-      customLookAt(0,0,0);
+      customLookAt(0, 0, 0);
     }
 
     selectedStar = {
@@ -564,9 +561,6 @@ window.addEventListener('mousemove', onMouseMove);
     // else customLookAt(0, 0, 0);
     toggleValue = false;
   }
-
-
-
 
   async function jumpToStar2(star) {
     console.log(selectedStar);
@@ -641,7 +635,6 @@ window.addEventListener('mousemove', onMouseMove);
     // disposeMaterial(starToRemove);
   }
 
-
   async function addAllLines() {
     console.log(typeof arrays);
     for (const key in arrays) {
@@ -655,7 +648,11 @@ window.addEventListener('mousemove', onMouseMove);
     }
   }
 
-  const darkZodiacMaterial = new THREE.LineBasicMaterial({ color:'#303030', transparent: true, opacity: 0})
+  const darkZodiacMaterial = new THREE.LineBasicMaterial({
+    color: "#303030",
+    transparent: true,
+    opacity: 0,
+  });
   async function add2ndLine(start, end) {
     let geometry = new THREE.BufferGeometry();
     let vertices = new Float32Array([
@@ -676,15 +673,22 @@ window.addEventListener('mousemove', onMouseMove);
   let zodiacWiki = "";
   let currentMaterialIndex = 0;
   let materials = [];
-  materials[0] = new THREE.LineBasicMaterial({ color: '#B8EEFF', transparent: true, opacity: 0 });
-  materials[1] = new THREE.LineBasicMaterial({ color: '#B8EEFF', transparent: true, opacity: 0 });
+  materials[0] = new THREE.LineBasicMaterial({
+    color: "#B8EEFF",
+    transparent: true,
+    opacity: 0,
+  });
+  materials[1] = new THREE.LineBasicMaterial({
+    color: "#B8EEFF",
+    transparent: true,
+    opacity: 0,
+  });
   let lineGroups = [];
   lineGroups[0] = new THREE.Group();
   lineGroups[1] = new THREE.Group();
 
   // const LinesMaterial = new THREE.LineBasicMaterial({ color: '#B8EEFF', transparent: true, opacity: 0 });
   async function updateLines(arrayName) {
-
     const previousMaterial = materials[currentMaterialIndex];
     const previousLineGroup = lineGroups[currentMaterialIndex];
     currentMaterialIndex = (currentMaterialIndex + 1) % 2;
@@ -692,15 +696,15 @@ window.addEventListener('mousemove', onMouseMove);
     const currentLineGroup = lineGroups[currentMaterialIndex];
 
     if (previousLineGroup.children.length > 0) {
-        fadeOut(previousMaterial);
+      fadeOut(previousMaterial);
     }
-    
+
     let array = arrays[arrayName];
     zodiacWiki = array[0];
     selectedArray = removeDuplicates(array);
     centerKoords = array[1];
     centerAvailable = true;
-    
+
     await customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
 
     if (array) {
@@ -708,14 +712,14 @@ window.addEventListener('mousemove', onMouseMove);
         addLine(array[i], array[i + 1], currentMaterial, currentLineGroup);
       }
       scene.add(currentLineGroup);
-      await fadeIn(currentMaterial);    
+      await fadeIn(currentMaterial);
       previousLineGroup.clear();
-    scene.remove(previousLineGroup);
+      scene.remove(previousLineGroup);
     } else {
       console.error("Unbekanntes Array:", arrayName);
     }
   }
-  
+
   function addLine(start, end, material, currentLineGroup) {
     let geometry = new THREE.BufferGeometry();
     let vertices = new Float32Array([
@@ -733,23 +737,23 @@ window.addEventListener('mousemove', onMouseMove);
   }
 
   function fadeIn(material) {
-            return new Promise((resolve) => {
-                new TWEEN.Tween(material)
-                    .to({ opacity: 1 }, 2000)
-                    .easing(TWEEN.Easing.Quadratic.Out)
-                    .onComplete(resolve)
-                    .start();
-            });
+    return new Promise((resolve) => {
+      new TWEEN.Tween(material)
+        .to({ opacity: 1 }, 2000)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .onComplete(resolve)
+        .start();
+    });
   }
 
   function fadeOut(material) {
-            // return new Promise((resolve) => {
-                new TWEEN.Tween(material)
-                    .to({ opacity: 0 }, 500)
-                    .easing(TWEEN.Easing.Quadratic.Out)
-                    // .onComplete(resolve)
-                    .start();
-            // });
+    // return new Promise((resolve) => {
+    new TWEEN.Tween(material)
+      .to({ opacity: 0 }, 500)
+      .easing(TWEEN.Easing.Quadratic.Out)
+      // .onComplete(resolve)
+      .start();
+    // });
   }
 
   function moveToConstellation(newTarget) {
@@ -792,7 +796,7 @@ window.addEventListener('mousemove', onMouseMove);
 
   function toggleZodiacSelectionContainer() {
     showZodiacSelection = !showZodiacSelection;
-    if(showZodiacSelection) fadeIn(darkZodiacMaterial);
+    if (showZodiacSelection) fadeIn(darkZodiacMaterial);
     if (!showZodiacSelection) {
       fadeOut(darkZodiacMaterial);
       showzodiacInfosBox = false;
@@ -933,43 +937,48 @@ window.addEventListener('mousemove', onMouseMove);
   let name;
 
   async function submit() {
-  const sce = scene.children.reverse();
-  const lowerName = name.toLowerCase();
-  name = "Suche nach Stern";
-  const starResult = await sce.find((child) => {
-    if (child.type === "Mesh") {
-      let flamConCombined;
-      let bayerConCombined;
-      if (child.userData.starData.flam && child.userData.starData.con) {
-        const flam = child.userData.starData.flam.toString();
-        const lowerCon = child.userData.starData.con.toLowerCase();
-        flamConCombined = `${flam} ${lowerCon}`;
+    const sce = scene.children.reverse();
+    const lowerName = name.toLowerCase();
+    name = "Suche nach Stern";
+    const starResult = await sce.find((child) => {
+      if (child.type === "Mesh") {
+        let flamConCombined;
+        let bayerConCombined;
+        if (child.userData.starData.flam && child.userData.starData.con) {
+          const flam = child.userData.starData.flam.toString();
+          const lowerCon = child.userData.starData.con.toLowerCase();
+          flamConCombined = `${flam} ${lowerCon}`;
+        }
+        if (child.userData.starData.bayer && child.userData.starData.con) {
+          const bayer = child.userData.starData.bayer.toString().toLowerCase();
+          const lowerCon = child.userData.starData.con.toLowerCase();
+          bayerConCombined = `${bayer} ${lowerCon}`;
+        }
+        const starName = child.userData.starData.proper?.toLowerCase();
+        return (
+          child.userData.starData &&
+          (starName == lowerName ||
+            lowerName === flamConCombined ||
+            lowerName === bayerConCombined)
+        );
       }
-      if (child.userData.starData.bayer && child.userData.starData.con) {
-        const bayer = child.userData.starData.bayer.toString().toLowerCase();
-        const lowerCon = child.userData.starData.con.toLowerCase();
-        bayerConCombined = `${bayer} ${lowerCon}`;
-      }
-      const starName = child.userData.starData.proper?.toLowerCase();
-      return child.userData.starData && (starName == lowerName || lowerName === flamConCombined || lowerName === bayerConCombined);
+    });
+    if (starResult && starResult.userData && starResult.userData.starData) {
+      selectedStar = {
+        ...starResult.userData.starData,
+        object: starResult,
+      };
+      customLookAtControls(selectedStar.y, selectedStar.z, selectedStar.x);
+      showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
+      showzodiacInfosBox = false;
+      showSearch = false;
+      name = null;
+    } else {
+      console.log("Kein passender Stern gefunden.");
+      name = null;
+      // Zusätzliche Logik hier, wenn kein Stern gefunden wurde
     }
-  });
-  if (starResult && starResult.userData && starResult.userData.starData) {
-    selectedStar = {
-      ...starResult.userData.starData,
-      object: starResult,
-    };
-    customLookAtControls(selectedStar.y, selectedStar.z, selectedStar.x);
-    showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
-    showzodiacInfosBox = false;
-    showSearch = false;
-    name = null;
-  } else {
-    console.log('Kein passender Stern gefunden.');
-    name = null;
-    // Zusätzliche Logik hier, wenn kein Stern gefunden wurde
   }
-}
 
   function handleKeyPress(event) {
     if (event.keyCode === 13) {
@@ -1010,22 +1019,24 @@ window.addEventListener('mousemove', onMouseMove);
   // }
 
   //infoBoxLookAtStarTitle
-$: currentHeader = selectedStar.proper
+  $: currentHeader = selectedStar.proper
     ? `Name: ${selectedStar.proper}`
     : selectedStar.bayer
-    ? `Bayer: ${selectedStar.bayer} ${selectedStar.con}`
-    : selectedStar.flam
-    ? `Flamsteed: ${selectedStar.flam} ${selectedStar.con}`
-    : `HIP: ${selectedStar.hip}`;
+      ? `Bayer: ${selectedStar.bayer} ${selectedStar.con}`
+      : selectedStar.flam
+        ? `Flamsteed: ${selectedStar.flam} ${selectedStar.con}`
+        : `HIP: ${selectedStar.hip}`;
   // lastRemovedStar
-$: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper
-  ? `Name: ${lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper}`
-  : lastRemovedStar?.bayer || lastRemovedStar?.object.userData.starData.bayer
-  ? `Bayer: ${lastRemovedStar?.bayer || lastRemovedStar?.object.userData.starData.bayer} ${lastRemovedStar?.con || lastRemovedStar?.object.userData.starData.con}`
-  : lastRemovedStar?.flam || lastRemovedStar?.object.userData.starData.flam
-  ? `Flamsteed: ${lastRemovedStar?.flam || lastRemovedStar?.object.userData.starData.flam} ${lastRemovedStar?.con || lastRemovedStar?.object.userData.starData.con}`
-  : `HIP: ${lastRemovedStar?.hip || lastRemovedStar?.object.userData.starData.hip}`;
-
+  $: currentHeaderLastRemoved =
+    lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper
+      ? `Name: ${lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper}`
+      : lastRemovedStar?.bayer ||
+          lastRemovedStar?.object.userData.starData.bayer
+        ? `Bayer: ${lastRemovedStar?.bayer || lastRemovedStar?.object.userData.starData.bayer} ${lastRemovedStar?.con || lastRemovedStar?.object.userData.starData.con}`
+        : lastRemovedStar?.flam ||
+            lastRemovedStar?.object.userData.starData.flam
+          ? `Flamsteed: ${lastRemovedStar?.flam || lastRemovedStar?.object.userData.starData.flam} ${lastRemovedStar?.con || lastRemovedStar?.object.userData.starData.con}`
+          : `HIP: ${lastRemovedStar?.hip || lastRemovedStar?.object.userData.starData.hip}`;
 
   function toggleinfoBoxHeaderLastRemoved() {
     headerIndex = (headerIndex + 1) % headerMappings.length;
@@ -1103,16 +1114,16 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
       }
     });
 
-    if(sun) {
+    if (sun) {
       const originalColor = sun.material.color.clone();
       const originalEmissive = sun.material.emissive.clone();
 
       sun.material.color.set(0xff0000);
       sun.material.emissive.set(0xff0000);
-      
+
       setTimeout(() => {
-          sun.material.color.copy(originalColor);
-          sun.material.emissive.copy(originalEmissive);
+        sun.material.color.copy(originalColor);
+        sun.material.emissive.copy(originalEmissive);
       }, 500);
     }
 
@@ -1148,7 +1159,7 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
 
 <!-- HTML -->
 <main>
-  <div id="tooltip" >Tooltip</div>
+  <div id="tooltip">Tooltip</div>
 
   <div
     id="zodiacInfosBox"
@@ -1264,7 +1275,11 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
       bind:this={searchRef}
       style="display: {showSearch ? 'flex' : 'none'};"
     >
-    <input bind:value={name} placeholder="enter name of star" on:keyup={handleKeyPress} />
+      <input
+        bind:value={name}
+        placeholder="enter name of star"
+        on:keyup={handleKeyPress}
+      />
       <button on:click|stopPropagation={submit}>Submit</button>
     </div>
     <!-- quickBar -->
@@ -1313,7 +1328,7 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
     <!-- weitere infos -->
     <p>Magnitude: {selectedStar.mag}</p>
     <p>Entfernung: {(selectedStar.dist * 3.26).toFixed(2)} Lichtjahre</p>
-    <p>Farbindex: {selectedStar.ci}</p>
+    <!-- <p>Farbindex: {selectedStar.ci}</p> -->
     <p>AbsoluteMagnitude: {selectedStar.absmag}</p>
 
     <button id="jumpButton" on:click|stopPropagation={jumpToStar}>Sprung</button
@@ -1333,18 +1348,28 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
       {currentHeaderLastRemoved}
     </div>
     <div style="display: flex; flex-direction: row; ">
-      <div style="display: flex;
+      <div
+        style="display: flex;
     flex-direction: column;
-    align-items: start; ">
-    <p style="margin-bottom: 5px;">Magnitude: {lastRemovedStar.mag}</p>
-        <p style="margin-bottom: 5px;">Entfernung: {(lastRemovedStar.dist * 3.26).toFixed(2)} Lichtjahre</p>
+    align-items: start; "
+      >
+        <p style="margin-bottom: 5px;">Magnitude: {lastRemovedStar.mag}</p>
+        <p style="margin-bottom: 5px;">
+          Entfernung: {(lastRemovedStar.dist * 3.26).toFixed(2)} Lichtjahre
+        </p>
       </div>
-      <div style="margin-left:20px; display: flex;
+      <div
+        style="margin-left:20px; display: flex;
     flex-direction: column;
-    align-items: start;">
-    <p style="margin-bottom: 5px;">Farbindex: {lastRemovedStar.ci}</p>
-        <p style="margin-bottom: 5px;">AbsoluteMagnitude: {lastRemovedStar.absmag}</p>
+    align-items: start;"
+      >
+        <!-- <p style="margin-bottom: 5px;">Farbindex: {lastRemovedStar.ci}</p> -->
+        <p style="margin-bottom: 5px;">
+          AbsoluteMagnitude: {lastRemovedStar.absmag}
+        </p>
+        <button id="wikiLinkButton2" on:click|stopPropagation={() => window.open(lastRemovedStar.wikiUrl, "_blank")}>Wikipedia</button>
       </div>
+      
     </div>
   </div>
 
@@ -1567,13 +1592,31 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
   }
 
   #wikiLinkButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    /* background-color: rgba(255, 255, 255, 0.2); */
+    text-decoration: underline;
+  }
+
+  #wikiLinkButton2 {
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 15px 50px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  #wikiLinkButton2:hover {
+    /* background-color: rgba(255, 255, 255, 0.2); */
+    text-decoration: underline;
   }
 
   #jumpButton {
-    background-color: #cccccc;
-    border: none;
-    color: rgb(0, 0, 0);
+    background-color: transparent;
+    border: 1px solid rgba(72, 72, 72, 0.248);
+    color: rgb(255, 255, 255);
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
@@ -1581,6 +1624,11 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
+    font-weight: bold;
+  }
+
+  #jumpButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
   }
   /* ende inhalt der Info box welche den Stern anzeigt den man anklickt ende */
 
@@ -1677,7 +1725,6 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
     border-radius: 8px;
     min-width: 220px;
     /* cursor: pointer; */
-    border: 0.5px solid rgba(72, 72, 72, 0.248);
     text-align: left; /* Add this line to align the content to the left */
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -1693,6 +1740,10 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
     padding-bottom: 10px;
   }
 
+  .zodiacContent::-webkit-scrollbar {
+    display: none; /* Für WebKit-Browser wie Chrome und Safari */
+  }
+
   .zodiacStarLinksHeader {
     color: white;
     font-size: 28px;
@@ -1702,9 +1753,6 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
     border-radius: 5px;
     cursor: pointer;
     gap: 5px;
-    background-color: #cccccc;
-    border: none;
-    color: rgb(0, 0, 0);
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
@@ -1712,20 +1760,24 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
+    background-color: transparent;
+    border: 1px solid rgba(72, 72, 72, 0.248);
+    color: rgb(255, 255, 255);
+    font-weight: bold;
   }
   #tooltip {
-  position: absolute;
-  display: none;
-  background-color: rgba(166, 166, 166, 0.093);
-  color: white;
-  padding: 5px;
-  border-radius: 5px;
-  font-size: 14px;
-  z-index: 1000;
-  pointer-events: none;
-  border: 0.5px solid rgba(72, 72, 72, 0.248);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  transform: translateX(-50%);
-}
+    position: absolute;
+    display: none;
+    background-color: rgba(166, 166, 166, 0.093);
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1000;
+    pointer-events: none;
+    border: 0.5px solid rgba(72, 72, 72, 0.248);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transform: translateX(-50%);
+  }
 </style>
