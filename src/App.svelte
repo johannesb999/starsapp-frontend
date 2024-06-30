@@ -233,7 +233,7 @@
     }
 
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(circlePoints);
-    const lineMaterial = new THREE.LineBasicMaterial({ color: "#585801" });
+    const lineMaterial = new THREE.LineBasicMaterial({ color: "#202020" });
     const line = new THREE.LineLoop(lineGeometry, lineMaterial);
     // line.layers.set(BLOOM_LAYER);
 
@@ -705,7 +705,7 @@
     const currentLineGroup = lineGroups[currentMaterialIndex];
 
     if (previousLineGroup.children.length > 0) {
-      fadeOut(previousMaterial);
+      await fadeOut(previousMaterial);
     }
 
     let array = arrays[arrayName];
@@ -716,14 +716,14 @@
 
     await customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
 
+    previousLineGroup.clear();
+    scene.remove(previousLineGroup);
     if (array) {
       for (let i = 2; i < array.length - 1; i++) {
         addLine(array[i], array[i + 1], currentMaterial, currentLineGroup);
       }
       scene.add(currentLineGroup);
-      fadeIn(currentMaterial);
-      previousLineGroup.clear();
-      scene.remove(previousLineGroup);
+      await fadeIn(currentMaterial);
     } else {
       console.error("Unbekanntes Array:", arrayName);
     }
@@ -748,7 +748,7 @@
   function fadeIn(material) {
     return new Promise((resolve) => {
       new TWEEN.Tween(material)
-        .to({ opacity: 1 }, 2000)
+        .to({ opacity: 1 }, 4000)
         .easing(TWEEN.Easing.Quadratic.Out)
         .onComplete(resolve)
         .start();
@@ -756,13 +756,13 @@
   }
 
   function fadeOut(material) {
-    // return new Promise((resolve) => {
+    return new Promise((resolve) => {
     new TWEEN.Tween(material)
-      .to({ opacity: 0 }, 500)
+      .to({ opacity: 0 }, 1000)
       .easing(TWEEN.Easing.Quadratic.Out)
-      // .onComplete(resolve)
+      .onComplete(resolve)
       .start();
-    // });
+    });
   }
 
   function moveToConstellation(newTarget) {
@@ -1274,6 +1274,15 @@
         ><img class="svgIcon" src={Schütze} alt="Schütze" />
         <span>Schhütze</span>
       </button>
+      <div id="spacer">
+        <p>-</p>
+      </div>
+      <button
+      class="zodiacButtons"
+      on:click|stopPropagation={() => showInfo("Schütze")}
+      ><img class="svgIcon" src={Schütze} alt="Schütze" />
+      <span>Schhütze</span>
+    </button>
       <!-- more -->
       <!-- ansicht in raster -->
     </div>
@@ -1338,7 +1347,7 @@
     <!-- weitere infos -->
     <p>Magnitude: {selectedStar.mag}</p>
     <p>Entfernung: {(selectedStar.dist * 3.26).toFixed(2)} Lichtjahre</p>
-    <!-- <p>Farbindex: {selectedStar.ci}</p> -->
+    <p>Konstellation: {selectedStar.con}</p>
     <p>AbsoluteMagnitude: {selectedStar.absmag}</p>
 
     <button id="jumpButton" on:click|stopPropagation={jumpToStar}>Sprung</button
@@ -1356,6 +1365,11 @@
   >
     <div class="currentPosition">
       {currentHeaderLastRemoved}
+        <button
+          id="wikiLinkButton2"
+          on:click|stopPropagation={() =>
+            window.open(lastRemovedStar.wikiUrl, "_blank")}>Wikipedia</button
+        >
     </div>
     <div style="display: flex; flex-direction: row; ">
       <div
@@ -1363,7 +1377,7 @@
     flex-direction: column;
     align-items: start; "
       >
-        <p style="margin-bottom: 5px;">Magnitude: {lastRemovedStar.mag}</p>
+        <p style="margin-bottom: -10px;">Magnitude: {lastRemovedStar.mag}</p>
         <p style="margin-bottom: 5px;">
           Entfernung: {(lastRemovedStar.dist * 3.26).toFixed(2)} Lichtjahre
         </p>
@@ -1373,15 +1387,11 @@
     flex-direction: column;
     align-items: start;"
       >
-        <!-- <p style="margin-bottom: 5px;">Farbindex: {lastRemovedStar.ci}</p> -->
+        <p style="margin-bottom: -10px;">Konstellation: {lastRemovedStar.con}</p>
         <p style="margin-bottom: 5px;">
           AbsoluteMagnitude: {lastRemovedStar.absmag}
         </p>
-        <button
-          id="wikiLinkButton2"
-          on:click|stopPropagation={() =>
-            window.open(lastRemovedStar.wikiUrl, "_blank")}>Wikipedia</button
-        >
+
       </div>
     </div>
   </div>
@@ -1413,6 +1423,14 @@
 
 <style>
   /* CSS */
+  #spacer {
+    height: 2px;
+    border: 2px solid darkgray;
+    background-color: darkgray;
+    border-radius: 8px;
+    width: 80%;
+    align-self: center;
+  }
   main {
     position: absolute;
     width: 100%;
@@ -1671,8 +1689,12 @@
     font-size: 24px;
     font-weight: bold;
     padding: 10px;
-    padding-bottom: initial;
+    padding-bottom: 0;
+    /* padding-bottom: initial; */
+    margin-bottom: -10px;
     color: white;
+    display: flex;
+    flex-direction: column;
   }
   /* ende infobox die aktuelle Position enzeigt ende */
 
