@@ -718,7 +718,7 @@ window.addEventListener('mousemove', onMouseMove);
         addLine(array[i], array[i + 1], currentMaterial, currentLineGroup);
       }
       scene.add(currentLineGroup);
-      await fadeIn(currentMaterial);    
+      fadeIn(currentMaterial);    
       previousLineGroup.clear();
     scene.remove(previousLineGroup);
     } else {
