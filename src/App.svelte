@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import axios from "axios";
   import * as THREE from "three";
+  import TWEEN from '@tweenjs/tween.js';
   import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
   import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
   import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
@@ -57,7 +58,6 @@
   };
   let sunIgnored = false;
   let showCurrentInfosBox = true;
-  let lineGroup = new THREE.Group();
   let ZoddiacGroup = new THREE.Group();
   let BigZoddiacGroup = new THREE.Group();
 
@@ -169,11 +169,10 @@
         minNewRadius,
         maxNewRadius
       );
-      // console.log(scaledRadius);
       let color = getColorByCI(star.ci);
       let intensity = getIntensityByMag(star.absmag);
       if (star.id === 1) {
-        color = 0xff0000;
+        color = '#FFC700';
         intensity = 8;
       }
       if (isNaN(scaledRadius)) {
@@ -197,7 +196,6 @@
       const sphere = new THREE.Mesh(starGeometry, starMaterial);
       
       sphere.position.set(star.y, star.z, star.x);
-      // console.log("adding user data");
       sphere.userData.starData = {
         x: star.x,
         y: star.y,
@@ -215,13 +213,12 @@
         flam: star.flam,
         con: star.con,
         bayer: star.bayer,
-      }; // Daten anhängen
+      }; 
       scene.add(sphere);
     });
-    const radius = 290; // Radius des Horizonts
-    const points = 64; // Anzahl der Punkte für den Umriss
+    const radius = 290; 
+    const points = 64; 
 
-    // Erzeuge einen Kreis aus Punkten
     const circlePoints = [];
     for (let i = 0; i <= points; i++) {
       const angle = (i / points) * 2 * Math.PI;
@@ -230,271 +227,15 @@
       );
     }
 
-    // Erstelle die Geometrie aus den Punkten
     const lineGeometry = new THREE.BufferGeometry().setFromPoints(circlePoints);
-
-    // Material für die Linie
     const lineMaterial = new THREE.LineBasicMaterial({ color: "#585801" });
-
-    // Erstelle die Linie
     const line = new THREE.LineLoop(lineGeometry, lineMaterial);
     // line.layers.set(BLOOM_LAYER);
 
     line.rotation.y = -Math.PI / 2; // Drehe die Linie auf die XZ-Ebene
-    // line.rotation.z = -THREE.MathUtils.degToRad(-337.5);
-
-    // Füge die Linie zur Szene hinzu
     scene.add(line);
-    if (!drawn) {
-      drawn = true;
-      addAllLines();
-    }
+    addAllLines();
   }
-
-  function animate() {
-    requestAnimationFrame(animate);
-    updateVisibility();
-    renderer.render(scene, camera);
-    composer.render();
-    controls.update();
-  }
-
-  function updateVisibility() {
-    const frustum = new THREE.Frustum();
-    const cameraViewProjectionMatrix = new THREE.Matrix4();
-
-    // Aktualisiere die Frustum-Grenzen basierend auf der aktuellen Kameraposition und -konfiguration
-    cameraViewProjectionMatrix.multiplyMatrices(
-      camera.projectionMatrix,
-      camera.matrixWorldInverse
-    );
-    frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
-
-    // Durchlaufe alle Objekte der Szene und aktualisiere ihre Sichtbarkeit
-    scene.traverse(function (object) {
-      if (object instanceof THREE.Mesh) {
-        object.visible = frustum.intersectsObject(object);
-      }
-    });
-  }
-
-  function onMouseClick(event) {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    raycaster.setFromCamera(mouse, camera);
-    const meshObjects = [];
-    scene.traverse(function (object) {
-      if (object instanceof THREE.Mesh) {
-        meshObjects.push(object);
-      }
-    });
-    const intersects = raycaster.intersectObjects(meshObjects);
-    if (intersects.length > 0) {
-      let firstObject = intersects[0].object;
-      if (firstObject.userData.starData) {
-        selectedStar = {
-          ...firstObject.userData.starData,
-          object: firstObject,
-        };
-        console.log(selectedStar);
-        showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
-        showzodiacInfosBox = false;
-      }
-    } else {
-      showInfoBox = false;
-    }
-  }
-  window.addEventListener("click", onMouseClick);
-
-
-
-
-
-
-
-
-
-
-function onMouseMove(event) {
-  event.preventDefault();
-
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-  raycaster2.setFromCamera(mouse, camera);
-  raycaster2.params.Points.threshold = 0.1; // Für PointCloud-Objekte, falls verwendet
-  raycaster2.params.Mesh.threshold = 0.1; // Für Mesh-Objekte
-  
-  const intersects = raycaster2.intersectObjects(scene.children, true);
-  const tooltip = document.getElementById('tooltip');
-  if (intersects.length > 0) {
-    if(intersects[0].object.type == "Mesh") {
-
-      const firstObject = intersects[0].object;
-      if (firstObject.userData.starData && firstObject.userData.starData.proper || firstObject.userData.starData.hip) {
-        tooltip.style.display = 'block';
-        tooltip.innerHTML = firstObject.userData.starData.proper 
-  ? firstObject.userData.starData.proper 
-  : firstObject.userData.starData.bayer 
-    ? `${firstObject.userData.starData.bayer} ${firstObject.userData.starData.con}` 
-    : firstObject.userData.starData.flam 
-      ? `${firstObject.userData.starData.flam} ${firstObject.userData.starData.con}` 
-      : `HIP: ${firstObject.userData.starData.hip}`;
-
-        tooltip.style.left = event.clientX + 'px';
-        tooltip.style.top = event.clientY - 40 + 'px';
-      }
-    }
-  } else {
-    tooltip.style.display = 'none';
-  }
-}
-
-window.addEventListener('mousemove', onMouseMove);
-
-
-
-
-
-
-
-
-  async function jumpToStar() {
-    const angle = THREE.MathUtils.degToRad(337.5);
-    const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
-    let originalPosition = new THREE.Vector3(
-      selectedStar.y,
-      selectedStar.z,
-      selectedStar.x + 0.01
-    );
-
-    let newPosition = originalPosition.applyMatrix4(rotationMatrix);
-
-    // OrbitControls neu ausrichten
-    await gsap.to(controls.target, {
-      x: newPosition.x,
-      y: newPosition.y,
-      z: newPosition.z,
-      duration: 0.2,
-      onUpdate: function () {
-        controls.update();
-      },
-    });
-
-    await gsap.to(camera.position, {
-      x: newPosition.x,
-      y: newPosition.y,
-      z: newPosition.z,
-      duration: 2,
-    });
-    if (centerAvailable) {
-      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
-    } else {
-      customLookAt(0, 0, 0);
-    }
-
-    if (selectedStar != lastRemovedStar) {
-      if (selectedStar.object) {
-        scene.remove(selectedStar.object);
-        disposeMaterial(selectedStar.object);
-      }
-      if (lastRemovedStar != null) {
-        // console.log("adding Stars", lastRemovedStar);
-        addStars([lastRemovedStar]);
-      }
-      if (selectedStar == lastRemovedStar) {
-        // console.log("nothing happens");
-      } else {
-        // console.log("selectedStar", selectedStar);
-        // console.log("lastRemovedStar", lastRemovedStar);
-        lastRemovedStar = null;
-        lastRemovedStar = selectedStar;
-      }
-    }
-  }
-
-  function disposeMaterial(object) {
-    if (object.geometry) object.geometry.dispose();
-    if (object.material) {
-      if (Array.isArray(object.material)) {
-        object.material.forEach((material) => material.dispose());
-      } else {
-        object.material.dispose();
-      }
-    }
-  }
-
-  async function returnToSun() {
-    hideInfo();
-    // console.log("button pressed");
-    let newPosition = new THREE.Vector3(0.000005, 0, 0);
-    // console.log(newPosition);
-    // OrbitControls neu ausrichten
-    await gsap.to(controls.target, {
-      x: newPosition.x,
-      y: newPosition.y,
-      z: newPosition.z,
-      duration: 1,
-      onUpdate: function () {
-        controls.update();
-      },
-    });
-
-    await gsap.to(camera.position, {
-      x: newPosition.x,
-      y: newPosition.y,
-      z: newPosition.z,
-      duration: 2,
-    });
-
-    selectedStar = {
-      id: 1,
-      x: 0.000005,
-      dist: 0,
-      mag: -26.7,
-      y: 0,
-      z: 0,
-      absmag: 4.85,
-      ci: 0.9,
-      proper: "Sun",
-      hip: 1,
-      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
-    };
-
-    if (lastRemovedStar != null) addStars([lastRemovedStar]);
-    lastRemovedStar = {
-      id: 1,
-      x: 0.000005,
-      dist: 0,
-      mag: -26.7,
-      y: 0,
-      z: 0,
-      absmag: 4.85,
-      ci: 0.9,
-      proper: "Sun",
-      hip: 1,
-      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
-    };
-
-    // console.log("lastRemovedStar", lastRemovedStar);
-    // console.log(scene.children);
-    const sce = scene.children.reverse();
-    const sun = sce.find((child) => {
-      if (child.type === "Mesh") {
-        // console.log("-");
-        // console.log(child);
-        // if (child.userData.starData.id === 1) console.log("hit");
-        return child.userData.starData && child.userData.starData.id === 1;
-      }
-    });
-    scene.remove(sun);
-    disposeMaterial(sun);
-    if (centerAvailable)
-      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
-    else customLookAt(0, 0, 0);
-    toggleValue = false;
-  }
-
   function getColorByCI(B_V) {
     // Berechnung der Temperatur basierend auf dem B-V Farbindex
     const temperature =
@@ -569,6 +310,264 @@ window.addEventListener('mousemove', onMouseMove);
     );
   }
 
+  function updateVisibility() {
+    const frustum = new THREE.Frustum();
+    const cameraViewProjectionMatrix = new THREE.Matrix4();
+
+    cameraViewProjectionMatrix.multiplyMatrices(
+      camera.projectionMatrix,
+      camera.matrixWorldInverse
+    );
+    frustum.setFromProjectionMatrix(cameraViewProjectionMatrix);
+
+    scene.traverse(function (object) {
+      if (object instanceof THREE.Mesh) {
+        object.visible = frustum.intersectsObject(object);
+      }
+    });
+  }
+  function animate() {
+    TWEEN.update();
+    requestAnimationFrame(animate);
+    updateVisibility();
+    renderer.render(scene, camera);
+    composer.render();
+    controls.update();
+  }
+
+
+
+  function onMouseClick(event) {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const meshObjects = [];
+    scene.traverse(function (object) {
+      if (object instanceof THREE.Mesh) {
+        meshObjects.push(object);
+      }
+    });
+    const intersects = raycaster.intersectObjects(meshObjects);
+    if (intersects.length > 0) {
+      let firstObject = intersects[0].object;
+      if (firstObject.userData.starData) {
+        selectedStar = {
+          ...firstObject.userData.starData,
+          object: firstObject,
+        };
+        console.log(selectedStar);
+        showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
+        showzodiacInfosBox = false;
+      }
+    } else {
+      showInfoBox = false;
+    }
+  }
+  window.addEventListener("click", onMouseClick);
+
+
+function onMouseMove(event) {
+  event.preventDefault();
+
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster2.setFromCamera(mouse, camera);
+  raycaster2.params.Points.threshold = 0.1; // Für PointCloud-Objekte, falls verwendet
+  raycaster2.params.Mesh.threshold = 0.1; // Für Mesh-Objekte
+  
+  const intersects = raycaster2.intersectObjects(scene.children, true);
+  const tooltip = document.getElementById('tooltip');
+  if (intersects.length > 0) {
+    if(intersects[0].object.type == "Mesh") {
+
+      const firstObject = intersects[0].object;
+      if (firstObject.userData.starData && firstObject.userData.starData.proper || firstObject.userData.starData.hip) {
+        tooltip.style.display = 'block';
+        tooltip.innerHTML = firstObject.userData.starData.proper 
+  ? firstObject.userData.starData.proper 
+  : firstObject.userData.starData.bayer 
+    ? `${firstObject.userData.starData.bayer} ${firstObject.userData.starData.con}` 
+    : firstObject.userData.starData.flam 
+      ? `${firstObject.userData.starData.flam} ${firstObject.userData.starData.con}` 
+      : `HIP: ${firstObject.userData.starData.hip}`;
+
+        tooltip.style.left = event.clientX + 'px';
+        tooltip.style.top = event.clientY - 40 + 'px';
+      }
+    }
+  } else {
+    tooltip.style.display = 'none';
+  }
+}
+
+window.addEventListener('mousemove', onMouseMove);
+
+
+
+
+
+
+
+
+  async function jumpToStar() {
+    const angle = THREE.MathUtils.degToRad(337.5);
+    const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
+    let originalPosition = new THREE.Vector3(
+      selectedStar.y,
+      selectedStar.z,
+      selectedStar.x + 0.01
+    );
+
+    let newPosition = originalPosition.applyMatrix4(rotationMatrix);
+
+    // OrbitControls neu ausrichten
+    await gsap.to(controls.target, {
+      x: newPosition.x,
+      y: newPosition.y,
+      z: newPosition.z,
+      duration: 0.2,
+      onUpdate: function () {
+        controls.update();
+      },
+    });
+
+    await gsap.to(camera.position, {
+      x: newPosition.x,
+      y: newPosition.y,
+      z: newPosition.z,
+      duration: 2,
+    });
+    showInfoBox = false;
+    if (centerAvailable) {
+      customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+    } else {
+      customLookAt(0, 0, 0);
+    }
+
+    if (selectedStar != lastRemovedStar) {
+      if (selectedStar.object) {
+        scene.remove(selectedStar.object);
+        disposeMaterial(selectedStar.object);
+      }
+      if (lastRemovedStar != null) {
+        // console.log("adding Stars", lastRemovedStar);
+        addStars([lastRemovedStar]);
+      }
+      if (selectedStar == lastRemovedStar) {
+        // console.log("nothing happens");
+      } else {
+        // console.log("selectedStar", selectedStar);
+        // console.log("lastRemovedStar", lastRemovedStar);
+        lastRemovedStar = null;
+        lastRemovedStar = selectedStar;
+      }
+    }
+  }
+
+  function disposeMaterial(object) {
+    if (object.geometry) object.geometry.dispose();
+    if (object.material) {
+      if (Array.isArray(object.material)) {
+        object.material.forEach((material) => material.dispose());
+      } else {
+        object.material.dispose();
+      }
+    }
+  }
+
+  async function returnToSun() {
+    hideInfo();
+
+    let originalPosition;
+    const angle = THREE.MathUtils.degToRad(337.5);
+    const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
+    if(centerAvailable) {
+      console.log(centerKoords);
+      originalPosition = new THREE.Vector3(centerKoords.y, centerKoords.z, centerKoords.x);
+    } else {
+      originalPosition = new THREE.Vector3(0.000005, 0, 0);
+    }
+
+    let newPosition = originalPosition.applyMatrix4(rotationMatrix);
+    console.log(newPosition)
+    
+    await gsap.to(controls.target, {
+      x: newPosition.x,
+      y: newPosition.y,
+      z: newPosition.z,
+      duration: 1,
+      onUpdate: function () {
+        controls.update();
+      },
+    });
+
+    const cameraPosition = new THREE.Vector3(0.000005, 0, 0);
+
+    await gsap.to(camera.position, {
+      x: cameraPosition.x,
+      y: cameraPosition.y,
+      z: cameraPosition.z,
+      duration: 2,
+    });
+
+    if(centerAvailable) {
+      customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
+    } else {
+      customLookAt(0,0,0);
+    }
+
+    selectedStar = {
+      id: 1,
+      x: 0.000005,
+      dist: 0,
+      mag: -26.7,
+      y: 0,
+      z: 0,
+      absmag: 4.85,
+      ci: 0.9,
+      proper: "Sun",
+      hip: 1,
+      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
+    };
+
+    if (lastRemovedStar != null) addStars([lastRemovedStar]);
+    lastRemovedStar = {
+      id: 1,
+      x: 0.000005,
+      dist: 0,
+      mag: -26.7,
+      y: 0,
+      z: 0,
+      absmag: 4.85,
+      ci: 0.9,
+      proper: "Sun",
+      hip: 1,
+      wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
+    };
+
+    // console.log("lastRemovedStar", lastRemovedStar);
+    // console.log(scene.children);
+    const sce = scene.children.reverse();
+    const sun = sce.find((child) => {
+      if (child.type === "Mesh") {
+        // console.log("-");
+        // console.log(child);
+        // if (child.userData.starData.id === 1) console.log("hit");
+        return child.userData.starData && child.userData.starData.id === 1;
+      }
+    });
+    scene.remove(sun);
+    disposeMaterial(sun);
+    // if (centerAvailable)
+    //   customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
+    // else customLookAt(0, 0, 0);
+    toggleValue = false;
+  }
+
+
+
+
   async function jumpToStar2(star) {
     console.log(selectedStar);
     console.log(star);
@@ -642,9 +641,6 @@ window.addEventListener('mousemove', onMouseMove);
     // disposeMaterial(starToRemove);
   }
 
-  // $: if (selectedArray) {
-  //   updateLines(selectedArray);
-  // }
 
   async function addAllLines() {
     console.log(typeof arrays);
@@ -659,6 +655,7 @@ window.addEventListener('mousemove', onMouseMove);
     }
   }
 
+  const darkZodiacMaterial = new THREE.LineBasicMaterial({ color:'#303030', transparent: true, opacity: 0})
   async function add2ndLine(start, end) {
     let geometry = new THREE.BufferGeometry();
     let vertices = new Float32Array([
@@ -671,38 +668,55 @@ window.addEventListener('mousemove', onMouseMove);
     ]);
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    let color = "#303030"; //Math.floor(Math.random() * 0xffffff);
-    let material = new THREE.LineBasicMaterial({ color: color });
-    let line = new THREE.Line(geometry, material);
-    ZoddiacGroup.add(line); // Füge die Linie zur Gruppe hinzu
+    let line = new THREE.Line(geometry, darkZodiacMaterial);
+    ZoddiacGroup.add(line);
     scene.add(ZoddiacGroup);
-    // console.log("drawn shit");
   }
 
   let zodiacWiki = "";
-  function updateLines(arrayName) {
-    lineGroup.clear(); // Löscht nur die Linien in der Gruppe
-    // console.log(arrayName);
+  let currentMaterialIndex = 0;
+  let materials = [];
+  materials[0] = new THREE.LineBasicMaterial({ color: '#B8EEFF', transparent: true, opacity: 0 });
+  materials[1] = new THREE.LineBasicMaterial({ color: '#B8EEFF', transparent: true, opacity: 0 });
+  let lineGroups = [];
+  lineGroups[0] = new THREE.Group();
+  lineGroups[1] = new THREE.Group();
+
+  // const LinesMaterial = new THREE.LineBasicMaterial({ color: '#B8EEFF', transparent: true, opacity: 0 });
+  async function updateLines(arrayName) {
+
+    const previousMaterial = materials[currentMaterialIndex];
+    const previousLineGroup = lineGroups[currentMaterialIndex];
+    currentMaterialIndex = (currentMaterialIndex + 1) % 2;
+    const currentMaterial = materials[currentMaterialIndex];
+    const currentLineGroup = lineGroups[currentMaterialIndex];
+
+    if (previousLineGroup.children.length > 0) {
+        fadeOut(previousMaterial);
+    }
+    
     let array = arrays[arrayName];
-    // console.log(array);
     zodiacWiki = array[0];
-    // console.log(removeDuplicates(array));
     selectedArray = removeDuplicates(array);
-    // console.log(selectedArray);
     centerKoords = array[1];
     centerAvailable = true;
-    // console.log("centerkoords", centerKoords);
+    
+    await customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
+
     if (array) {
       for (let i = 2; i < array.length - 1; i++) {
-        addLine(array[i], array[i + 1]);
+        addLine(array[i], array[i + 1], currentMaterial, currentLineGroup);
       }
-      customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
+      scene.add(currentLineGroup);
+      await fadeIn(currentMaterial);    
+      previousLineGroup.clear();
+    scene.remove(previousLineGroup);
     } else {
       console.error("Unbekanntes Array:", arrayName);
     }
   }
-
-  function addLine(start, end) {
+  
+  function addLine(start, end, material, currentLineGroup) {
     let geometry = new THREE.BufferGeometry();
     let vertices = new Float32Array([
       start.y,
@@ -714,15 +728,30 @@ window.addEventListener('mousemove', onMouseMove);
     ]);
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-    let color = '#B8EEFF'; //Math.floor(Math.random() * 0xffffff);
-    let material = new THREE.LineBasicMaterial({ color: color });
     let line = new THREE.Line(geometry, material);
-    lineGroup.add(line); // Füge die Linie zur Gruppe hinzu
-    scene.add(lineGroup);
-    // console.log(center);
+    currentLineGroup.add(line);
   }
 
-  // Aktuelle Position der Kamera speichern
+  function fadeIn(material) {
+            return new Promise((resolve) => {
+                new TWEEN.Tween(material)
+                    .to({ opacity: 1 }, 2000)
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    .onComplete(resolve)
+                    .start();
+            });
+  }
+
+  function fadeOut(material) {
+            // return new Promise((resolve) => {
+                new TWEEN.Tween(material)
+                    .to({ opacity: 0 }, 500)
+                    .easing(TWEEN.Easing.Quadratic.Out)
+                    // .onComplete(resolve)
+                    .start();
+            // });
+  }
+
   function moveToConstellation(newTarget) {
     gsap.to(controls.target, {
       x: newTarget.x,
@@ -754,7 +783,8 @@ window.addEventListener('mousemove', onMouseMove);
     toggleValue = false;
     if (centerAvailable)
       customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
-    lineGroup.clear();
+    lineGroups[0].clear();
+    lineGroups[1].clear();
     centerAvailable = false;
   }
 
@@ -762,15 +792,15 @@ window.addEventListener('mousemove', onMouseMove);
 
   function toggleZodiacSelectionContainer() {
     showZodiacSelection = !showZodiacSelection;
-    // Automatisch die zodiacInfosBox ausblenden, wenn der Container geschlossen wird
+    if(showZodiacSelection) fadeIn(darkZodiacMaterial);
     if (!showZodiacSelection) {
+      fadeOut(darkZodiacMaterial);
       showzodiacInfosBox = false;
       resetTest();
     }
   }
 
   let infoContent = ""; // Inhalt für das zodiacInfosBox
-  // let displaySmallBox = "none"; // Steuert die Anzeige des zodiacInfosBoxs
   let showzodiacInfosBox = false;
   let showInfoBox = false; //steuert die Anzeige der lookAtStarInfoBox
 
@@ -929,6 +959,7 @@ window.addEventListener('mousemove', onMouseMove);
       ...starResult.userData.starData,
       object: starResult,
     };
+    customLookAtControls(selectedStar.y, selectedStar.z, selectedStar.x);
     showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
     showzodiacInfosBox = false;
     showSearch = false;
@@ -1066,18 +1097,26 @@ $: currentHeaderLastRemoved = lastRemovedStar?.proper || lastRemovedStar?.object
     const sce = scene.children.reverse();
     const sun = sce.find((child) => {
       if (child.type === "Mesh") {
-        console.log("-");
-        // console.log(child);
+        // console.log("-");
         if (child.userData.starData.id === 1) console.log("hit");
         return child.userData.starData && child.userData.starData.id === 1;
       }
     });
 
-    // console.log(sun);
+    if(sun) {
+      const originalColor = sun.material.color.clone();
+      const originalEmissive = sun.material.emissive.clone();
+
+      sun.material.color.set(0xff0000);
+      sun.material.emissive.set(0xff0000);
+      
+      setTimeout(() => {
+          sun.material.color.copy(originalColor);
+          sun.material.emissive.copy(originalEmissive);
+      }, 500);
+    }
+
     if (distance > 1 && sun === undefined) {
-      // console.log(
-      //   "Kamera ist mehr als 10 Einheiten vom Zentrum entfernt. Aktion wird durchgeführt."
-      // );
       const Sonne = {
         id: 1,
         x: 0.000005,
