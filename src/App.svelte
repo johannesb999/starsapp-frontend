@@ -316,7 +316,7 @@
   }
 
   function updateVisibility() {
-    const frustum = new THREE.Frustum();
+    const frustum = new THREE.Frustum();  
     const cameraViewProjectionMatrix = new THREE.Matrix4();
 
     cameraViewProjectionMatrix.multiplyMatrices(
@@ -1134,7 +1134,7 @@
       setTimeout(() => {
         sun.material.color.copy(originalColor);
         sun.material.emissive.copy(originalEmissive);
-      }, 500);
+      }, 2000);
     }
 
     if (distance > 1 && sun === undefined) {
