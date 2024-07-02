@@ -364,6 +364,7 @@
       }
     } else {
       showInfoBox = false;
+      showzodiacInfosBox = false;
     }
   }
   window.addEventListener("click", onMouseClick);
@@ -475,16 +476,9 @@
   }
 
   async function returnToSun() {
-    hideInfo();
+    // hideInfo();
 
-    console.log(showZodiacSelection);
-    if (showZodiacSelection) {
-      fadeIn(darkZodiacMaterial);
-      // fadeOut(materials[0]);
-      // fadeOut(materials[1]);
-      // fadeIn(materials[0]);
-      // fadeIn(materials[1]);
-    }
+
     let originalPosition;
     const angle = THREE.MathUtils.degToRad(337.5);
     const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
@@ -521,6 +515,10 @@
       duration: 2,
     });
 
+    console.log(showZodiacSelection);
+    if (showZodiacSelection) {
+      fadeIn(darkZodiacMaterial);
+    }
     if (centerAvailable) {
       customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
     } else {
@@ -556,22 +554,14 @@
       wikiUrl: "https://de.wikipedia.org/wiki/Sonne",
     };
 
-    // console.log("lastRemovedStar", lastRemovedStar);
-    // console.log(scene.children);
     const sce = scene.children.reverse();
     const sun = sce.find((child) => {
       if (child.type === "Mesh") {
-        // console.log("-");
-        // console.log(child);
-        // if (child.userData.starData.id === 1) console.log("hit");
         return child.userData.starData && child.userData.starData.id === 1;
       }
     });
     scene.remove(sun);
     disposeMaterial(sun);
-    // if (centerAvailable)
-    //   customLookAt(centerKoords.y, centerKoords.z, centerKoords.x);
-    // else customLookAt(0, 0, 0);
     toggleValue = false;
   }
 
@@ -658,6 +648,7 @@
         for (let i = 2; i < array.length - 1; i++) {
           await add2ndLine(array[i], array[i + 1]);
         }
+        scene.add(ZoddiacGroup);
       }
     }
   }
@@ -675,8 +666,8 @@
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     let line = new THREE.Line(geometry, darkZodiacMaterial);
+    line.renderOrder =1;
     ZoddiacGroup.add(line);
-    scene.add(ZoddiacGroup);
   }
 
   let zodiacWiki = "";
@@ -696,7 +687,6 @@
   lineGroups[0] = new THREE.Group();
   lineGroups[1] = new THREE.Group();
 
-  // const LinesMaterial = new THREE.LineBasicMaterial({ color: '#B8EEFF', transparent: true, opacity: 0 });
   async function updateLines(arrayName) {
     const previousMaterial = materials[currentMaterialIndex];
     const previousLineGroup = lineGroups[currentMaterialIndex];
@@ -705,7 +695,11 @@
     const currentLineGroup = lineGroups[currentMaterialIndex];
 
     if (previousLineGroup.children.length > 0) {
-      await fadeOut(previousMaterial);
+      fadeOut(previousMaterial).then(() => {
+      console.log("clearing previous line");
+      previousLineGroup.clear();
+      scene.remove(previousLineGroup);
+    });
     }
 
     let array = arrays[arrayName];
@@ -715,9 +709,6 @@
     centerAvailable = true;
 
     await customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
-
-    previousLineGroup.clear();
-    scene.remove(previousLineGroup);
     if (array) {
       for (let i = 2; i < array.length - 1; i++) {
         addLine(array[i], array[i + 1], currentMaterial, currentLineGroup);
@@ -742,14 +733,15 @@
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     let line = new THREE.Line(geometry, material);
+    line.renderOrder = 2;
     currentLineGroup.add(line);
   }
 
   function fadeIn(material) {
     return new Promise((resolve) => {
       new TWEEN.Tween(material)
-        .to({ opacity: 1 }, 4000)
-        .easing(TWEEN.Easing.Quadratic.Out)
+        .to({ opacity: 1 }, 1500)
+        .easing(TWEEN.Easing.Quadratic.In)
         .onComplete(resolve)
         .start();
     });
@@ -824,17 +816,13 @@
     infoContent = element;
     showzodiacInfosBox = true;
     showInfoBox = false;
-    // displaySmallBox = "block"; // Zeigt das zodiacInfosBox an
     if (!showZodiacSelection) {
       showZodiacSelection = true;
     }
-    // console.log("show info");
   }
 
   function hideInfo() {
-    // displaySmallBox = "none"; // Verbirgt das zodiacInfosBox
     showzodiacInfosBox = false;
-    // console.log("hide info");
   }
 
   function adjustCoordinatesForSceneRotation(x, y, z) {
@@ -1165,6 +1153,8 @@
     }
     customLookAtControls(0, 0, 0);
   }
+
+  let lookingAtStar;
 </script>
 
 <!-- HTML -->
@@ -1191,7 +1181,15 @@
         {#each selectedArray as star}
           <button
             class="jumpToStar2Button"
-            on:click|stopPropagation={() => jumpToStar2(star)}
+            on:click|stopPropagation={() => {
+              if(lookingAtStar && lookingAtStar === star) {
+                jumpToStar2(star)
+                lookingAtStar = null;
+              } else if(star.id !== lastRemovedStar.id) {
+                customLookAtControls(star.y,star.z,star.x);
+                lookingAtStar = star;
+              }
+            }}
           >
             {star.proper ? star.proper : star.flam + star.con || star.hip}
           </button>
