@@ -3123,6 +3123,7 @@ export const arrays = {
   ],
   Orion: [
     "https://de.wikipedia.org/wiki/Orion_(Sternbild)",
+    { x: 24.001473684210524, y: 190.10415789473686, z: 13.54863157894737 },
     {
       _id: "659bb8edd8c798c315f40c21",
       x: 0.199,
@@ -3201,6 +3202,38 @@ export const arrays = {
       wikiUrl: "https://en.wikipedia.org/wiki/Xi%20Orionis",
       hip: 29426,
       flam: 70,
+      con: "Ori",
+    },
+    {
+      _id: "659bb8edd8c798c315f41530",
+      x: -0.487,
+      y: 46.832,
+      z: 7.961,
+      absmag: 0.736,
+      mag: 4.12,
+      dist: 47.5059,
+      id: 479449,
+      ci: 0.17,
+      proper: undefined,
+      wikiUrl: "https://en.wikipedia.org/wiki/Mu%20Orionis",
+      hip: 28614,
+      flam: 61,
+      con: "Ori",
+    },
+    {
+      _id: "659bb8edd8c798c315f41b49",
+      x: -5.912,
+      y: 178.859,
+      z: 47.177,
+      absmag: -1.917,
+      mag: 4.42,
+      dist: 185.0703,
+      id: 491348,
+      ci: -0.164,
+      proper: undefined,
+      wikiUrl: "https://en.wikipedia.org/wiki/Nu%20Orionis",
+      hip: 29038,
+      flam: 67,
       con: "Ori",
     },
     {
@@ -3590,6 +3623,7 @@ export const arrays = {
   
   kleinerBär: [
     "https://de.wikipedia.org/wiki/Kleiner_B%C3%A4r#:~:text=Kleiner%20B%C3%A4r%2C%20lateinisch%20Ursa%20Minor,Polaris)%20nahe%20dem%20n%C3%B6rdlichen%20Himmelspol.",
+    { x: -8.224, y: -12.098142857142859, z: 86.55628571428572 },
     {
       _id: "659bb8e8d8c798c315f36e9a",
       ra: 2.52975,
@@ -3648,41 +3682,9 @@ export const arrays = {
       flam: 16,
       con: "UMi",
     },
-  
-    {
-      _id: "659bb8fcd8c798c315f6193b",
-      x: -29.797,
-      y: -35.741,
-      z: 141.814,
-      absmag: -2.87,
-      mag: 3,
-      dist: 149.2537,
-      id: 1509654,
-      ci: 0.058,
-      proper: "Pherkad",
-      wikiUrl: "https://en.wikipedia.org/wiki/Gamma%20Ursae%20Minoris",
-      hip: 75097,
-      flam: 13,
-      con: "UMi",
-    },
-  
-    {
-      _id: "659bb8fbd8c798c315f6025c",
-      x: -8.058,
-      y: -7.43,
-      z: 38.619,
-      absmag: -0.948,
-      mag: 2.07,
-      dist: 40.1445,
-      id: 1466797,
-      ci: 1.465,
-      proper: "Kochab",
-      wikiUrl: "https://en.wikipedia.org/wiki/Beta%20Ursae%20Minoris",
-      hip: 72607,
-      flam: 7,
-      con: "UMi",
-    },
-  
+    
+    
+    
     {
       _id: "659bb8fdd8c798c315f6468a",
       x: -3.184,
@@ -3699,7 +3701,39 @@ export const arrays = {
       flam: 21,
       con: "UMi",
     },
-  
+    
+      {
+        _id: "659bb8fcd8c798c315f6193b",
+        x: -29.797,
+        y: -35.741,
+        z: 141.814,
+        absmag: -2.87,
+        mag: 3,
+        dist: 149.2537,
+        id: 1509654,
+        ci: 0.058,
+        proper: "Pherkad",
+        wikiUrl: "https://en.wikipedia.org/wiki/Gamma%20Ursae%20Minoris",
+        hip: 75097,
+        flam: 13,
+        con: "UMi",
+      },
+    {
+      _id: "659bb8fbd8c798c315f6025c",
+      x: -8.058,
+      y: -7.43,
+      z: 38.619,
+      absmag: -0.948,
+      mag: 2.07,
+      dist: 40.1445,
+      id: 1466797,
+      ci: 1.465,
+      proper: "Kochab",
+      wikiUrl: "https://en.wikipedia.org/wiki/Beta%20Ursae%20Minoris",
+      hip: 72607,
+      flam: 7,
+      con: "UMi",
+    },
     {
       _id: "659bb8fcd8c798c315f62bb9",
       x: -13.011,
@@ -3720,6 +3754,7 @@ export const arrays = {
   
   Kassiopaia: [
     "https://de.wikipedia.org/wiki/Kassiopeia_(Sternbild)",
+    { x: 38.1108, y: 11.9738, z: 72.14320000000001 },
     {
       _id: "659bb8e7d8c798c315f353fe",
       x: 49.17,
@@ -3798,6 +3833,11 @@ export const arrays = {
   ],
   Schlangenträger: [
     "https://de.wikipedia.org/wiki/Schlangentr%C3%A4ger",
+    {
+      x: -13.094000000000003,
+      y: -51.30457142857143,
+      z: -10.862142857142857
+    },
     {
       _id: "659bb8ffd8c798c315f6875c",
       x: -14.292,
@@ -3927,6 +3967,11 @@ export const arrays = {
   GroßerWagen: [
     "https://de.wikipedia.org/?title=Gro%C3%9Fer_Wagen&redirect=no",
     {
+      x: -14.943999999999999,
+      y: -1.5127142857142857,
+      z: 22.914142857142856
+    },
+    {
       _id: "659bb8fad8c798c315f5d545",
       x: -18.53,
       y: -9.395,
@@ -4006,6 +4051,7 @@ export const arrays = {
       flam: 50,
       con: "UMa",
     },
+    
     {
       _id: "659bb8f6d8c798c315f5610b",
       x: -13.103,
@@ -4022,6 +4068,7 @@ export const arrays = {
       flam: 48,
       con: "UMa",
     },
+    
     {
       _id: "659bb8f8d8c798c315f5878e",
       x: -15.095,
@@ -4058,6 +4105,7 @@ export const arrays = {
   
   GroßerBär: [
     "https://de.wikipedia.org/wiki/Gro%C3%9Fer_B%C3%A4r",
+    { x: -21.524947368421056, y: 13.14957894736842, z: 39.37615789473684 },
     {
       _id: "659bb8fad8c798c315f5d545",
       x: -18.53,
@@ -4122,22 +4170,7 @@ export const arrays = {
       flam: 69,
       con: "UMa",
     },
-    {
-      _id: "659bb8f6d8c798c315f562af",
-      x: -17.299,
-      y: 4.335,
-      z: 33.191,
-      absmag: -1.07,
-      mag: 1.81,
-      dist: 37.679,
-      id: 1154608,
-      ci: 1.061,
-      proper: "Dubhe",
-      wikiUrl: "https://en.wikipedia.org/wiki/Dubhe",
-      hip: 54061,
-      flam: 50,
-      con: "UMa",
-    },
+
     {
       _id: "659bb8f4d8c798c315f515ba",
       x: -8.583,
@@ -4315,14 +4348,36 @@ export const arrays = {
       con: "UMa",
     },
     {
-      _id: "659bb8e6d8c798c315f32b61",
-      ra: 0.91859736,
-      dec: 23.41624199,
-      dist: 84.2017,
-      x: 75.043,
-      y: 18.403,
-      z: 33.462,
-      hip: 4301,
+      _id: "659bb8f6d8c798c315f562af",
+      x: -17.299,
+      y: 4.335,
+      z: 33.191,
+      absmag: -1.07,
+      mag: 1.81,
+      dist: 37.679,
+      id: 1154608,
+      ci: 1.061,
+      proper: "Dubhe",
+      wikiUrl: "https://en.wikipedia.org/wiki/Dubhe",
+      hip: 54061,
+      flam: 50,
+      con: "UMa",
+    },
+    {
+      _id: "659bb8f6d8c798c315f5610b",
+      x: -13.103,
+      y: 3.398,
+      z: 20.361,
+      absmag: 0.399,
+      mag: 2.34,
+      dist: 24.4499,
+      id: 1151532,
+      ci: 0.033,
+      proper: "Merak",
+      wikiUrl: "https://en.wikipedia.org/wiki/Merak%20(star)",
+      hip: 53910,
+      flam: 48,
+      con: "UMa",
     },
     {
       _id: "659bb8f6d8c798c315f5610b",

@@ -819,6 +819,7 @@
 
   function showInfo(element) {
     // selectedArray = element;
+    console.log(element);
     toggleValue = false;
     updateLines(element);
     infoContent = element;
@@ -1296,7 +1297,7 @@
       </button>
       <button
         class="zodiacButtons"
-        on:click|stopPropagation={() => showInfo("großerBär")}
+        on:click|stopPropagation={() => showInfo("GroßerBär")}
         ><img class="svgIcon" src={großerBär} alt="großerBär" />
         <span>großer Bär</span>
       </button>
@@ -1308,8 +1309,8 @@
       </button>
       <button
         class="zodiacButtons"
-        on:click|stopPropagation={() => showInfo("großerWagen")}
-        ><img class="svgIcon" src={großerWagen} alt="großerWagen" />
+        on:click|stopPropagation={() => showInfo("GroßerWagen")}
+        ><img class="svgIcon" src={großerWagen} alt="GroßerWagen" />
         <span>großer Wagen</span>
       </button>
       <button
