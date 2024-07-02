@@ -350,6 +350,7 @@
     controls.update();
   }
 
+  let foundfirst = false;
   function onMouseClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -368,6 +369,15 @@
           ...firstObject.userData.starData,
           object: firstObject,
         };
+        if(selectedStar.id === 1451193) {
+          console.log(selectedStar.id);
+          foundfirst = true;
+        } else if(foundfirst && selectedStar.id != 1451193 && selectedStar.id != 584955) foundfirst = false;
+        console.log(foundfirst);
+        if(foundfirst && selectedStar.id === 584955) {
+          console.log("trigering easter egg");
+          window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+        } 
         console.log(selectedStar);
         showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
         showzodiacInfosBox = false;

@@ -11,22 +11,21 @@
 - [Teammitglieder](#teammitglieder)
 - [Verknüpfte Repositories](#Verknüpfte-Repositories)
 - [Technologien](#technologien)
-- [Funktionsweise](#funktionsweise)
 - [Kontakt](#kontakt)
 
 
 ## Über das Projekt
 
-Mit unserer Website möchten wir die wissenschaftliche Sichtweise auf Horoskope und Astrologie darstellen. Wir zeigen, dass Sternzeichen konstruierte Konzepte sind, die keine wissenschaftliche Basis haben. Um dies zu veranschaulichen, bieten wir eine simulierte 3D-Reise durch das Weltall an. Nutzer können Sternkonstellationen aus verschiedenen Perspektiven und von anderen Sternen aus betrachten.
+Mit unserer Website möchten wir die wissenschaftliche Sichtweise auf Horoskope und Astrologie darstellen. Wir zeigen, dass Sternzeichen konstruierte Konzepte sind, die keine wissenschaftliche Basis haben und damit keine Auswirkung auf Menschen oder unseren Alltag hat. Um dies zu veranschaulichen, bieten wir eine simulierte 3D-Reise durch das Weltall an. Nutzer können Sternkonstellationen aus verschiedenen Perspektiven und von anderen Sternen aus betrachten.
 Zusätzlich können sich Nutzer Fakten zu Sternen direkt über Wikipedia anzeigen lassen.
 
 
 
-![Sternbild](https://github.com/jannikflaig/goease/blob/main/assets/Mockup.svg?raw=true)
+![Sternbild](https://github.com/johannesb999/starsapp-frontend/blob/main/Sternbild.svg?raw=true)
 
 ## Verknüpfte Repositories
 
-- [Backend](https://github.com/jannikflaig/prot-backend)
+- [Backend](https://github.com/johannesb999/starsapp-backend)
 
 ## Teammitglieder
 
@@ -34,15 +33,12 @@ Zusätzlich können sich Nutzer Fakten zu Sternen direkt über Wikipedia anzeige
 - [Jannik Flaig](https://github.com/jannikflaig)
 
 
-## Funktionsweise 
-
-
 
 ## Technologien
 
-- [Three.js](https://reactnative.dev/docs/set-up-your-environment)
-- [JavaScript](https://developer.android.com/studio?hl=de)
-
+- [Svelte](https://www.w3schools.com/js/)
+- [Three.js](https://threejs.org/docs/index.html#manual/en/introduction/Installation)
+- [JavaScript](https://www.w3schools.com/js/)
 
 
 ## Voraussetzungen zur Nutzung
@@ -53,7 +49,6 @@ Vor der Installation sicherstellen, dass folgende Komponenten und Software verf�
 - [Android Studio](https://developer.android.com/studio?hl=de)
 
 
-
 ## Kontakt
 
 Für weitere Anfragen oder Unterstützung kontaktieren Sie bitte:
@@ -61,4 +56,3 @@ Für weitere Anfragen oder Unterstützung kontaktieren Sie bitte:
 
 - Johannes Biess - [johannes.biess@hfg.design]
 - Jannik Flaig - [jannik.flaig@hfg.design]
-- Robert Naus - [robert.naus@hfg.design]
