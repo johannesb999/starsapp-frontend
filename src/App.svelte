@@ -316,7 +316,7 @@
   }
 
   function updateVisibility() {
-    const frustum = new THREE.Frustum();  
+    const frustum = new THREE.Frustum();
     const cameraViewProjectionMatrix = new THREE.Matrix4();
 
     cameraViewProjectionMatrix.multiplyMatrices(
@@ -696,10 +696,9 @@
 
     if (previousLineGroup.children.length > 0) {
       fadeOut(previousMaterial).then(() => {
-      console.log("clearing previous line");
-      previousLineGroup.clear();
-      scene.remove(previousLineGroup);
-    });
+        previousLineGroup.clear();
+        scene.remove(previousLineGroup);
+      });
     }
 
     let array = arrays[arrayName];
@@ -749,11 +748,11 @@
 
   function fadeOut(material) {
     return new Promise((resolve) => {
-    new TWEEN.Tween(material)
-      .to({ opacity: 0 }, 1000)
-      .easing(TWEEN.Easing.Quadratic.Out)
-      .onComplete(resolve)
-      .start();
+      new TWEEN.Tween(material)
+        .to({ opacity: 0 }, 1000)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .onComplete(resolve)
+        .start();
     });
   }
 
@@ -811,6 +810,7 @@
 
   function showInfo(element) {
     // selectedArray = element;
+    console.log(element);
     toggleValue = false;
     updateLines(element);
     infoContent = element;
@@ -1004,6 +1004,12 @@
   import constellationX from "./assets/constelX.svg";
   import { draw } from "svelte/transition";
   import { clearcoatRoughness } from "three/examples/jsm/nodes/Nodes.js";
+  import Orion from "./assets/Orion.svg";
+  import kleinerBär from "./assets/kleinerBär.svg";
+  import großerBär from "./assets/großerBär.svg";
+  import Kassiopaia from "./assets/Kassiopaia.svg";
+  import Schlangenträger from "./assets/Schlangenträger.svg";
+  import großerWagen from "./assets/großerWagen.svg";
 
   let headerIndex = 0;
   const headerMappings = [
@@ -1265,7 +1271,6 @@
         ><img class="svgIcon" src={Skorpion} alt="Skorpion" />
         <span>Skorpion</span>
       </button>
-      <!-- schlangenträger -->
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Schütze")}
@@ -1276,11 +1281,41 @@
         <p>-</p>
       </div>
       <button
-      class="zodiacButtons"
-      on:click|stopPropagation={() => showInfo("Schütze")}
-      ><img class="svgIcon" src={Schütze} alt="Schütze" />
-      <span>Schhütze</span>
-    </button>
+        class="zodiacButtons"
+        on:click|stopPropagation={() => showInfo("Schlangenträger")}
+        ><img class="svgIcon" src={Schlangenträger} alt="Schlangenträger" />
+        <span>Schlangenträger</span>
+      </button>
+      <button
+        class="zodiacButtons"
+        on:click|stopPropagation={() => showInfo("kleinerBär")}
+        ><img class="svgIcon" src={kleinerBär} alt="kleinerBär" />
+        <span>kleiner Bär</span>
+      </button>
+      <button
+        class="zodiacButtons"
+        on:click|stopPropagation={() => showInfo("GroßerBär")}
+        ><img class="svgIcon" src={großerBär} alt="großerBär" />
+        <span>großer Bär</span>
+      </button>
+      <button
+        class="zodiacButtons"
+        on:click|stopPropagation={() => showInfo("Orion")}
+        ><img class="svgIcon" src={Orion} alt="Orion" />
+        <span>Orion</span>
+      </button>
+      <button
+        class="zodiacButtons"
+        on:click|stopPropagation={() => showInfo("GroßerWagen")}
+        ><img class="svgIcon" src={großerWagen} alt="GroßerWagen" />
+        <span>großer Wagen</span>
+      </button>
+      <button
+        class="zodiacButtons"
+        on:click|stopPropagation={() => showInfo("Kassiopaia")}
+        ><img class="svgIcon" src={Kassiopaia} alt="Kassiopaia" />
+        <span>Kassiopaia</span>
+      </button>
       <!-- more -->
       <!-- ansicht in raster -->
     </div>
@@ -1363,11 +1398,11 @@
   >
     <div class="currentPosition">
       {currentHeaderLastRemoved}
-        <button
-          id="wikiLinkButton2"
-          on:click|stopPropagation={() =>
-            window.open(lastRemovedStar.wikiUrl, "_blank")}>Wikipedia</button
-        >
+      <button
+        id="wikiLinkButton2"
+        on:click|stopPropagation={() =>
+          window.open(lastRemovedStar.wikiUrl, "_blank")}>Wikipedia</button
+      >
     </div>
     <div style="display: flex; flex-direction: row; ">
       <div
@@ -1385,11 +1420,12 @@
     flex-direction: column;
     align-items: start;"
       >
-        <p style="margin-bottom: -10px;">Konstellation: {lastRemovedStar.con}</p>
+        <p style="margin-bottom: -10px;">
+          Konstellation: {lastRemovedStar.con}
+        </p>
         <p style="margin-bottom: 5px;">
           AbsoluteMagnitude: {lastRemovedStar.absmag}
         </p>
-
       </div>
     </div>
   </div>
@@ -1422,11 +1458,11 @@
 <style>
   /* CSS */
   #spacer {
-    height: 2px;
-    border: 2px solid darkgray;
+    height: 1px;
+    border: 1px solid darkgray;
     background-color: darkgray;
     border-radius: 8px;
-    width: 80%;
+    width: 90%;
     align-self: center;
   }
   main {
@@ -1787,7 +1823,7 @@
     cursor: pointer;
     gap: 5px;
     padding: 15px 32px;
-    text-align: c   enter;
+    text-align: c enter;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
