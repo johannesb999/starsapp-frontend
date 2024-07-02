@@ -1,0 +1,706 @@
+[
+    {
+        "constellation": "Andromeda",
+        "abbr_IAU": "And",
+        "abbr_NASA": "Andr",
+        "genitive": "Andromedae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Andromeda (The chained maiden or princess)"
+    },
+    {
+        "constellation": "Antlia",
+        "abbr_IAU": "Ant",
+        "abbr_NASA": "Antl",
+        "genitive": "Antliae",
+        "origin": "1763, Lacaille",
+        "meaning": "air pump"
+    },
+    {
+        "constellation": "Apus",
+        "abbr_IAU": "Aps",
+        "abbr_NASA": "Apus",
+        "genitive": "Apodis",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "Bird-of-paradise/Exotic Bird/Extraordinary Bird"
+    },
+    {
+        "constellation": "Aquarius",
+        "abbr_IAU": "Aqr",
+        "abbr_NASA": "Aqar",
+        "genitive": "Aquarii",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "water-bearer"
+    },
+    {
+        "constellation": "Aquila",
+        "abbr_IAU": "Aql",
+        "abbr_NASA": "Aqil",
+        "genitive": "Aquilae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "eagle"
+    },
+    {
+        "constellation": "Ara",
+        "abbr_IAU": "Ara",
+        "abbr_NASA": "Arae",
+        "genitive": "Arae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "altar"
+    },
+    {
+        "constellation": "Aries",
+        "abbr_IAU": "Ari",
+        "abbr_NASA": "Arie",
+        "genitive": "Arietis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "ram"
+    },
+    {
+        "constellation": "Auriga",
+        "abbr_IAU": "Aur",
+        "abbr_NASA": "Auri",
+        "genitive": "Aurigae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "charioteer"
+    },
+    {
+        "constellation": "Boötes",
+        "abbr_IAU": "Boo",
+        "abbr_NASA": "Boot",
+        "genitive": "Boötis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "herdsman"
+    },
+    {
+        "constellation": "Caelum",
+        "abbr_IAU": "Cae",
+        "abbr_NASA": "Cael",
+        "genitive": "Caeli",
+        "origin": "1763, Lacaille",
+        "meaning": "chisel or engraving tool"
+    },
+    {
+        "constellation": "Camelopardalis",
+        "abbr_IAU": "Cam",
+        "abbr_NASA": "Caml",
+        "genitive": "Camelopardalis",
+        "origin": "1613, Plancius[note 1]",
+        "meaning": "giraffe"
+    },
+    {
+        "constellation": "Cancer",
+        "abbr_IAU": "Cnc",
+        "abbr_NASA": "Canc",
+        "genitive": "Cancri",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "crab"
+    },
+    {
+        "constellation": "Canes Venatici",
+        "abbr_IAU": "CVn",
+        "abbr_NASA": "CVen",
+        "genitive": "Canum Venaticorum",
+        "origin": "1690, Firmamentum Sobiescianum, Hevelius",
+        "meaning": "hunting dogs"
+    },
+    {
+        "constellation": "Canis Major",
+        "abbr_IAU": "CMa",
+        "abbr_NASA": "CMaj",
+        "genitive": "Canis Majoris",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "greater dog"
+    },
+    {
+        "constellation": "Canis Minor",
+        "abbr_IAU": "CMi",
+        "abbr_NASA": "CMin",
+        "genitive": "Canis Minoris",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "lesser dog"
+    },
+    {
+        "constellation": "Capricornus",
+        "abbr_IAU": "Cap",
+        "abbr_NASA": "Capr",
+        "genitive": "Capricorni",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "sea goat"
+    },
+    {
+        "constellation": "Carina",
+        "abbr_IAU": "Car",
+        "abbr_NASA": "Cari",
+        "genitive": "Carinae",
+        "origin": "1763, Lacaille, split from Argo Navis",
+        "meaning": "keel"
+    },
+    {
+        "constellation": "Cassiopeia",
+        "abbr_IAU": "Cas",
+        "abbr_NASA": "Cass",
+        "genitive": "Cassiopeiae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Cassiopeia (mythological character)"
+    },
+    {
+        "constellation": "Centaurus",
+        "abbr_IAU": "Cen",
+        "abbr_NASA": "Cent",
+        "genitive": "Centauri",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "centaur"
+    },
+    {
+        "constellation": "Cepheus",
+        "abbr_IAU": "Cep",
+        "abbr_NASA": "Ceph",
+        "genitive": "Cephei",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Cepheus (mythological character)"
+    },
+    {
+        "constellation": "Cetus",
+        "abbr_IAU": "Cet",
+        "abbr_NASA": "Ceti",
+        "genitive": "Ceti",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "sea monster (later interpreted as a whale)"
+    },
+    {
+        "constellation": "Chamaeleon",
+        "abbr_IAU": "Cha",
+        "abbr_NASA": "Cham",
+        "genitive": "Chamaeleontis",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "chameleon"
+    },
+    {
+        "constellation": "Circinus",
+        "abbr_IAU": "Cir",
+        "abbr_NASA": "Circ",
+        "genitive": "Circini",
+        "origin": "1763, Lacaille",
+        "meaning": "compasses"
+    },
+    {
+        "constellation": "Columba",
+        "abbr_IAU": "Col",
+        "abbr_NASA": "Colm",
+        "genitive": "Columbae",
+        "origin": "1592, Plancius, split from Canis Major",
+        "meaning": "dove"
+    },
+    {
+        "constellation": "Coma Berenices",
+        "abbr_IAU": "Com",
+        "abbr_NASA": "Coma",
+        "genitive": "Comae Berenices",
+        "origin": "1536, Caspar Vopel,[9] split from Leo",
+        "meaning": "Berenice's hair"
+    },
+    {
+        "constellation": "Corona Australis",
+        "abbr_IAU": "CrA",
+        "abbr_NASA": "CorA",
+        "genitive": "Coronae Australis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "southern crown"
+    },
+    {
+        "constellation": "Corona Borealis",
+        "abbr_IAU": "CrB",
+        "abbr_NASA": "CorB",
+        "genitive": "Coronae Borealis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "northern crown"
+    },
+    {
+        "constellation": "Corvus",
+        "abbr_IAU": "Crv",
+        "abbr_NASA": "Corv",
+        "genitive": "Corvi",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "crow"
+    },
+    {
+        "constellation": "Crater",
+        "abbr_IAU": "Crt",
+        "abbr_NASA": "Crat",
+        "genitive": "Crateris",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "cup"
+    },
+    {
+        "constellation": "Crux",
+        "abbr_IAU": "Cru",
+        "abbr_NASA": "Cruc",
+        "genitive": "Crucis",
+        "origin": "1603, Uranometria, split from Centaurus",
+        "meaning": "southern cross"
+    },
+    {
+        "constellation": "Cygnus",
+        "abbr_IAU": "Cyg",
+        "abbr_NASA": "Cygn",
+        "genitive": "Cygni",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "swan or Northern Cross"
+    },
+    {
+        "constellation": "Delphinus",
+        "abbr_IAU": "Del",
+        "abbr_NASA": "Dlph",
+        "genitive": "Delphini",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "dolphin"
+    },
+    {
+        "constellation": "Dorado",
+        "abbr_IAU": "Dor",
+        "abbr_NASA": "Dora",
+        "genitive": "Doradus",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "dolphinfish"
+    },
+    {
+        "constellation": "Draco",
+        "abbr_IAU": "Dra",
+        "abbr_NASA": "Drac",
+        "genitive": "Draconis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "dragon"
+    },
+    {
+        "constellation": "Equuleus",
+        "abbr_IAU": "Equ",
+        "abbr_NASA": "Equl",
+        "genitive": "Equulei",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "pony"
+    },
+    {
+        "constellation": "Eridanus",
+        "abbr_IAU": "Eri",
+        "abbr_NASA": "Erid",
+        "genitive": "Eridani",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "river Eridanus (mythology)"
+    },
+    {
+        "constellation": "Fornax",
+        "abbr_IAU": "For",
+        "abbr_NASA": "Forn",
+        "genitive": "Fornacis",
+        "origin": "1763, Lacaille",
+        "meaning": "chemical furnace"
+    },
+    {
+        "constellation": "Gemini",
+        "abbr_IAU": "Gem",
+        "abbr_NASA": "Gemi",
+        "genitive": "Geminorum",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "twins"
+    },
+    {
+        "constellation": "Grus",
+        "abbr_IAU": "Gru",
+        "abbr_NASA": "Grus",
+        "genitive": "Gruis",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "crane"
+    },
+    {
+        "constellation": "Hercules",
+        "abbr_IAU": "Her",
+        "abbr_NASA": "Herc",
+        "genitive": "Herculis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Hercules (mythological character)"
+    },
+    {
+        "constellation": "Horologium",
+        "abbr_IAU": "Hor",
+        "abbr_NASA": "Horo",
+        "genitive": "Horologii",
+        "origin": "1763, Lacaille",
+        "meaning": "pendulum clock"
+    },
+    {
+        "constellation": "Hydra",
+        "abbr_IAU": "Hya",
+        "abbr_NASA": "Hyda",
+        "genitive": "Hydrae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Hydra (mythological creature)"
+    },
+    {
+        "constellation": "Hydrus",
+        "abbr_IAU": "Hyi",
+        "abbr_NASA": "Hydi",
+        "genitive": "Hydri",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "lesser water snake"
+    },
+    {
+        "constellation": "Indus",
+        "abbr_IAU": "Ind",
+        "abbr_NASA": "Indi",
+        "genitive": "Indi",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "Indian (of unspecified type)"
+    },
+    {
+        "constellation": "Lacerta",
+        "abbr_IAU": "Lac",
+        "abbr_NASA": "Lacr",
+        "genitive": "Lacertae",
+        "origin": "1690, Firmamentum Sobiescianum, Hevelius",
+        "meaning": "lizard"
+    },
+    {
+        "constellation": "Leo",
+        "abbr_IAU": "Leo",
+        "abbr_NASA": "Leon",
+        "genitive": "Leonis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "lion"
+    },
+    {
+        "constellation": "Leo Minor",
+        "abbr_IAU": "LMi",
+        "abbr_NASA": "LMin",
+        "genitive": "Leonis Minoris",
+        "origin": "1690, Firmamentum Sobiescianum, Hevelius",
+        "meaning": "lesser lion"
+    },
+    {
+        "constellation": "Lepus",
+        "abbr_IAU": "Lep",
+        "abbr_NASA": "Leps",
+        "genitive": "Leporis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "hare"
+    },
+    {
+        "constellation": "Libra",
+        "abbr_IAU": "Lib",
+        "abbr_NASA": "Libr",
+        "genitive": "Librae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "balance"
+    },
+    {
+        "constellation": "Lupus",
+        "abbr_IAU": "Lup",
+        "abbr_NASA": "Lupi",
+        "genitive": "Lupi",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "wolf"
+    },
+    {
+        "constellation": "Lynx",
+        "abbr_IAU": "Lyn",
+        "abbr_NASA": "Lync",
+        "genitive": "Lyncis",
+        "origin": "1690, Firmamentum Sobiescianum, Hevelius",
+        "meaning": "lynx"
+    },
+    {
+        "constellation": "Lyra",
+        "abbr_IAU": "Lyr",
+        "abbr_NASA": "Lyra",
+        "genitive": "Lyrae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "lyre / harp"
+    },
+    {
+        "constellation": "Mensa",
+        "abbr_IAU": "Men",
+        "abbr_NASA": "Mens",
+        "genitive": "Mensae",
+        "origin": "1763, Lacaille, as Mons Mensæ",
+        "meaning": "Table Mountain (South Africa)"
+    },
+    {
+        "constellation": "Microscopium",
+        "abbr_IAU": "Mic",
+        "abbr_NASA": "Micr",
+        "genitive": "Microscopii",
+        "origin": "1763, Lacaille",
+        "meaning": "microscope"
+    },
+    {
+        "constellation": "Monoceros",
+        "abbr_IAU": "Mon",
+        "abbr_NASA": "Mono",
+        "genitive": "Monocerotis",
+        "origin": "1613, Plancius",
+        "meaning": "unicorn"
+    },
+    {
+        "constellation": "Musca",
+        "abbr_IAU": "Mus",
+        "abbr_NASA": "Musc",
+        "genitive": "Muscae",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "fly"
+    },
+    {
+        "constellation": "Norma",
+        "abbr_IAU": "Nor",
+        "abbr_NASA": "Norm",
+        "genitive": "Normae",
+        "origin": "1763, Lacaille",
+        "meaning": "carpenter's level"
+    },
+    {
+        "constellation": "Octans",
+        "abbr_IAU": "Oct",
+        "abbr_NASA": "Octn",
+        "genitive": "Octantis",
+        "origin": "1763, Lacaille",
+        "meaning": "octant (instrument)"
+    },
+    {
+        "constellation": "Ophiuchus",
+        "abbr_IAU": "Oph",
+        "abbr_NASA": "Ophi",
+        "genitive": "Ophiuchi",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "serpent-bearer"
+    },
+    {
+        "constellation": "Orion",
+        "abbr_IAU": "Ori",
+        "abbr_NASA": "Orio",
+        "genitive": "Orionis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Orion (mythological character)"
+    },
+    {
+        "constellation": "Pavo",
+        "abbr_IAU": "Pav",
+        "abbr_NASA": "Pavo",
+        "genitive": "Pavonis",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "peacock"
+    },
+    {
+        "constellation": "Pegasus",
+        "abbr_IAU": "Peg",
+        "abbr_NASA": "Pegs",
+        "genitive": "Pegasi",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Pegasus (mythological winged horse)"
+    },
+    {
+        "constellation": "Perseus",
+        "abbr_IAU": "Per",
+        "abbr_NASA": "Pers",
+        "genitive": "Persei",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "Perseus (mythological character)"
+    },
+    {
+        "constellation": "Phoenix",
+        "abbr_IAU": "Phe",
+        "abbr_NASA": "Phoe",
+        "genitive": "Phoenicis",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "phoenix"
+    },
+    {
+        "constellation": "Pictor",
+        "abbr_IAU": "Pic",
+        "abbr_NASA": "Pict",
+        "genitive": "Pictoris",
+        "origin": "1763, Lacaille, as Equuleus Pictoris",
+        "meaning": "easel"
+    },
+    {
+        "constellation": "Pisces",
+        "abbr_IAU": "Psc",
+        "abbr_NASA": "Pisc",
+        "genitive": "Piscium",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "fishes"
+    },
+    {
+        "constellation": "Piscis Austrinus",
+        "abbr_IAU": "PsA",
+        "abbr_NASA": "PscA",
+        "genitive": "Piscis Austrini",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "southern fish"
+    },
+    {
+        "constellation": "Puppis",
+        "abbr_IAU": "Pup",
+        "abbr_NASA": "Pupp",
+        "genitive": "Puppis",
+        "origin": "1763, Lacaille, split from Argo Navis",
+        "meaning": "poop deck"
+    },
+    {
+        "constellation": "Pyxis",
+        "abbr_IAU": "Pyx",
+        "abbr_NASA": "Pyxi",
+        "genitive": "Pyxidis",
+        "origin": "1763, Lacaille",
+        "meaning": "mariner's compass"
+    },
+    {
+        "constellation": "Reticulum",
+        "abbr_IAU": "Ret",
+        "abbr_NASA": "Reti",
+        "genitive": "Reticuli",
+        "origin": "1763, Lacaille",
+        "meaning": "eyepiece graticule"
+    },
+    {
+        "constellation": "Sagitta",
+        "abbr_IAU": "Sge",
+        "abbr_NASA": "Sgte",
+        "genitive": "Sagittae",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "arrow"
+    },
+    {
+        "constellation": "Sagittarius",
+        "abbr_IAU": "Sgr",
+        "abbr_NASA": "Sgtr",
+        "genitive": "Sagittarii",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "archer"
+    },
+    {
+        "constellation": "Scorpius",
+        "abbr_IAU": "Sco",
+        "abbr_NASA": "Scor",
+        "genitive": "Scorpii",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "scorpion"
+    },
+    {
+        "constellation": "Sculptor",
+        "abbr_IAU": "Scl",
+        "abbr_NASA": "Scul",
+        "genitive": "Sculptoris",
+        "origin": "1763, Lacaille",
+        "meaning": "sculptor"
+    },
+    {
+        "constellation": "Scutum",
+        "abbr_IAU": "Sct",
+        "abbr_NASA": "Scut",
+        "genitive": "Scuti",
+        "origin": "1690, Firmamentum Sobiescianum, Hevelius",
+        "meaning": "shield (of Sobieski)"
+    },
+    {
+        "constellation": "Serpens[11]",
+        "abbr_IAU": "Ser",
+        "abbr_NASA": "Serp",
+        "genitive": "Serpentis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "snake"
+    },
+    {
+        "constellation": "Sextans",
+        "abbr_IAU": "Sex",
+        "abbr_NASA": "Sext",
+        "genitive": "Sextantis",
+        "origin": "1690, Firmamentum Sobiescianum, Hevelius",
+        "meaning": "sextant"
+    },
+    {
+        "constellation": "Taurus",
+        "abbr_IAU": "Tau",
+        "abbr_NASA": "Taur",
+        "genitive": "Tauri",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "bull"
+    },
+    {
+        "constellation": "Telescopium",
+        "abbr_IAU": "Tel",
+        "abbr_NASA": "Tele",
+        "genitive": "Telescopii",
+        "origin": "1763, Lacaille",
+        "meaning": "telescope"
+    },
+    {
+        "constellation": "Triangulum",
+        "abbr_IAU": "Tri",
+        "abbr_NASA": "Tria",
+        "genitive": "Trianguli",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "triangle"
+    },
+    {
+        "constellation": "Triangulum Australe",
+        "abbr_IAU": "TrA",
+        "abbr_NASA": "TrAu",
+        "genitive": "Trianguli Australis",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "southern triangle"
+    },
+    {
+        "constellation": "Tucana",
+        "abbr_IAU": "Tuc",
+        "abbr_NASA": "Tucn",
+        "genitive": "Tucanae",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman",
+        "meaning": "toucan"
+    },
+    {
+        "constellation": "Ursa Major",
+        "abbr_IAU": "UMa",
+        "abbr_NASA": "UMaj",
+        "genitive": "Ursae Majoris",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "great bear"
+    },
+    {
+        "constellation": "Ursa Minor",
+        "abbr_IAU": "UMi",
+        "abbr_NASA": "UMin",
+        "genitive": "Ursae Minoris",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "lesser bear"
+    },
+    {
+        "constellation": "Vela",
+        "abbr_IAU": "Vel",
+        "abbr_NASA": "Velr",
+        "genitive": "Velorum",
+        "origin": "1763, Lacaille, split from Argo Navis",
+        "meaning": "sails"
+    },
+    {
+        "constellation": "Virgo",
+        "abbr_IAU": "Vir",
+        "abbr_NASA": "Virg",
+        "genitive": "Virginis",
+        "origin": "ancient (Ptolemy)",
+        "meaning": "virgin or maiden"
+    },
+    {
+        "constellation": "Volans",
+        "abbr_IAU": "Vol",
+        "abbr_NASA": "Voln",
+        "genitive": "Volantis",
+        "origin": "1603, Uranometria, created by Keyser and de Houtman, as Piscis Volans",
+        "meaning": "flying fish"
+    },
+    {
+        "constellation": "Vulpecula",
+        "abbr_IAU": "Vul",
+        "abbr_NASA": "Vulp",
+        "genitive": "Vulpeculae",
+        "origin": "1690, Firmamentum Sobiescianum, Hevelius, as Vulpecula cum Ansere",
+        "meaning": "fox"
+    }
+]

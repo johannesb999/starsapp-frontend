@@ -10,6 +10,8 @@
   import gsap from "gsap";
   import { arrays } from "./data/tierkreis";
   import Switch from "./components/Switch.svelte";
+  import constellations from './data/constellationData.json';
+  console.log(constellations);
 
   const darkZodiacMaterial = new THREE.LineBasicMaterial({
     color: "#303030",
@@ -124,25 +126,32 @@
               star.x0 !== undefined &&
               star.y0 !== undefined &&
               star.z0 !== undefined
-          )
-          .map((star) => ({
-            x: star.x0,
-            y: star.y0,
-            z: star.z0,
-            id: star.id,
-            absmag: star.absmag,
-            ci: star.ci,
-            mag: star.mag,
-            dist: star.dist,
-            ra: star.ra,
-            dec: star.dec,
-            proper: star.proper,
-            wikiUrl: star.wikiUrl,
-            hip: star.hip,
-            flam: star.flam,
-            con: star.con,
-            bayer: star.bayer,
-          }));
+          ) 
+          .map((star) => {
+            const constellation = constellations.find((c) => c.abbr_IAU === star.con);
+            const genitive = constellation ? constellation.genitive : 'Unbekannt';
+
+            return {
+                x: star.x0,
+                y: star.y0,
+                z: star.z0,
+                id: star.id,
+                absmag: star.absmag,
+                ci: star.ci,
+                mag: star.mag,
+                dist: star.dist,
+                ra: star.ra,
+                dec: star.dec,
+                proper: star.proper,
+                wikiUrl: star.wikiUrl,
+                hip: star.hip,
+                flam: star.flam,
+                con: star.con,
+                bayer: star.bayer,
+                genitive: genitive 
+              };
+        });
+
         addStars(starsData);
         animate();
       })
@@ -218,6 +227,7 @@
         flam: star.flam,
         con: star.con,
         bayer: star.bayer,
+        genitive: star.genitive 
       };
       scene.add(sphere);
     });
@@ -393,9 +403,9 @@
           tooltip.innerHTML = firstObject.userData.starData.proper
             ? firstObject.userData.starData.proper
             : firstObject.userData.starData.bayer
-              ? `${firstObject.userData.starData.bayer} ${firstObject.userData.starData.con}`
+              ? `${firstObject.userData.starData.bayer} ${firstObject.userData.starData.genitive}`
               : firstObject.userData.starData.flam
-                ? `${firstObject.userData.starData.flam} ${firstObject.userData.starData.con}`
+                ? `${firstObject.userData.starData.flam} ${firstObject.userData.starData.genitive}`
                 : `HIP: ${firstObject.userData.starData.hip}`;
 
           tooltip.style.left = event.clientX + "px";
@@ -937,18 +947,21 @@
     const sce = scene.children.reverse();
     const lowerName = name.toLowerCase();
     name = "Suche nach Stern";
+    console.log(lowerName);
     const starResult = await sce.find((child) => {
       if (child.type === "Mesh") {
+        console.log(child);
         let flamConCombined;
         let bayerConCombined;
-        if (child.userData.starData.flam && child.userData.starData.con) {
+        if (child.userData.starData.flam && child.userData.starData.genitive) {
           const flam = child.userData.starData.flam.toString();
-          const lowerCon = child.userData.starData.con.toLowerCase();
+          const lowerCon = child.userData.starData.genitive.toLowerCase();
           flamConCombined = `${flam} ${lowerCon}`;
+          console.log(flamConCombined);
         }
-        if (child.userData.starData.bayer && child.userData.starData.con) {
+        if (child.userData.starData.bayer && child.userData.starData.genitive) {
           const bayer = child.userData.starData.bayer.toString().toLowerCase();
-          const lowerCon = child.userData.starData.con.toLowerCase();
+          const lowerCon = child.userData.starData.genitive.toLowerCase();
           bayerConCombined = `${bayer} ${lowerCon}`;
         }
         const starName = child.userData.starData.proper?.toLowerCase();
@@ -1026,9 +1039,9 @@
   $: currentHeader = selectedStar.proper
     ? `Name: ${selectedStar.proper}`
     : selectedStar.bayer
-      ? `Bayer: ${selectedStar.bayer} ${selectedStar.con}`
+      ? `Bayer: ${selectedStar.bayer} ${selectedStar.genitive}`
       : selectedStar.flam
-        ? `Flamsteed: ${selectedStar.flam} ${selectedStar.con}`
+        ? `Flamsteed: ${selectedStar.flam} ${selectedStar.genitive}`
         : `HIP: ${selectedStar.hip}`;
   // lastRemovedStar
   $: currentHeaderLastRemoved =
@@ -1036,10 +1049,10 @@
       ? `Name: ${lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper}`
       : lastRemovedStar?.bayer ||
           lastRemovedStar?.object.userData.starData.bayer
-        ? `Bayer: ${lastRemovedStar?.bayer || lastRemovedStar?.object.userData.starData.bayer} ${lastRemovedStar?.con || lastRemovedStar?.object.userData.starData.con}`
+        ? `Bayer: ${lastRemovedStar?.bayer || lastRemovedStar?.object.userData.starData.bayer} ${lastRemovedStar?.genitive || lastRemovedStar?.object.userData.starData.genitive}`
         : lastRemovedStar?.flam ||
             lastRemovedStar?.object.userData.starData.flam
-          ? `Flamsteed: ${lastRemovedStar?.flam || lastRemovedStar?.object.userData.starData.flam} ${lastRemovedStar?.con || lastRemovedStar?.object.userData.starData.con}`
+          ? `Flamsteed: ${lastRemovedStar?.flam || lastRemovedStar?.object.userData.starData.flam} ${lastRemovedStar?.genitive || lastRemovedStar?.object.userData.starData.genitive}`
           : `HIP: ${lastRemovedStar?.hip || lastRemovedStar?.object.userData.starData.hip}`;
 
   function toggleinfoBoxHeaderLastRemoved() {
@@ -1160,6 +1173,11 @@
     customLookAtControls(0, 0, 0);
   }
 
+  function getGenitive(con) {
+    const constellation = constellations.find(c => c.abbr_IAU === con);
+    return constellation ? constellation.genitive : 'Unbekannt';
+  }
+  
   let lookingAtStar;
 </script>
 
@@ -1197,7 +1215,14 @@
               }
             }}
           >
-            {star.proper ? star.proper : star.flam + star.con || star.hip}
+            {star?.proper
+              ? `${star?.proper}`
+              : star?.bayer 
+                ? `${star?.bayer} ${getGenitive(star.con)}`
+                : star?.flam 
+                  ? `${star?.flam} ${getGenitive(star.con)}`
+                  : `${star?.hip}`
+                  }
           </button>
         {/each}
       {/if}
@@ -1378,10 +1403,10 @@
       {currentHeader}
     </div>
     <!-- weitere infos -->
-    <p>Magnitude: {selectedStar.mag ? selectedStar.mag : '-'}</p>
-    <p>Entfernung: {(selectedStar.dist * 3.26).toFixed(2)} Lichtjahre</p>
-    <p>Konstellation: {selectedStar.con == undefined ? selectedStar.con : '-'}</p>
-    <p>AbsoluteMagnitude: {selectedStar.absmag}</p>
+    <p>Apperente Magnitude: {selectedStar.mag}</p>
+    <p>Entfernung: {(selectedStar.dist == 0 ? '-' : (selectedStar.dist * 3.26).toFixed(2))} Lichtjahre</p>
+    <p>Konstellation: {selectedStar.con == undefined ? '-' : selectedStar.con}</p>
+    <p>Absolute Magnitude: {selectedStar.absmag}</p>
 
     <button id="jumpButton" on:click|stopPropagation={jumpToStar}>Sprung</button
     >
@@ -1410,9 +1435,9 @@
     flex-direction: column;
     align-items: start; "
       >
-        <p style="margin-bottom: -10px;">Magnitude: {lastRemovedStar.mag}</p>
+        <p style="margin-bottom: -10px;">Apperente Magnitude: {lastRemovedStar.mag}</p>
         <p style="margin-bottom: 5px;">
-          Entfernung: {(lastRemovedStar.dist * 3.26).toFixed(2)} Lichtjahre
+          Entfernung: {(lastRemovedStar.dist == 0 ? '-' : (lastRemovedStar.dist * 3.26).toFixed(2))} Lichtjahre
         </p>
       </div>
       <div
@@ -1421,10 +1446,10 @@
     align-items: start;"
       >
         <p style="margin-bottom: -10px;">
-          Konstellation: {lastRemovedStar.con}
+          Konstellation: {lastRemovedStar.con == undefined ?  '-' : lastRemovedStar.con }
         </p>
         <p style="margin-bottom: 5px;">
-          AbsoluteMagnitude: {lastRemovedStar.absmag}
+          Absolute Magnitude: {lastRemovedStar.absmag}
         </p>
       </div>
     </div>
