@@ -1275,7 +1275,7 @@
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Schütze")}
         ><img class="svgIcon" src={Schütze} alt="Schütze" />
-        <span>Schhütze</span>
+        <span>Schütze</span>
       </button>
       <div id="spacer">
         <p>-</p>
@@ -1378,9 +1378,9 @@
       {currentHeader}
     </div>
     <!-- weitere infos -->
-    <p>Magnitude: {selectedStar.mag}</p>
+    <p>Magnitude: {selectedStar.mag ? selectedStar.mag : '-'}</p>
     <p>Entfernung: {(selectedStar.dist * 3.26).toFixed(2)} Lichtjahre</p>
-    <p>Konstellation: {selectedStar.con}</p>
+    <p>Konstellation: {selectedStar.con == undefined ? selectedStar.con : '-'}</p>
     <p>AbsoluteMagnitude: {selectedStar.absmag}</p>
 
     <button id="jumpButton" on:click|stopPropagation={jumpToStar}>Sprung</button
