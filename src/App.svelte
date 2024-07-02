@@ -420,6 +420,7 @@
   window.addEventListener("mousemove", onMouseMove);
 
   async function jumpToStar() {
+    fadeOut(darkZodiacMaterial);
     const angle = THREE.MathUtils.degToRad(337.5);
     const rotationMatrix = new THREE.Matrix4().makeRotationZ(angle);
     let originalPosition = new THREE.Vector3(
@@ -921,8 +922,11 @@
 
   function togglePov() {
     //false == Pov-pov && true == orbit
+    // const distande = camera.position.distanceTo(new THREE.Vector3(0,0,0));
+    // console.log(distande)
     toggleValue = !toggleValue;
     if (toggleValue === true) {
+      fadeOut(darkZodiacMaterial);
       // console.log("using  Orbit");
       let targetCoordinates = adjustCoordinatesForSceneRotation(
         centerKoords.y,
