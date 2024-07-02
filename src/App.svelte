@@ -705,7 +705,10 @@
     const currentLineGroup = lineGroups[currentMaterialIndex];
 
     if (previousLineGroup.children.length > 0) {
-      await fadeOut(previousMaterial);
+      fadeOut(previousMaterial).then(() => {
+        previousLineGroup.clear();
+        scene.remove(previousLineGroup);
+      });
     }
 
     let array = arrays[arrayName];
@@ -716,8 +719,8 @@
 
     await customLookAtControls(centerKoords.y, centerKoords.z, centerKoords.x);
 
-    previousLineGroup.clear();
-    scene.remove(previousLineGroup);
+    // previousLineGroup.clear();
+    // scene.remove(previousLineGroup);
     if (array) {
       for (let i = 2; i < array.length - 1; i++) {
         addLine(array[i], array[i + 1], currentMaterial, currentLineGroup);
