@@ -1037,6 +1037,8 @@
   import Kassiopaia from "./assets/Kassiopaia.svg";
   import Schlangenträger from "./assets/Schlangenträger.svg";
   import großerWagen from "./assets/großerWagen.svg";
+  import eye from './assets/eye.svg';
+  import location from './assets/location.svg';
 
   let headerIndex = 0;
   const headerMappings = [
@@ -1217,28 +1219,34 @@
       <!-- Diese Klasse dient zur Abgrenzung des Inhaltsbereichs -->
       {#if selectedArray && selectedArray.length > 0}
         {#each selectedArray as star}
-          <button
-            class="jumpToStar2Button"
-            on:click|stopPropagation={() => {
-              if(lookingAtStar && lookingAtStar === star) {
-                jumpToStar2(star)
-                lookingAtStar = null;
-              } else if(star.id !== lastRemovedStar.id) {
-                customLookAtControls(star.y,star.z,star.x);
-                lookingAtStar = star;
-              }
-            }}
-          >
-            {star?.proper
+        <div id='flexZodiac'>
+
+          <p>{star?.proper
               ? `${star?.proper}`
               : star?.bayer 
-                ? `${star?.bayer} ${getGenitive(star.con)}`
-                : star?.flam 
-                  ? `${star?.flam} ${getGenitive(star.con)}`
-                  : `${star?.hip}`
-                  }
-          </button>
-        {/each}
+              ? `${star?.bayer} ${getGenitive(star.con)}`
+              : star?.flam 
+              ? `${star?.flam} ${getGenitive(star.con)}`
+              : `${star?.hip}`
+            }</p>
+            <div>
+
+              <button
+              class="jumpToStar2Button"
+              on:click|stopPropagation={() => {
+                jumpToStar2(star)
+              }}
+          >
+          <img class="svgIcon" src={location} alt="Steinbock" />
+        </button>
+        <button class="jumpToStar2Button"
+        on:click|stopPropagation={() => {
+          customLookAtControls(star.y,star.z,star.x);
+        }
+      }><img class="svgIcon" src={eye} alt="Steinbock" /></button>
+    </div>
+      </div>
+      {/each}
       {/if}
     </div>
   </div>
@@ -1495,6 +1503,21 @@
 </svelte:head>
 
 <style>
+  #flexZodiac {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: rgba(166, 166, 166, 0.093);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); */
+    border-radius: 8px;
+    border: 1px solid rgba(72, 72, 72, 0.248);
+    margin-bottom: 10px;
+    padding: 20px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
   /* CSS */
   #spacer {
     height: 1px;
@@ -1632,9 +1655,7 @@
     position: relative;
   }
 
-  :focus {
-    outline: none;
-  }
+
 
   .zodiacButtons:hover {
     background-color: rgba(
@@ -1861,7 +1882,7 @@
     border-radius: 5px;
     cursor: pointer;
     gap: 5px;
-    padding: 15px 32px;
+    padding: 10px 20px;
     text-align: c enter;
     text-decoration: none;
     display: inline-block;
@@ -1869,9 +1890,17 @@
     margin: 4px 2px;
     cursor: pointer;
     background-color: transparent;
-    border: 1px solid rgba(72, 72, 72, 0.248);
+    border: none;
     color: rgb(255, 255, 255);
     font-weight: bold;
+  }
+  .jumpToStar2Button:hover {
+    background-color: rgba(
+      255,
+      255,
+      255,
+      0.2
+    ); /* Hervorhebung beim Darüberfahren */
   }
   #tooltip {
     position: absolute;
@@ -1887,5 +1916,8 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     transform: translateX(-50%);
+  }  
+  :focus {
+    outline: none;
   }
 </style>
