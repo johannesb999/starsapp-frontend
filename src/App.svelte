@@ -1058,7 +1058,7 @@
       ? `<${selectedStar.bayer} ${selectedStar.genitive}`
       : selectedStar.flam
         ? `${selectedStar.flam} ${selectedStar.genitive}`
-        : `${selectedStar.hip}`;y
+        : `${selectedStar.hip}`;
   // lastRemovedStar
   $: currentHeaderLastRemoved =
     lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper
