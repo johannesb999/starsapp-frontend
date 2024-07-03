@@ -1053,23 +1053,23 @@
 
   //infoBoxLookAtStarTitle
   $: currentHeader = selectedStar.proper
-    ? `Name: ${selectedStar.proper}`
+    ? `${selectedStar.proper}`
     : selectedStar.bayer
-      ? `Bayer: ${selectedStar.bayer} ${selectedStar.genitive}`
+      ? `<${selectedStar.bayer} ${selectedStar.genitive}`
       : selectedStar.flam
-        ? `Flamsteed: ${selectedStar.flam} ${selectedStar.genitive}`
-        : `HIP: ${selectedStar.hip}`;
+        ? `${selectedStar.flam} ${selectedStar.genitive}`
+        : `${selectedStar.hip}`;y
   // lastRemovedStar
   $: currentHeaderLastRemoved =
     lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper
-      ? `Name: ${lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper}`
+      ? `${lastRemovedStar?.proper || lastRemovedStar?.object.userData.starData.proper}`
       : lastRemovedStar?.bayer ||
           lastRemovedStar?.object.userData.starData.bayer
-        ? `Bayer: ${lastRemovedStar?.bayer || lastRemovedStar?.object.userData.starData.bayer} ${lastRemovedStar?.genitive || lastRemovedStar?.object.userData.starData.genitive}`
+        ? `${lastRemovedStar?.bayer || lastRemovedStar?.object.userData.starData.bayer} ${lastRemovedStar?.genitive || lastRemovedStar?.object.userData.starData.genitive}`
         : lastRemovedStar?.flam ||
             lastRemovedStar?.object.userData.starData.flam
-          ? `Flamsteed: ${lastRemovedStar?.flam || lastRemovedStar?.object.userData.starData.flam} ${lastRemovedStar?.genitive || lastRemovedStar?.object.userData.starData.genitive}`
-          : `HIP: ${lastRemovedStar?.hip || lastRemovedStar?.object.userData.starData.hip}`;
+          ? `${lastRemovedStar?.flam || lastRemovedStar?.object.userData.starData.flam} ${lastRemovedStar?.genitive || lastRemovedStar?.object.userData.starData.genitive}`
+          : `${lastRemovedStar?.hip || lastRemovedStar?.object.userData.starData.hip}`;
 
   function toggleinfoBoxHeaderLastRemoved() {
     headerIndex = (headerIndex + 1) % headerMappings.length;
