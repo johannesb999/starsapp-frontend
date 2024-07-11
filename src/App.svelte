@@ -1503,6 +1503,9 @@
 </svelte:head>
 
 <style>
+  p {
+    color: white;
+  }
   #flexZodiac {
     display: flex;
     flex-direction: row;
