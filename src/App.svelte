@@ -93,7 +93,7 @@
     scene.rotation.z = THREE.MathUtils.degToRad(337.5);
 
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight - 1);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement); // Stellen Sie sicher, dass dies ausgeführt wird
     controls = new OrbitControls(camera, renderer.domElement);
 
@@ -1822,6 +1822,13 @@
     max-height: 97vh;
     overflow-y: auto;
   }
+
+  @media (min-width: 1920px) {
+    /* Deine CSS-Regeln hier */
+    #zodiacSelectionOverlay {
+      max-height: 100vh;
+    }
+}
 
   #zodiacSelectionOverlay::-webkit-scrollbar {
     display: none; /* Für WebKit-Browser wie Chrome und Safari */
