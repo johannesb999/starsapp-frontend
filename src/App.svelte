@@ -1545,6 +1545,7 @@
     padding: 20px;
     border: none;
     font-size: 22px;
+    color: white;
   }
 
   #tglbtn:hover {
@@ -1627,6 +1628,7 @@
     border-bottom-right-radius: 8px;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+    color: white;
   }
 
   #searchBar button {
