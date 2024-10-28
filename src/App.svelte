@@ -10,7 +10,7 @@
   import gsap from "gsap";
   import { arrays } from "./data/tierkreis";
   import Switch from "./components/Switch.svelte";
-  import constellations from './data/constellationData.json';
+  import constellations from "./data/constellationData.json";
   console.log(constellations);
 
   const darkZodiacMaterial = new THREE.LineBasicMaterial({
@@ -126,31 +126,35 @@
               star.x0 !== undefined &&
               star.y0 !== undefined &&
               star.z0 !== undefined
-          ) 
+          )
           .map((star) => {
-            const constellation = constellations.find((c) => c.abbr_IAU === star.con);
-            const genitive = constellation ? constellation.genitive : 'Unbekannt';
+            const constellation = constellations.find(
+              (c) => c.abbr_IAU === star.con
+            );
+            const genitive = constellation
+              ? constellation.genitive
+              : "Unbekannt";
 
             return {
-                x: star.x0,
-                y: star.y0,
-                z: star.z0,
-                id: star.id,
-                absmag: star.absmag,
-                ci: star.ci,
-                mag: star.mag,
-                dist: star.dist,
-                ra: star.ra,
-                dec: star.dec,
-                proper: star.proper,
-                wikiUrl: star.wikiUrl,
-                hip: star.hip,
-                flam: star.flam,
-                con: star.con,
-                bayer: star.bayer,
-                genitive: genitive 
-              };
-        });
+              x: star.x0,
+              y: star.y0,
+              z: star.z0,
+              id: star.id,
+              absmag: star.absmag,
+              ci: star.ci,
+              mag: star.mag,
+              dist: star.dist,
+              ra: star.ra,
+              dec: star.dec,
+              proper: star.proper,
+              wikiUrl: star.wikiUrl,
+              hip: star.hip,
+              flam: star.flam,
+              con: star.con,
+              bayer: star.bayer,
+              genitive: genitive,
+            };
+          });
 
         addStars(starsData);
         animate();
@@ -227,7 +231,7 @@
         flam: star.flam,
         con: star.con,
         bayer: star.bayer,
-        genitive: star.genitive 
+        genitive: star.genitive,
       };
       scene.add(sphere);
     });
@@ -369,15 +373,20 @@
           ...firstObject.userData.starData,
           object: firstObject,
         };
-        if(selectedStar.id === 1451193) {
+        if (selectedStar.id === 1451193) {
           console.log(selectedStar.id);
           foundfirst = true;
-        } else if(foundfirst && selectedStar.id != 1451193 && selectedStar.id != 584955) foundfirst = false;
+        } else if (
+          foundfirst &&
+          selectedStar.id != 1451193 &&
+          selectedStar.id != 584955
+        )
+          foundfirst = false;
         console.log(foundfirst);
-        if(foundfirst && selectedStar.id === 584955) {
+        if (foundfirst && selectedStar.id === 584955) {
           console.log("trigering easter egg");
-          window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
-        } 
+          window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+        }
         console.log(selectedStar);
         showInfoBox = true; // Info-Box anzeigen, wenn ein Stern angeklickt wird
         showzodiacInfosBox = false;
@@ -498,7 +507,6 @@
 
   async function returnToSun() {
     // hideInfo();
-
 
     let originalPosition;
     const angle = THREE.MathUtils.degToRad(337.5);
@@ -687,7 +695,7 @@
 
     geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
     let line = new THREE.Line(geometry, darkZodiacMaterial);
-    line.renderOrder =1;
+    line.renderOrder = 1;
     ZoddiacGroup.add(line);
   }
 
@@ -1037,8 +1045,8 @@
   import Kassiopaia from "./assets/Kassiopaia.svg";
   import Schlangenträger from "./assets/Schlangenträger.svg";
   import großerWagen from "./assets/großerWagen.svg";
-  import eye from './assets/eye.svg';
-  import location from './assets/location.svg';
+  import eye from "./assets/eye.svg";
+  import location from "./assets/location.svg";
 
   let headerIndex = 0;
   const headerMappings = [
@@ -1190,10 +1198,10 @@
   }
 
   function getGenitive(con) {
-    const constellation = constellations.find(c => c.abbr_IAU === con);
-    return constellation ? constellation.genitive : 'Unbekannt';
+    const constellation = constellations.find((c) => c.abbr_IAU === con);
+    return constellation ? constellation.genitive : "Unbekannt";
   }
-  
+
   let lookingAtStar;
 </script>
 
@@ -1219,34 +1227,34 @@
       <!-- Diese Klasse dient zur Abgrenzung des Inhaltsbereichs -->
       {#if selectedArray && selectedArray.length > 0}
         {#each selectedArray as star}
-        <div id='flexZodiac'>
-
-          <p>{star?.proper
-              ? `${star?.proper}`
-              : star?.bayer 
-              ? `${star?.bayer} ${getGenitive(star.con)}`
-              : star?.flam 
-              ? `${star?.flam} ${getGenitive(star.con)}`
-              : `${star?.hip}`
-            }</p>
+          <div id="flexZodiac">
+            <p>
+              {star?.proper
+                ? `${star?.proper}`
+                : star?.bayer
+                  ? `${star?.bayer} ${getGenitive(star.con)}`
+                  : star?.flam
+                    ? `${star?.flam} ${getGenitive(star.con)}`
+                    : `${star?.hip}`}
+            </p>
             <div>
-
               <button
-              class="jumpToStar2Button"
-              on:click|stopPropagation={() => {
-                jumpToStar2(star)
-              }}
-          >
-          <img class="svgIcon" src={location} alt="Steinbock" />
-        </button>
-        <button class="jumpToStar2Button"
-        on:click|stopPropagation={() => {
-          customLookAtControls(star.y,star.z,star.x);
-        }
-      }><img class="svgIcon" src={eye} alt="Steinbock" /></button>
-    </div>
-      </div>
-      {/each}
+                class="jumpToStar2Button"
+                on:click|stopPropagation={() => {
+                  jumpToStar2(star);
+                }}
+              >
+                <img class="svgIcon" src={location} alt="Steinbock" />
+              </button>
+              <button
+                class="jumpToStar2Button"
+                on:click|stopPropagation={() => {
+                  customLookAtControls(star.y, star.z, star.x);
+                }}><img class="svgIcon" src={eye} alt="Steinbock" /></button
+              >
+            </div>
+          </div>
+        {/each}
       {/if}
     </div>
   </div>
@@ -1260,69 +1268,69 @@
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Steinbock")}
         ><img class="svgIcon" src={Steinbock} alt="Steinbock" />
-        <span>Steinbock</span>
+        <span>Capricorn</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Wassermann")}
         ><img class="svgIcon" src={Wassermann} alt="Wassermann" />
-        <span>Wassermann</span>
+        <span>Aquarius</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Fische")}
         ><img class="svgIcon" src={Fische} alt="Fische" />
-        <span>Fische</span>
+        <span>Pisces</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Widder")}
         ><img class="svgIcon" src={Widder} alt="Widder" />
-        <span>Widder</span>
+        <span>Aries</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Stier")}
-        ><img class="svgIcon" src={Stier} alt="Stier" /> <span>Stier</span>
+        ><img class="svgIcon" src={Stier} alt="Stier" /> <span>Taurus</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Zwilling")}
         ><img class="svgIcon" src={Zwillinge} alt="Zwilling" />
-        <span>Zwilling</span>
+        <span>Gemini</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Krebs")}
-        ><img class="svgIcon" src={Krebs} alt="Krebs" /> <span>Krebs</span>
+        ><img class="svgIcon" src={Krebs} alt="Krebs" /> <span>Cancer</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Löwe")}
-        ><img class="svgIcon" src={Löwe} alt="Löwe" /> <span>Löwe</span>
+        ><img class="svgIcon" src={Löwe} alt="Löwe" /> <span>Leo</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Jungfrau")}
         ><img class="svgIcon" src={Jungfrau} alt="Jungfrau" />
-        <span>Jungfrau</span>
+        <span>Virgo</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Waage")}
-        ><img class="svgIcon" src={Waage} alt="Waage" /> <span>Waage</span>
+        ><img class="svgIcon" src={Waage} alt="Waage" /> <span>Libra</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Skorpion")}
         ><img class="svgIcon" src={Skorpion} alt="Skorpion" />
-        <span>Skorpion</span>
+        <span>Scorpio</span>
       </button>
       <button
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Schütze")}
         ><img class="svgIcon" src={Schütze} alt="Schütze" />
-        <span>Schütze</span>
+        <span>Sagittarius</span>
       </button>
       <div id="spacer">
         <p>-</p>
@@ -1331,7 +1339,7 @@
         class="zodiacButtons"
         on:click|stopPropagation={() => showInfo("Schlangenträger")}
         ><img class="svgIcon" src={Schlangenträger} alt="Schlangenträger" />
-        <span>Schlangenträger</span>
+        <span>Ophiuchus</span>
       </button>
       <button
         class="zodiacButtons"
@@ -1425,13 +1433,18 @@
       {currentHeader}
     </div>
     <!-- weitere infos -->
-    <p>Apperente Magnitude: {selectedStar.mag}</p>
-    <p>Entfernung: {(selectedStar.dist == 0 ? '-' : (selectedStar.dist * 3.26).toFixed(2))} Lichtjahre</p>
-    <p>Konstellation: {selectedStar.con == undefined ? '-' : selectedStar.con}</p>
+    <p>Apparent Magnitude : {selectedStar.mag}</p>
+    <p>
+      Distance: {selectedStar.dist == 0
+        ? "-"
+        : (selectedStar.dist * 3.26).toFixed(2)} Lichtjahre
+    </p>
+    <p>
+      Constellation: {selectedStar.con == undefined ? "-" : selectedStar.con}
+    </p>
     <p>Absolute Magnitude: {selectedStar.absmag}</p>
 
-    <button id="jumpButton" on:click|stopPropagation={jumpToStar}>Sprung</button
-    >
+    <button id="jumpButton" on:click|stopPropagation={jumpToStar}>Jump</button>
     <button
       id="wikiLinkButton"
       on:click|stopPropagation={() =>
@@ -1457,9 +1470,13 @@
     flex-direction: column;
     align-items: start; "
       >
-        <p style="margin-bottom: -10px;">Apperente Magnitude: {lastRemovedStar.mag}</p>
+        <p style="margin-bottom: -10px;">
+          Apperente Magnitude: {lastRemovedStar.mag}
+        </p>
         <p style="margin-bottom: 5px;">
-          Entfernung: {(lastRemovedStar.dist == 0 ? '-' : (lastRemovedStar.dist * 3.26).toFixed(2))} Lichtjahre
+          Distance: {lastRemovedStar.dist == 0
+            ? "-"
+            : (lastRemovedStar.dist * 3.26).toFixed(2)} Lightyears
         </p>
       </div>
       <div
@@ -1468,7 +1485,9 @@
     align-items: start;"
       >
         <p style="margin-bottom: -10px;">
-          Konstellation: {lastRemovedStar.con == undefined ?  '-' : lastRemovedStar.con }
+          Konstellation: {lastRemovedStar.con == undefined
+            ? "-"
+            : lastRemovedStar.con}
         </p>
         <p style="margin-bottom: 5px;">
           Absolute Magnitude: {lastRemovedStar.absmag}
@@ -1659,8 +1678,6 @@
     transition: background-color 0.3s ease;
     position: relative;
   }
-
-
 
   .zodiacButtons:hover {
     background-color: rgba(
@@ -1921,7 +1938,7 @@
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     transform: translateX(-50%);
-  }  
+  }
   :focus {
     outline: none;
   }
